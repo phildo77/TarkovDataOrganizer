@@ -9,11 +9,6 @@ namespace TarkovDataOrganizer;
 
 public partial class TarkovData
 {
-
-    
-    
-    
-    
     public class TraderCashOffer
     {
         
@@ -36,7 +31,7 @@ public partial class TarkovData
         public DateTime TimestampLastDownload { get; set; }
         public DateTime TimestampLastChanged { get; set; }  
         
-        public static async Task DownloadTableTraderCashOffers()
+        public static async Task DownloadTable()
         {
 
             var graphData = await GraphQueries.QueryTarkovAPI(GraphQueries.QUERY_TRADER_CASH_OFFERS);
@@ -83,6 +78,8 @@ public partial class TarkovData
             using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
             csv.WriteRecords(DataTable);
         }
+        
+        
     }
     
 

@@ -4,8 +4,10 @@ using TarkovDataOrganizer;
 
 Console.WriteLine("Hello, World!");
 
-await TarkovData.TraderCashOffer.DownloadTableTraderCashOffers();
-
+await TarkovData.TraderCashOffer.DownloadTable();
 TarkovData.TraderCashOffer.WriteToCsv();
+await TarkovData.TraderBarterOffer.DownloadTable();
+TarkovData.TraderBarterOffer.WriteToCsv();
 
 Console.WriteLine("Done!");
+

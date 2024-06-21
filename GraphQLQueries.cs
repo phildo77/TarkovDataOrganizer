@@ -306,13 +306,11 @@ public static class GraphQueries
               item { id name } 
               count 
               quantity 
-              attributes { name type value }
             }
     	      rewardItems {
               item { id name } 
               count 
               quantity 
-              attributes { name type value }
             }
             taskUnlock { id name trader { id name } minPlayerLevel }
             buyLimit
