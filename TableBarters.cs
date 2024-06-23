@@ -55,10 +55,10 @@ public partial class TarkovData
                     barterOffer.RequiredItemQuantities += $"{requiredItem.quantity}|";
                 }
                 // Remove the last | character
-                barterOffer.RequiredItemIds = barterOffer.RequiredItemIds?.TrimEnd('|');
-                barterOffer.RequiredItemNames = barterOffer.RequiredItemNames?.TrimEnd('|');
-                barterOffer.RequiredItemCount = barterOffer.RequiredItemCount?.TrimEnd('|');
-                barterOffer.RequiredItemQuantities = barterOffer.RequiredItemQuantities?.TrimEnd('|');
+                barterOffer.RequiredItemIds = barterOffer.RequiredItemIds.TrimEnd('|');
+                barterOffer.RequiredItemNames = barterOffer.RequiredItemNames.TrimEnd('|');
+                barterOffer.RequiredItemCount = barterOffer.RequiredItemCount.TrimEnd('|');
+                barterOffer.RequiredItemQuantities = barterOffer.RequiredItemQuantities.TrimEnd('|');
 
                 foreach (var rewardItem in barterData.rewardItems)
                 {
@@ -68,13 +68,15 @@ public partial class TarkovData
                     barterOffer.RewardItemQuantities += $"{rewardItem.quantity}|";
                 }
                 // Remove the last | character
-                barterOffer.RewardItemIds = barterOffer.RewardItemIds?.TrimEnd('|');
-                barterOffer.RewardItemNames = barterOffer.RewardItemNames?.TrimEnd('|');
-                barterOffer.RewardItemCount = barterOffer.RewardItemCount?.TrimEnd('|');
-                barterOffer.RewardItemQuantities = barterOffer.RewardItemQuantities?.TrimEnd('|');
+                barterOffer.RewardItemIds = barterOffer.RewardItemIds.TrimEnd('|');
+                barterOffer.RewardItemNames = barterOffer.RewardItemNames.TrimEnd('|');
+                barterOffer.RewardItemCount = barterOffer.RewardItemCount.TrimEnd('|');
+                barterOffer.RewardItemQuantities = barterOffer.RewardItemQuantities.TrimEnd('|');
 
                 DataTable.Add(barterOffer);
             }
+            
+            Console.WriteLine("Successfully Downloaded Barter Data.");
         }
         
         public static void WriteToCsv(string _filename = "tempBarters.csv")

@@ -69,7 +69,7 @@ public partial class TarkovData
                 }
             }
 
-
+            Console.WriteLine("Successfully Downloaded CashOffer Data.");
         }
 
         public static void WriteToCsv(string _filename = "tempCashOffers.csv")

@@ -273,8 +273,143 @@ public static class GraphQueries
             }
         ";
 
+    //TODO working on ALL Generic info
+    /* Not using contained items for now:
+     containsItems {
+                  item { name }
+                  count
+                  quantity
+                  attributes { type name value }
+                }
+    */
     public const string QUERY_ITEMS_ALL_GENERIC_INFO =
-      @"";
+      @"query {
+        items
+           {
+            id
+            name
+            shortName
+            description
+            category { id name }
+            types
+            updated
+
+            weight
+            ergonomicsModifier
+            accuracyModifier
+            recoilModifier
+            loudness
+            velocity
+
+            blocksHeadphones
+            conflictingSlotIds
+            conflictingItems{ id name }
+
+            hasGrid
+            width
+            height
+            backgroundColor
+            gridImageLink
+
+            link
+            iconLink                
+            inspectImageLink
+            image8xLink
+            image512pxLink
+            baseImageLink
+            wikiLink
+
+            basePrice
+            avg24hPrice
+            low24hPrice
+            lastLowPrice
+            high24hPrice
+            changeLast48h
+            changeLast48hPercent
+            lastOfferCount
+
+            properties {
+              ... on ItemPropertiesWeapon
+              {        
+                caliber
+
+                ergonomics
+
+                fireRate
+                fireModes
+
+                recoilVertical
+                recoilHorizontal
+
+                defaultPreset {
+                  id
+                  name
+                  gridImageLink
+                  link
+                  iconLink                
+                  inspectImageLink
+                  image8xLink
+                  image512pxLink
+                  baseImageLink
+                  wikiLink
+                }
+
+                presets { id }
+
+                slots {
+                  id
+                  nameId
+                  required
+                  name
+                  filters {
+                    allowedItems { id name }
+                    excludedItems { id name }
+                    allowedCategories { id name }
+                    excludedCategories { id name }
+                  }
+                }
+              }
+
+              ... on ItemPropertiesWeaponMod
+                {                        
+                  slots {
+                    id
+                    nameId
+                    required
+                    name
+                    filters {
+                      allowedItems { id name }
+                      excludedItems { id name }
+                      allowedCategories { id name }
+                      excludedCategories { id name }
+                    }
+                  }
+                }
+              ... on ItemPropertiesBarrel
+              {
+                ergonomics
+                recoilModifier
+                centerOfImpact
+                deviationCurve
+                deviationMax
+
+                slots {
+                    id
+                    nameId
+                    required
+                    name
+                    filters {
+                      allowedItems { id name }
+                      excludedItems { id name }
+                      allowedCategories { id name }
+                      excludedCategories { id name }
+                    }
+                  }
+              }
+            }
+          }
+        }";
+   
 
     public const string QUERY_TRADER_CASH_OFFERS =
       @"query {
