@@ -19,6 +19,9 @@ public partial class TarkovData
             return false;
         return true;
     }
+    
+    
+
 
     
 }

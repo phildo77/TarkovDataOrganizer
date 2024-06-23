@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using CsvHelper;
+using CsvHelper.Configuration;
 
 namespace TarkovDataOrganizer;
 
@@ -9,8 +10,8 @@ public partial class TarkovData
     {
         
         
-        public static List<TarkovItem> DataTable;
-        public static List<Slot> DataTableSlots;
+        public static Dictionary<string,TarkovItem> DataTable;
+        public static Dictionary<string, Dictionary<string,Slot>> DataTableSlots;
 
         public string id { get; set; }
         public string name { get; set; }
@@ -98,7 +99,8 @@ public partial class TarkovData
             public string nameId { get; set; }
             public bool required { get; set; }
             public string name { get; set; }
-            public string allowedIDs { get; set; } // mutliple delim |
+            public string allowedIDsStr { get; set; } // mutliple delim | ... For use in exporting to CSV
+            public List<string> allowedIDs = new List<string>();  // For easier use getting all combos
             public string allowedCategories { get; set; } // mutliple delim | - Currently no data here?  FUture?
             public string excludedIDs { get; set; } // mutliple delim | - Currently no data here?  FUture?
             public string excludedCategories { get; set; } // mutliple delim | - Currently no data here?  FUture?
@@ -107,8 +109,8 @@ public partial class TarkovData
         public static async Task DownloadTable(bool force = false)
         {
             Console.WriteLine("Downloading Item Data... (this might take a few seconds)");
-            DataTable = new List<TarkovItem>();
-            DataTableSlots = new List<Slot>();
+            DataTable = new Dictionary<string,TarkovItem>();
+            DataTableSlots = new Dictionary<string, Dictionary<string, Slot>>(); 
 
             var graphData = await GraphQueries.QueryTarkovAPI(GraphQueries.QUERY_ITEMS_ALL_GENERIC_INFO);
 
@@ -119,6 +121,8 @@ public partial class TarkovData
                 tItem.name = graphItem.name;
                 tItem.shortName = graphItem.shortName;
                 tItem.description = graphItem.description;
+                if(tItem.description != null)
+                    tItem.description = tItem.description.Replace(",", "`").Replace(System.Environment.NewLine," "); // TODO more elegant solution to commas in all strings
                 tItem.categoryId = graphItem.category.id;
                 tItem.categoryName = graphItem.category.name;
                 tItem.types = string.Empty;
@@ -210,6 +214,7 @@ public partial class TarkovData
                                 tItem.presetIds += preset.id + "|";
                         tItem.presetIds.TrimEnd('|');
 
+                        DataTableSlots.Add(tItem.id, new Dictionary<string, Slot>());
                         foreach (var slot in graphItem.properties.slots)
                         {
                             var newSlot = new Slot();
@@ -220,7 +225,11 @@ public partial class TarkovData
                             newSlot.required = slot.required == "true";
                             newSlot.name = slot.name;
                             foreach (var allowedItem in slot.filters.allowedItems)
-                                newSlot.allowedIDs += allowedItem.id + "|";
+                            {
+                                newSlot.allowedIDsStr += allowedItem.id + "|";
+                                newSlot.allowedIDs.Add(allowedItem.id);
+                            }
+                                
 
                             foreach (var excludedItem in slot.filters.excludedItems)
                                 newSlot.excludedIDs += excludedItem.id + "|";
@@ -230,7 +239,7 @@ public partial class TarkovData
 
                             foreach (var excludedCategory in slot.filters.excludedCategories)
                                 newSlot.excludedCategories += excludedCategory.id + "|";
-                            DataTableSlots.Add(newSlot);
+                            DataTableSlots[tItem.id].Add(newSlot.slotId, newSlot);
                         }
                     }
                     //Item properties Weapon Mod - TODO double slots code
@@ -244,6 +253,8 @@ public partial class TarkovData
                         }
 
                         if (HasValidValue(graphItem.properties, "slots"))
+                        {
+                            DataTableSlots.Add(tItem.id, new Dictionary<string, Slot>());
                             foreach (var slot in graphItem.properties.slots)
                             {
                                 var newSlot = new Slot();
@@ -254,7 +265,10 @@ public partial class TarkovData
                                 newSlot.required = slot.required == "true";
                                 newSlot.name = slot.name;
                                 foreach (var allowedItem in slot.filters.allowedItems)
-                                    newSlot.allowedIDs += allowedItem.id + "|";
+                                {
+                                    newSlot.allowedIDsStr += allowedItem.id + "|";
+                                    newSlot.allowedIDs.Add(allowedItem.id);
+                                }
 
                                 foreach (var excludedItem in slot.filters.excludedItems)
                                     newSlot.excludedIDs += excludedItem.id + "|";
@@ -264,12 +278,13 @@ public partial class TarkovData
 
                                 foreach (var excludedCategory in slot.filters.excludedCategories)
                                     newSlot.excludedCategories += excludedCategory.id + "|";
-                                DataTableSlots.Add(newSlot);
+                                DataTableSlots[tItem.id].Add(newSlot.slotId, newSlot);
                             }
+                        }
                     }
                 }
 
-                DataTable.Add(tItem);
+                DataTable.Add(tItem.id, tItem);
 
             }
             
@@ -278,13 +293,16 @@ public partial class TarkovData
         
         public static void WriteToCsv(string _itemsFilename = "tempItemData.csv", string _slotsFilename = "tempItemSlotData.csv")
         {
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = "~" };
+            
             using var writerItems = new StreamWriter(_itemsFilename);
-            using var csvItems = new CsvWriter(writerItems, CultureInfo.InvariantCulture);
-            csvItems.WriteRecords(DataTable);
+            using var csvItems = new CsvWriter(writerItems, config);
+            
+            csvItems.WriteRecords(DataTable.Values.ToList());
 
             using var writerSlots = new StreamWriter(_slotsFilename);
-            using var csvSlots = new CsvWriter(writerSlots, CultureInfo.InvariantCulture);
-            csvSlots.WriteRecords(DataTableSlots);
+            using var csvSlots = new CsvWriter(writerSlots, config);
+            csvSlots.WriteRecords(DataTableSlots.Values.ToList());
             
             Console.WriteLine("Successfully wrote Item Data to '" + _itemsFilename + "' and slot data to '" + _slotsFilename + "'");
         }
