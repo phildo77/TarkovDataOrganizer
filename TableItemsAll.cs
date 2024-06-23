@@ -122,7 +122,10 @@ public partial class TarkovData
                 tItem.shortName = graphItem.shortName;
                 tItem.description = graphItem.description;
                 if(tItem.description != null)
-                    tItem.description = tItem.description.Replace(",", "`").Replace(System.Environment.NewLine," "); // TODO more elegant solution to commas in all strings
+                    tItem.description = tItem.description
+                        .Replace(",", "`").Replace(System.Environment.NewLine," ")
+                        .Replace("\n", " ").Replace("\r", " ")
+                        .Replace("\r\n", " ").Replace("\n\r", " "); // TODO more elegant solution to commas in all strings
                 tItem.categoryId = graphItem.category.id;
                 tItem.categoryName = graphItem.category.name;
                 tItem.types = string.Empty;
@@ -227,7 +230,7 @@ public partial class TarkovData
                             foreach (var allowedItem in slot.filters.allowedItems)
                             {
                                 newSlot.allowedIDsStr += allowedItem.id + "|";
-                                newSlot.allowedIDs.Add(allowedItem.id);
+                                newSlot.allowedIDs.Add(allowedItem.id.ToString());
                             }
                                 
 
@@ -251,10 +254,10 @@ public partial class TarkovData
                             tItem.deviationCurve = graphItem.properties.deviationCurve;
                             tItem.deviationMax = graphItem.properties.deviationMax;
                         }
-
+                        
+                        DataTableSlots.Add(tItem.id, new Dictionary<string, Slot>());
                         if (HasValidValue(graphItem.properties, "slots"))
                         {
-                            DataTableSlots.Add(tItem.id, new Dictionary<string, Slot>());
                             foreach (var slot in graphItem.properties.slots)
                             {
                                 var newSlot = new Slot();
@@ -267,7 +270,7 @@ public partial class TarkovData
                                 foreach (var allowedItem in slot.filters.allowedItems)
                                 {
                                     newSlot.allowedIDsStr += allowedItem.id + "|";
-                                    newSlot.allowedIDs.Add(allowedItem.id);
+                                    newSlot.allowedIDs.Add(allowedItem.id.ToString());
                                 }
 
                                 foreach (var excludedItem in slot.filters.excludedItems)
@@ -302,9 +305,21 @@ public partial class TarkovData
 
             using var writerSlots = new StreamWriter(_slotsFilename);
             using var csvSlots = new CsvWriter(writerSlots, config);
-            csvSlots.WriteRecords(DataTableSlots.Values.ToList());
+            var slotsList = new List<SlotsCSVHelper>();
+            foreach (var itemId in DataTableSlots.Keys)
+                foreach (var slotEntry in DataTableSlots[itemId])
+                    slotsList.Add(new SlotsCSVHelper()
+                        { ItemId = itemId, SlotId = slotEntry.Key, Desc = slotEntry.Value.name });
+            csvSlots.WriteRecords(slotsList);
             
             Console.WriteLine("Successfully wrote Item Data to '" + _itemsFilename + "' and slot data to '" + _slotsFilename + "'");
+        }
+
+        private class SlotsCSVHelper
+        {
+            public string ItemId { get; set; }
+            public string SlotId { get; set; }
+            public string Desc { get; set; }
         }
 
     }

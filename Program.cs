@@ -5,11 +5,14 @@ using TarkovDataOrganizer;
 Console.WriteLine("Tarkov.dev data organizer - Downloading Data into CSV files...");
 
 await TarkovData.TraderCashOffer.DownloadTable();
-TarkovData.TraderCashOffer.WriteToCsv();
+//TarkovData.TraderCashOffer.WriteToCsv();
 await TarkovData.TraderBarterOffer.DownloadTable();
-TarkovData.TraderBarterOffer.WriteToCsv();
+//TarkovData.TraderBarterOffer.WriteToCsv();
 await TarkovData.TarkovItem.DownloadTable();
 TarkovData.TarkovItem.WriteToCsv();
+
+//Testing Colt assault rifle
+TarkovData.GunModCombinator.GunConfig.Build("5447a9cd4bdc2dbd208b4567");
 
 Console.WriteLine("Done!");
 

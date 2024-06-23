@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace TarkovDataOrganizer;
+﻿namespace TarkovDataOrganizer;
 
 public partial class TarkovData
 {
@@ -11,10 +9,9 @@ public partial class TarkovData
 
         public class GunConfig
         {
-            public GunConfig(string _gunId)
+            public GunConfig(Node _root)
             {
-                GunId = _gunId;
-                RootNode = new Node(_gunId, this);
+                RootNode = _root;
             }
 
             public string GunId;
@@ -37,81 +34,127 @@ public partial class TarkovData
             }
 
             //TODO - is this efficient?  Does it work?
-            public GunConfig DeepClone()
+            public GunConfig Clone()
             {
-                var json = JsonConvert.SerializeObject(this);
-                return JsonConvert.DeserializeObject<GunConfig>(json);
+                return new GunConfig(Node.CloneRoot(RootNode));
             }
-
 
 
             public class Node
             {
-                public Node(string _rootItemId, GunConfig _config)
+                private Node(string _rootItemId)
                 {
                     ItemId = _rootItemId;
-                    ParentConfig = _config;
-                    ParentId = string.Empty; //Empty if Root Gun
-                    ParentSlotId = string.Empty; //Empty if Root Gun
+                    Parent = null;
                     SlotChildren = new Dictionary<string, Node?>();
                     foreach (var slot in TarkovItem.DataTableSlots[_rootItemId])
                         SlotChildren.Add(slot.Key, null);
                 }
 
-                public Node(string _itemId, Node _parentNode, string _slotIdTaken)
+                private Node(string _itemId, Node _parentNode)
                 {
                     ItemId = _itemId;
-                    ParentConfig = _parentNode.ParentConfig;
-                    ParentId = _parentNode.ParentId; //Empty if Root Gun
-                    ParentSlotId = _parentNode.ParentSlotId; //Empty if Root Gun
+                    Parent = _parentNode;
                     SlotChildren = new Dictionary<string, Node?>();
                     foreach (var slot in TarkovItem.DataTableSlots[_itemId])
                         SlotChildren.Add(slot.Key, null);
                 }
 
-                public GunConfig ParentConfig;
                 public string ItemId;
-                public string ParentId;
-                public string ParentSlotId;
+                public Node? Parent;
                 public Dictionary<string, Node?> SlotChildren; //(slotId, childNode ) child null if not slotted
+
+                public static Node CloneRoot(Node _rootToClone)
+                {
+                    var newNode = new Node(_rootToClone.ItemId);
+                    foreach (var childEntry in _rootToClone.SlotChildren)
+                        if (childEntry.Value != null)
+                            newNode.SlotChildren[childEntry.Key] = Clone(childEntry.Value, newNode);
+                    return newNode;
+                }
+
+                private static Node Clone(Node _nodeToClone, Node _parentNode)
+                {
+                    var newNode = new Node(_nodeToClone.ItemId);
+                    newNode.Parent = _parentNode;
+                    foreach (var childEntry in _nodeToClone.SlotChildren)
+                        if (childEntry.Value != null)
+                            newNode.SlotChildren[childEntry.Key] = Clone(childEntry.Value, newNode);
+                    return newNode;
+                }
+
+                public static Node CreateRoot(string _gunId)
+                {
+                    return new Node(_gunId);
+                }
+
+                public Node GetRoot
+                {
+                    get
+                    {
+                        var checkParent = Parent;
+                        if (checkParent == null) return this;
+                        while (checkParent != null)
+                            checkParent = checkParent.Parent;
+                        return Parent;
+                    }
+                }
+
+                public Node AttachItemToSlot(string _itemId, string _slotIdTaken)
+                {
+                    var newNode = new Node(_itemId, this);
+
+                    SlotChildren[_slotIdTaken] = newNode;
+                    return newNode;
+                }
+
+                public string ParentSlotId
+                {
+                    get
+                    {
+                        if (Parent == null)
+                            return string.Empty;
+                        foreach (var entry in Parent.SlotChildren)
+                            if (entry.Value != null && entry.Value.Equals(this))
+                                return entry.Key;
+                        return string.Empty;
+                    }
+                }
             }
 
             public static List<GunConfig> Build(string _gunId)
             {
                 Console.WriteLine("Finding and building all loadout combinations for: " +
                                   TarkovItem.DataTable[_gunId].name);
-                
-                var gun = TarkovItem.DataTable[_gunId];
+
+                var configs = new List<GunConfig>();
                 if (TarkovItem.DataTableSlots.ContainsKey(_gunId))
                 {
-                    var allConfigs = Build(new GunConfig(_gunId).RootNode);
-                    
-                    Console.WriteLine("Found " + allConfigs.Count + " unique and valid configs!");
-                    
+                    configs = Build(Node.CreateRoot(_gunId));
+
+                    Console.WriteLine("Found " + configs.Count + " unique and valid configs!");
                 }
-                    
-                Console.WriteLine("No slots for id: " + _gunId + " - " + gun.name);
                 Console.WriteLine("Done!");
-                return [];
+                return configs;
             }
+
             private static List<GunConfig> Build(Node _currentNode)
             {
-                Console.WriteLine(".");
+                Console.Write(".");
                 var configList = new List<GunConfig>();
+
+                var config = new GunConfig(_currentNode.GetRoot);
 
                 //Add config if valid (no unfilled required slots in the whole config)
                 //TODO this is a lot of searching through the tree/config - could be more efficient?
-                if (_currentNode.ParentConfig.IsValid)
-                    configList.Add(_currentNode.ParentConfig.DeepClone());
+                if (config.IsValid)
+                    configList.Add(config.Clone());
 
 
                 if (!TarkovItem.DataTableSlots.ContainsKey(_currentNode.ItemId) ||
                     TarkovItem.DataTableSlots[_currentNode.ItemId].Count == 0)
-                {
-                    Console.WriteLine("No slots for id: " + _currentNode.ItemId + " - " +
-                                      TarkovItem.DataTable[_currentNode.ItemId].name);
+                    //Console.WriteLine("No slots for id: " + _currentNode.ItemId + " - " + TarkovItem.DataTable[_currentNode.ItemId].name);
                     return [];
-                }
 
                 foreach (var slot in TarkovItem.DataTableSlots[_currentNode.ItemId])
                 {
@@ -119,8 +162,7 @@ public partial class TarkovData
                         continue;
                     foreach (var allowedItemId in slot.Value.allowedIDs)
                     {
-                        var childNode = new Node(TarkovItem.DataTable[allowedItemId].id, _currentNode, slot.Key);
-
+                        var childNode = _currentNode.AttachItemToSlot(allowedItemId, slot.Key);
                         configList.AddRange(Build(childNode));
                     }
                 }
