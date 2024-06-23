@@ -31,6 +31,7 @@ public partial class TarkovData
         
         public static async Task DownloadTable()
         {
+            Console.WriteLine("Downloading Barter Data...");
             var results = await GraphQueries.QueryTarkovAPI(GraphQueries.QUERY_BARTERS);
            
             DataTable = new List<TraderBarterOffer>();
@@ -76,7 +77,7 @@ public partial class TarkovData
                 DataTable.Add(barterOffer);
             }
             
-            Console.WriteLine("Successfully Downloaded Barter Data.");
+            Console.WriteLine("Done!");
         }
         
         public static void WriteToCsv(string _filename = "tempBarters.csv")
@@ -84,6 +85,9 @@ public partial class TarkovData
             using var writer = new StreamWriter(_filename);
             using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
             csv.WriteRecords(DataTable);
+
+            Console.WriteLine("Successfully wrote Barter data to '" + _filename + "'");
+
         }
     }
 

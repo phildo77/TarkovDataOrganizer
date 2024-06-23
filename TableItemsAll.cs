@@ -10,6 +10,7 @@ public partial class TarkovData
         
         
         public static List<TarkovItem> DataTable;
+        public static List<Slot> DataTableSlots;
 
         public string id { get; set; }
         public string name { get; set; }
@@ -87,23 +88,27 @@ public partial class TarkovData
 
         //All items w/ props
 
-        public List<Slot> slots = new List<Slot>();
+        //public List<Slot> slots;  Making this a separate table - see DataTableSlots
 
         public class Slot
         {
-            public string id;
-            public string nameId;
-            public bool required;
-            public string name;
-            public List<string> allowedIDs;
-            public List<string> allowedCategories;
-            public List<string> excludedIDs;
-            public List<string> exlcludedCategories;
+            public string itemId { get; set; }  // Item having the associated slot info
+            public string itemName { get; set; } //Redundant - for debug / checking / testing
+            public string slotId { get; set; }
+            public string nameId { get; set; }
+            public bool required { get; set; }
+            public string name { get; set; }
+            public string allowedIDs { get; set; } // mutliple delim |
+            public string allowedCategories { get; set; } // mutliple delim | - Currently no data here?  FUture?
+            public string excludedIDs { get; set; } // mutliple delim | - Currently no data here?  FUture?
+            public string excludedCategories { get; set; } // mutliple delim | - Currently no data here?  FUture?
         }
         
         public static async Task DownloadTable(bool force = false)
         {
+            Console.WriteLine("Downloading Item Data... (this might take a few seconds)");
             DataTable = new List<TarkovItem>();
+            DataTableSlots = new List<Slot>();
 
             var graphData = await GraphQueries.QueryTarkovAPI(GraphQueries.QUERY_ITEMS_ALL_GENERIC_INFO);
 
@@ -205,27 +210,30 @@ public partial class TarkovData
                                 tItem.presetIds += preset.id + "|";
                         tItem.presetIds.TrimEnd('|');
 
-                        tItem.slots = new List<Slot>();
                         foreach (var slot in graphItem.properties.slots)
                         {
                             var newSlot = new Slot();
-                            newSlot.id = slot.id;
+                            newSlot.itemId = tItem.id;
+                            newSlot.itemName = tItem.name;
+                            newSlot.slotId = slot.id;
                             newSlot.nameId = slot.nameId;
                             newSlot.required = slot.required == "true";
                             newSlot.name = slot.name;
-                            newSlot.allowedIDs = new List<string>();
                             foreach (var allowedItem in slot.filters.allowedItems)
-                                newSlot.allowedIDs.Add((string)allowedItem.id);
+                                newSlot.allowedIDs += allowedItem.id + "|";
+
                             foreach (var excludedItem in slot.filters.excludedItems)
-                                newSlot.excludedIDs.Add((string)excludedItem.id);
+                                newSlot.excludedIDs += excludedItem.id + "|";
+
                             foreach (var allowedCategory in slot.filters.allowedCategories)
-                                newSlot.allowedCategories.Add((string)allowedCategory.id);
+                                newSlot.allowedCategories += allowedCategory.id + "|";
+
                             foreach (var excludedCategory in slot.filters.excludedCategories)
-                                newSlot.allowedCategories.Add((string)excludedCategory.id);
-                            tItem.slots.Add(newSlot);
+                                newSlot.excludedCategories += excludedCategory.id + "|";
+                            DataTableSlots.Add(newSlot);
                         }
                     }
-                    //Item properties Weapon Mod
+                    //Item properties Weapon Mod - TODO double slots code
                     else if (tItem.types.Contains("mods")) // TODO const - missing anything by doing this?
                     {
                         if (tItem.categoryName.Contains("Barrel"))
@@ -235,25 +243,28 @@ public partial class TarkovData
                             tItem.deviationMax = graphItem.properties.deviationMax;
                         }
 
-                        tItem.slots = new List<Slot>();
                         if (HasValidValue(graphItem.properties, "slots"))
                             foreach (var slot in graphItem.properties.slots)
                             {
                                 var newSlot = new Slot();
-                                newSlot.id = slot.id;
+                                newSlot.itemId = tItem.id;
+                                newSlot.itemName = tItem.name;
+                                newSlot.slotId = slot.id;
                                 newSlot.nameId = slot.nameId;
                                 newSlot.required = slot.required == "true";
                                 newSlot.name = slot.name;
-                                newSlot.allowedIDs = new List<string>();
                                 foreach (var allowedItem in slot.filters.allowedItems)
-                                    newSlot.allowedIDs.Add((string)allowedItem.id);
+                                    newSlot.allowedIDs += allowedItem.id + "|";
+
                                 foreach (var excludedItem in slot.filters.excludedItems)
-                                    newSlot.excludedIDs.Add((string)excludedItem.id);
+                                    newSlot.excludedIDs += excludedItem.id + "|";
+
                                 foreach (var allowedCategory in slot.filters.allowedCategories)
-                                    newSlot.allowedCategories.Add((string)allowedCategory.id);
+                                    newSlot.allowedCategories += allowedCategory.id + "|";
+
                                 foreach (var excludedCategory in slot.filters.excludedCategories)
-                                    newSlot.allowedCategories.Add((string)excludedCategory.id);
-                                tItem.slots.Add(newSlot);
+                                    newSlot.excludedCategories += excludedCategory.id + "|";
+                                DataTableSlots.Add(newSlot);
                             }
                     }
                 }
@@ -262,14 +273,20 @@ public partial class TarkovData
 
             }
             
-            Console.WriteLine("Successfully Downloaded Item Data.");
+            Console.WriteLine("Done!");
         }
         
-        public static void WriteToCsv(string _filename = "tempItemData.csv")
+        public static void WriteToCsv(string _itemsFilename = "tempItemData.csv", string _slotsFilename = "tempItemSlotData.csv")
         {
-            using var writer = new StreamWriter(_filename);
-            using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-            csv.WriteRecords(DataTable);
+            using var writerItems = new StreamWriter(_itemsFilename);
+            using var csvItems = new CsvWriter(writerItems, CultureInfo.InvariantCulture);
+            csvItems.WriteRecords(DataTable);
+
+            using var writerSlots = new StreamWriter(_slotsFilename);
+            using var csvSlots = new CsvWriter(writerSlots, CultureInfo.InvariantCulture);
+            csvSlots.WriteRecords(DataTableSlots);
+            
+            Console.WriteLine("Successfully wrote Item Data to '" + _itemsFilename + "' and slot data to '" + _slotsFilename + "'");
         }
 
     }

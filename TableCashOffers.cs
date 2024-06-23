@@ -33,6 +33,8 @@ public partial class TarkovData
         
         public static async Task DownloadTable()
         {
+            Console.WriteLine("Downloading CashOffer Data...");
+
 
             var graphData = await GraphQueries.QueryTarkovAPI(GraphQueries.QUERY_TRADER_CASH_OFFERS);
 
@@ -69,7 +71,7 @@ public partial class TarkovData
                 }
             }
 
-            Console.WriteLine("Successfully Downloaded CashOffer Data.");
+            Console.WriteLine("Done!");
         }
 
         public static void WriteToCsv(string _filename = "tempCashOffers.csv")
@@ -77,6 +79,9 @@ public partial class TarkovData
             using var writer = new StreamWriter(_filename);
             using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
             csv.WriteRecords(DataTable);
+            
+            
+            Console.WriteLine("Successfully wrote CashOffer data to '" + _filename + "'");
         }
         
         
