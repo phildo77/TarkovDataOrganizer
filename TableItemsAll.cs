@@ -189,7 +189,7 @@ public partial class TarkovData
                         tItem.recoilVertical = graphItem.properties.Value<float?>("recoilVertical") ?? 0f;
                         tItem.recoilHorizontal = graphItem.properties.Value<float?>("recoilHorizontal") ?? 0f;
 
-                        if (HasValidValue(graphItem.properties.defaultPreset, "id"))
+                        if (HasValidValue(graphItem.properties, "defaultPreset"))
                         {
                             tItem.defaultPresetId = graphItem.properties.defaultPreset.id;
                             tItem.defaultPresetName = graphItem.properties.defaultPreset.name;
