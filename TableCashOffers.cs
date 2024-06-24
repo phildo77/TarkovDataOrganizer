@@ -9,10 +9,10 @@ namespace TarkovDataOrganizer;
 
 public partial class TarkovData
 {
-    public class TraderCashOffer
+    public class CashOffer
     {
         
-        public static List<TraderCashOffer> DataTable;
+        public static Dictionary<string, List<CashOffer>> DataTable;
         
         public string TraderName { get; set; }
         
@@ -38,14 +38,14 @@ public partial class TarkovData
 
             var graphData = await GraphQueries.QueryTarkovAPI(GraphQueries.QUERY_TRADER_CASH_OFFERS);
 
-            DataTable = new List<TraderCashOffer>();
+            DataTable = new Dictionary<string, List<CashOffer>>();
 
             foreach (var traderData in graphData.Data.traders)
             {
                 var traderName = traderData.name;
                 foreach (var cashOfferData in traderData.cashOffers)
                 {
-                    var cashOffer = new TraderCashOffer();
+                    var cashOffer = new CashOffer();
                     cashOffer.TraderName = traderName;
                 
                     cashOffer.ItemId = cashOfferData.item.id;
@@ -66,7 +66,9 @@ public partial class TarkovData
                 
                     cashOffer.TimestampLastDownload = DateTime.Now;
                     cashOffer.TimestampLastChanged = DateTime.Now;
-                    DataTable.Add(cashOffer);
+                    if(!DataTable.ContainsKey(cashOffer.ItemId))
+                        DataTable.Add(cashOffer.ItemId, new List<CashOffer>());
+                    DataTable[cashOffer.ItemId].Add(cashOffer);
                 
                 }
             }
@@ -76,9 +78,13 @@ public partial class TarkovData
 
         public static void WriteToCsv(string _filename = "tempCashOffers.csv")
         {
+            var cashOfferList = new List<CashOffer>();
+            foreach (var cashOfferEntry in DataTable)
+                cashOfferList.AddRange(cashOfferEntry.Value);
+            
             using var writer = new StreamWriter(_filename);
             using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-            csv.WriteRecords(DataTable);
+            csv.WriteRecords(cashOfferList);
             
             
             Console.WriteLine("Successfully wrote CashOffer data to '" + _filename + "'");

@@ -1,4 +1,10 @@
-﻿namespace TarkovDataOrganizer;
+﻿using System.Data;
+using System.Globalization;
+using System.Text;
+using CsvHelper;
+using CsvHelper.Configuration;
+
+namespace TarkovDataOrganizer;
 
 public partial class TarkovData
 {
@@ -14,7 +20,6 @@ public partial class TarkovData
                 RootNode = _root;
             }
 
-            public string GunId;
             public Node RootNode;
 
             public bool IsValid => IsValidConfig(RootNode);
@@ -39,6 +44,17 @@ public partial class TarkovData
                 return new GunConfig(Node.CloneRoot(RootNode));
             }
 
+            private List<Node> GetAllNodes(Node _rootNode)
+            {
+                var nodes = new List<Node>();
+                nodes.Add(_rootNode);
+                foreach (var slot in _rootNode.SlotChildren)
+                    if(slot.Value != null)
+                        nodes.AddRange(GetAllNodes(slot.Value));
+                return nodes;
+            }
+
+            
 
             public class Node
             {
@@ -169,6 +185,152 @@ public partial class TarkovData
 
 
                 return configList;
+            }
+
+           
+            //TODO Temp Testing
+            private string GetComponentList()
+            {
+                var componentList = new List<ModReportData>();
+                var nodeList = GetAllNodes(RootNode);
+                foreach (var node in nodeList)
+                {
+                    componentList.Add(new ModReportData(node));
+                }
+                
+                var config = new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = "~" };
+
+                var sb = new StringBuilder();
+                using var writerItems = new StringWriter(sb);
+                using var csvItems = new CsvWriter(writerItems, config);
+
+                csvItems.WriteRecords(componentList);
+
+                return sb.ToString();
+            }
+
+            public static void WriteStringsToFile(List<string> _strings)
+            {
+                var finalString = string.Empty;
+                foreach (var str in _strings)
+                    finalString += str + Environment.NewLine + Environment.NewLine;
+                
+                File.WriteAllText("testingAllCombos.txt",finalString);
+            }
+
+            public static void TestWriteAllCombosToFile(string _gunID)
+            {
+                var allConfigs = Build(_gunID);
+                var configSummaries = new List<string>();
+                foreach (var config in allConfigs)
+                {
+                    configSummaries.Add(config.GetComponentList());
+                }
+
+                WriteStringsToFile(configSummaries);
+
+            }
+            
+            
+            private class ModReportData
+            {
+                public ModReportData(Node _node)
+                {
+                    var item = TarkovItem.DataTable[_node.ItemId];
+                    //TODO ParentName, ParentSlotType 
+                    ItemId = item.id;
+                    ItemName = item.name;
+                    CategoryName = item.categoryName;
+                    Weight = item.weight;
+                    ErgonomicsModifier = item.ergonomicsModifier;
+                    AccuracyModifier = item.accuracyModifier;
+                    RecoilModifier = item.recoilModifier;
+                    Loudness = item.loudness;
+                    Velocity = item.velocity;
+
+                    if (item.types.Contains("gun"))
+                    {
+                        Ergonomics = item.ergonomics;
+                        FireRate = item.fireRate;
+                        RecoilHorizontal = item.recoilHorizontal;
+                        RecoilVertical = item.recoilVertical;
+                    }
+                    else if(item.types.Contains("barrel"))
+                    {
+                        CenterOfImpact = item.centerOfImpact;
+                        DeviationCurve = item.deviationCurve;
+                        DeviationMax = item.deviationMax;
+                    }
+
+                    Avg24hPrice = item.avg24hPrice;
+                    Low24hPrice = item.low24hPrice;
+                    LastLowPrice = item.lastLowPrice;
+
+                    //TODO add switches/filters for minimum Trader level and tasks completed
+                    if (CashOffer.DataTable.ContainsKey(item.id))
+                    {
+                        var cashOffer = CashOffer.DataTable[item.id];
+                        LowestTraderPriceRUB = int.MaxValue;
+                        foreach (var offer in cashOffer)
+                        {
+                            if (offer.PriceRUB < LowestTraderPriceRUB)
+                            {
+                                LowestTraderPriceRUB = offer.PriceRUB;
+                                LowestTraderPriceName = offer.TraderName;
+                                LowestTraderPriceMinLevel = offer.MinTraderLevel;
+                                LowestTraderPriceTaskUnlockName = offer.TaskUnlockName;
+                            }
+                        }
+                    }
+                    
+
+                    //TODO barters - need a better class structure (not just delimted strings)
+                    //TODO crafts
+                }
+                
+                public string ParentName { get; set; }
+                public string ParentSlotName { get; set; }
+                public string ItemId { get; set; }
+                public string ItemName { get; set; }
+                public string CategoryName { get; set; }
+
+                public float Weight { get; set; }
+                public float ErgonomicsModifier { get; set; }
+                public float AccuracyModifier { get; set; }
+                public float RecoilModifier { get; set; }
+                public float Loudness  { get; set; }
+                public float Velocity  { get; set; }
+                
+                //Weapon Prop
+                public float Ergonomics { get; set; }
+                public float FireRate { get; set; }
+                
+                public float RecoilVertical { get; set; }
+                public float RecoilHorizontal { get; set; }
+                
+                //Barrel Prop
+                public float CenterOfImpact { get; set; }
+                public float DeviationCurve { get; set; }
+                public float DeviationMax { get; set; }
+                
+                // PRICING ------------------
+                public int Avg24hPrice  { get; set; }
+                public int Low24hPrice { get; set; }
+                public int LastLowPrice { get; set; }
+                
+                //From CashOffers
+                public int LowestTraderPriceRUB { get; set; }
+                public string LowestTraderPriceName { get; set; }
+                public int LowestTraderPriceMinLevel { get; set; }
+                public string LowestTraderPriceTaskUnlockName { get; set; }
+                
+                //From Barters
+                public int LowestBarterPriceRUB { get; set; }
+                public int LowestBarterPriceName { get; set; }
+                public int LowestBarterPriceTradeDescription { get; set; }
+                
+                
+                
             }
         }
     }

@@ -59,8 +59,8 @@ public partial class TarkovData
 
         //ItemPropWeapon
         public string caliber { get; set; }
-        public string ergonomics { get; set; }
-        public string fireRate { get; set; }
+        public float ergonomics { get; set; }
+        public float fireRate { get; set; }
         public string fireModes { get; set; } //Can contain multiple strings delim |
 
         public float recoilVertical { get; set; }

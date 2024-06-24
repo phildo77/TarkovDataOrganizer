@@ -6,9 +6,10 @@ using CsvHelper;
 namespace TarkovDataOrganizer;
 public partial class TarkovData
 {
-    public class TraderBarterOffer
+    public class BarterOffer
     {
-        public static List<TraderBarterOffer> DataTable;
+        //ItemId Barter FOR, List of barter offers
+        public static Dictionary<string,List<BarterOffer>> DataTable;
         public string Id { get; set; }
         public string Level { get; set; }
 
@@ -34,10 +35,10 @@ public partial class TarkovData
             Console.WriteLine("Downloading Barter Data...");
             var results = await GraphQueries.QueryTarkovAPI(GraphQueries.QUERY_BARTERS);
            
-            DataTable = new List<TraderBarterOffer>();
+            DataTable = new Dictionary<string, List<BarterOffer>>();
             foreach (var barterData in results.Data.barters)
             {
-                var barterOffer = new TraderBarterOffer
+                var barterOffer = new BarterOffer
                 {
                     Id = barterData.id,
                     Level = barterData.level,
@@ -61,12 +62,18 @@ public partial class TarkovData
                 barterOffer.RequiredItemCount = barterOffer.RequiredItemCount.TrimEnd('|');
                 barterOffer.RequiredItemQuantities = barterOffer.RequiredItemQuantities.TrimEnd('|');
 
+                var rewardItemIdsToAdd = new List<string>();
                 foreach (var rewardItem in barterData.rewardItems)
                 {
+                    string itemId = rewardItem.item.id.ToString();
                     barterOffer.RewardItemIds += $"{rewardItem.item.id}|";
                     barterOffer.RewardItemNames += $"{rewardItem.item.name}|";
                     barterOffer.RewardItemCount += $"{rewardItem.count}|";
                     barterOffer.RewardItemQuantities += $"{rewardItem.quantity}|";
+                    if(!DataTable.ContainsKey(itemId))
+                        DataTable.Add(itemId,new List<BarterOffer>());
+                    rewardItemIdsToAdd.Add(itemId);
+
                 }
                 // Remove the last | character
                 barterOffer.RewardItemIds = barterOffer.RewardItemIds.TrimEnd('|');
@@ -74,7 +81,8 @@ public partial class TarkovData
                 barterOffer.RewardItemCount = barterOffer.RewardItemCount.TrimEnd('|');
                 barterOffer.RewardItemQuantities = barterOffer.RewardItemQuantities.TrimEnd('|');
 
-                DataTable.Add(barterOffer);
+                foreach (var id in rewardItemIdsToAdd)
+                    DataTable[id].Add(barterOffer);
             }
             
             Console.WriteLine("Done!");
@@ -82,9 +90,16 @@ public partial class TarkovData
         
         public static void WriteToCsv(string _filename = "tempBarters.csv")
         {
+            var barterList = new List<BarterOffer>();
+            foreach (var entry in DataTable)
+                barterList.AddRange(entry.Value);
+            
+            barterList = barterList.GroupBy(_offer => _offer.RewardItemIds)
+                .Select(_group => _group.First()).ToList();
+            
             using var writer = new StreamWriter(_filename);
             using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-            csv.WriteRecords(DataTable);
+            csv.WriteRecords(barterList);
 
             Console.WriteLine("Successfully wrote Barter data to '" + _filename + "'");
 
