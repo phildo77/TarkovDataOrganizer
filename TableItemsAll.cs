@@ -95,10 +95,10 @@ public partial class TarkovData
         {
             public string itemId { get; set; }  // Item having the associated slot info
             public string itemName { get; set; } //Redundant - for debug / checking / testing
-            public string slotId { get; set; }
-            public string nameId { get; set; }
-            public bool required { get; set; }
-            public string name { get; set; }
+            public string slotId { get; set; } //Used in DataTableSlots as secondary key
+            public string nameId { get; set; } //Normalized slot type
+            public bool required { get; set; } //Is the gun valid / fireable without this slot filled?
+            public string name { get; set; } //Slot type (ie Pistol Grip, Scope, Barrel, etc.)
             public string allowedIDsStr { get; set; } // mutliple delim | ... For use in exporting to CSV
             public List<string> allowedIDs = new List<string>();  // For easier use getting all combos
             public string allowedCategories { get; set; } // mutliple delim | - Currently no data here?  FUture?
@@ -315,6 +315,7 @@ public partial class TarkovData
             Console.WriteLine("Successfully wrote Item Data to '" + _itemsFilename + "' and slot data to '" + _slotsFilename + "'");
         }
 
+        
         private class SlotsCSVHelper
         {
             public string ItemId { get; set; }
