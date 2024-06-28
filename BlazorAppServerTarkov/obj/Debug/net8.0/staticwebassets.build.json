@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "NwuIN1d8WWhF15rZSh91fRfKSz2aNqRyD4SRChVdgbk=",
+  "Hash": "k1nkk944YBwA9EYOLvWHtdmL5Q/kO+VGccbuVzM65Gs=",
   "Source": "BlazorAppServerTarkov",
   "BasePath": "_content/BlazorAppServerTarkov",
   "Mode": "Default",
@@ -300,6 +300,44 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
+    },
+    {
+      "Identity": "C:\\Users\\aidan\\source\\repos\\TarkovDataOrganizer\\BlazorAppServerTarkov\\wwwroot\\testReportAllCombos - Copy.csv",
+      "SourceId": "BlazorAppServerTarkov",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\aidan\\source\\repos\\TarkovDataOrganizer\\BlazorAppServerTarkov\\wwwroot\\",
+      "BasePath": "_content/BlazorAppServerTarkov",
+      "RelativePath": "testReportAllCombos - Copy.csv",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\testReportAllCombos - Copy.csv"
+    },
+    {
+      "Identity": "C:\\Users\\aidan\\source\\repos\\TarkovDataOrganizer\\BlazorAppServerTarkov\\wwwroot\\testReportAllCombos.csv",
+      "SourceId": "BlazorAppServerTarkov",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\aidan\\source\\repos\\TarkovDataOrganizer\\BlazorAppServerTarkov\\wwwroot\\",
+      "BasePath": "_content/BlazorAppServerTarkov",
+      "RelativePath": "testReportAllCombos.csv",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\testReportAllCombos.csv"
     }
   ]
 }

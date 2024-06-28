@@ -26,6 +26,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGF0YURvd25sb2FkZXJUYXJrb3YucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/aidan/source/repos/TarkovDataOrganizer/BlazorAppServerTarkov/Pages/GunConfigurator.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcR3VuQ29uZmlndXJhdG9yLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/aidan/source/repos/TarkovDataOrganizer/BlazorAppServerTarkov/Pages/Index.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 

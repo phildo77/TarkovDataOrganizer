@@ -57,6 +57,14 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "C:\\Users\\aidan\\source\\repos\\TarkovDataOrganizer\\BlazorAppServerTarkov\\wwwroot\\testReportAllCombos - Copy.csv",
+      "PackagePath": "staticwebassets\\testReportAllCombos - Copy.csv"
+    },
+    {
+      "Id": "C:\\Users\\aidan\\source\\repos\\TarkovDataOrganizer\\BlazorAppServerTarkov\\wwwroot\\testReportAllCombos.csv",
+      "PackagePath": "staticwebassets\\testReportAllCombos.csv"
+    },
+    {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.BlazorAppServerTarkov.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },

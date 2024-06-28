@@ -1,0 +1,57 @@
+﻿@using System.Collections.Generic
+@using System.IO
+@page "/gun-configurator"
+<h3>Gun Configurator</h3>
+
+<select @bind="SelectedCategory">
+    @foreach (var category in Categories)
+    {
+        <option value="@category">@category</option>
+    }
+</select>
+
+<select>
+    @foreach (var item in WeaponNames)
+    {
+        <option value="@item">@item</option>
+    }
+</select>
+
+@code {
+    private List<string> WeaponNames = new List<string>();
+
+    public string? SelectedCategory { get; set; }
+
+    public List<string> Categories { get; set; } = new List<string>
+    {
+        "Assault rifle",
+        "Stock",
+        "Receiver",
+        "Barrel",
+        "Gas block",
+        "Handguard",
+        "Charging handle"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var csvContent = await File.ReadAllTextAsync(Path.Combine(Environment.CurrentDirectory, "wwwroot", "testReportAllCombos - Copy.csv"));
+        WeaponNames = ParseCsv(csvContent);
+    }
+    private List<string> ParseCsv(string csvContent)
+    {
+        var lines = csvContent.Split('\n');
+        var itemNames = new List<string>();
+
+        foreach (var line in lines.Skip(1)) // Skip header
+        {
+            var columns = line.Split(',');
+            if (columns.Length > 3) // Ensure there are enough columns
+            {
+                itemNames.Add(columns[3].Trim());
+            }
+        }
+
+        return itemNames;
+    }
+}
