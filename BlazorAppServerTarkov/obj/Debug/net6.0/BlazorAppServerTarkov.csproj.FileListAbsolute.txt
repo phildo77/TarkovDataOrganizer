@@ -1,0 +1,8 @@
+C:\Users\aidan\source\repos\TarkovDataOrganizer\BlazorAppServerTarkov\obj\Debug\net6.0\BlazorAppServerTarkov.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\aidan\source\repos\TarkovDataOrganizer\BlazorAppServerTarkov\obj\Debug\net6.0\BlazorAppServerTarkov.AssemblyInfoInputs.cache
+C:\Users\aidan\source\repos\TarkovDataOrganizer\BlazorAppServerTarkov\obj\Debug\net6.0\BlazorAppServerTarkov.AssemblyInfo.cs
+C:\Users\aidan\source\repos\TarkovDataOrganizer\BlazorAppServerTarkov\obj\Debug\net6.0\BlazorAppServerTarkov.csproj.CoreCompileInputs.cache
+C:\Users\aidan\source\repos\TarkovDataOrganizer\BlazorAppServerTarkov\obj\Debug\net6.0\BlazorAppServerTarkov.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\aidan\source\repos\TarkovDataOrganizer\BlazorAppServerTarkov\obj\Debug\net6.0\BlazorAppServerTarkov.RazorAssemblyInfo.cache
+C:\Users\aidan\source\repos\TarkovDataOrganizer\BlazorAppServerTarkov\obj\Debug\net6.0\BlazorAppServerTarkov.RazorAssemblyInfo.cs
+C:\Users\aidan\source\repos\TarkovDataOrganizer\BlazorAppServerTarkov\obj\Debug\net6.0\BlazorAppServerTarkov.sourcelink.json

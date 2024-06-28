@@ -1,38 +1,37 @@
-﻿@page "/data-downloader"
-@using TarkovDataOrganizer
+﻿@using TarkovDataOrganizer
 @implements IDisposable
 
 <h3>Data Downloader</h3>
 
-<button @onclick="DownloadData" disabled="@isDownloading">Download Data</button>
+<button @onclick="DownloadData" disabled="@IsDownloading">Download Data</button>
 
-@if (isDownloading)
+@if (IsDownloading)
 {
     <p>Downloading data, please wait...</p>
 }
 
-@if (errorMessage != null)
+@if (ErrorMessage != null)
 {
-    <p style="color:red">@errorMessage</p>
+    <p style="color:red">@ErrorMessage</p>
 }
 
-@if (downloadComplete)
+@if (DownloadComplete)
 {
     <p>Data download and report generation complete!</p>
 }
 
 @code {
-    private bool isDownloading = false;
-    private bool downloadComplete = false;
-    private string? errorMessage;
+    private bool IsDownloading { get; set; } = false;
+    private bool DownloadComplete { get; set; } = false;
+    private string? ErrorMessage { get; set; }
 
     private async Task DownloadData()
     {
         try
         {
-            isDownloading = true;
-            errorMessage = null;
-            downloadComplete = false;
+            IsDownloading = true;
+            ErrorMessage = null;
+            DownloadComplete = false;
             await TarkovData.CashOffer.DownloadTable();
             await TarkovData.BarterOffer.DownloadTable();
             await TarkovData.TarkovItem.DownloadTable();
@@ -41,15 +40,15 @@
             var fullReport = TarkovData.CombinationExplorer.Report.MultiVerbose(comboList);
             await File.WriteAllTextAsync("wwwroot/testReportAllCombos.csv", fullReport);
 
-            downloadComplete = true;
+            DownloadComplete = true;
         }
         catch (Exception ex)
         {
-            errorMessage = $"An error occurred: {ex.Message}";
+            ErrorMessage = $"An error occurred: {ex.Message}";
         }
         finally
         {
-            isDownloading = false;
+            IsDownloading = false;
         }
     }
 

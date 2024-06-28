@@ -1,0 +1,77 @@
+﻿@page "/data-downloader"
+@using TarkovDataOrganizer
+@implements IDisposable
+
+<h3>Data Downloader</h3>
+
+<button @onclick="DownloadData">Download Data</button>
+
+@if (IsDownloading)
+{
+    <p>Downloading data, please wait...</p>
+}
+
+@if (ErrorMessage != null)
+{
+    <p style="color:red">@ErrorMessage</p>
+}
+
+@if (DownloadComplete)
+{
+    <p>Data download and report generation complete!</p>
+}
+
+@code {
+    private bool IsDownloading { get; set; } = false;
+    private bool DownloadComplete { get; set; } = false;
+    private string? ErrorMessage { get; set; }
+
+    private async Task DownloadData()
+    {
+        try
+        {
+            Console.WriteLine("DownloadData method started.");
+            IsDownloading = true;
+            ErrorMessage = null;
+            DownloadComplete = false;
+
+            Console.WriteLine("Downloading CashOffer data.");
+            await TarkovData.CashOffer.DownloadTable();
+            Console.WriteLine("CashOffer data downloaded.");
+
+            Console.WriteLine("Downloading BarterOffer data.");
+            await TarkovData.BarterOffer.DownloadTable();
+            Console.WriteLine("BarterOffer data downloaded.");
+
+            Console.WriteLine("Downloading TarkovItem data.");
+            await TarkovData.TarkovItem.DownloadTable();
+            Console.WriteLine("TarkovItem data downloaded.");
+
+            var comboList = TarkovData.CombinationExplorer.GetAllCombinationsForItemId("5447a9cd4bdc2dbd208b4567");
+            Console.WriteLine($"Retrieved {comboList.Count} combinations.");
+
+            var fullReport = TarkovData.CombinationExplorer.Report.MultiVerbose(comboList);
+            Console.WriteLine("Generated full report.");
+
+            await File.WriteAllTextAsync("wwwroot/testReportAllCombos.csv", fullReport);
+            Console.WriteLine("Report written to wwwroot/testReportAllCombos.csv");
+
+            DownloadComplete = true;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"An error occurred: {ex.Message}";
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            IsDownloading = false;
+            Console.WriteLine("DownloadData method completed.");
+        }
+    }
+
+    public void Dispose()
+    {
+        // Dispose any resources if necessary
+    }
+}
