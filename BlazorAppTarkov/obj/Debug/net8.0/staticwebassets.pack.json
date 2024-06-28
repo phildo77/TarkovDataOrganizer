@@ -1,0 +1,41 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\aidan\\source\\repos\\TarkovDataOrganizer\\BlazorAppTarkov\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\BlazorAppTarkov.bundle.scp.css",
+      "PackagePath": "staticwebassets\\BlazorAppTarkov.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\Users\\aidan\\source\\repos\\TarkovDataOrganizer\\BlazorAppTarkov\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\aidan\\source\\repos\\TarkovDataOrganizer\\BlazorAppTarkov\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\aidan\\source\\repos\\TarkovDataOrganizer\\BlazorAppTarkov\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\aidan\\source\\repos\\TarkovDataOrganizer\\BlazorAppTarkov\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.BlazorAppTarkov.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.BlazorAppTarkov.props",
+      "PackagePath": "build\\BlazorAppTarkov.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.BlazorAppTarkov.props",
+      "PackagePath": "buildMultiTargeting\\BlazorAppTarkov.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.BlazorAppTarkov.props",
+      "PackagePath": "buildTransitive\\BlazorAppTarkov.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

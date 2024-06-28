@@ -1,0 +1,60 @@
+﻿@page "/data-downloader"
+@using TarkovDataOrganizer
+@implements IDisposable
+
+<h3>Data Downloader</h3>
+
+<button @onclick="DownloadData" disabled="@isDownloading">Download Data</button>
+
+@if (isDownloading)
+{
+    <p>Downloading data, please wait...</p>
+}
+
+@if (errorMessage != null)
+{
+    <p style="color:red">@errorMessage</p>
+}
+
+@if (downloadComplete)
+{
+    <p>Data download and report generation complete!</p>
+}
+
+@code {
+    private bool isDownloading = false;
+    private bool downloadComplete = false;
+    private string? errorMessage;
+
+    private async Task DownloadData()
+    {
+        try
+        {
+            isDownloading = true;
+            errorMessage = null;
+            downloadComplete = false;
+            await TarkovData.CashOffer.DownloadTable();
+            await TarkovData.BarterOffer.DownloadTable();
+            await TarkovData.TarkovItem.DownloadTable();
+
+            var comboList = TarkovData.CombinationExplorer.GetAllCombinationsForItemId("5447a9cd4bdc2dbd208b4567");
+            var fullReport = TarkovData.CombinationExplorer.Report.MultiVerbose(comboList);
+            await File.WriteAllTextAsync("wwwroot/testReportAllCombos.csv", fullReport);
+
+            downloadComplete = true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            isDownloading = false;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Dispose any resources if necessary
+    }
+}
