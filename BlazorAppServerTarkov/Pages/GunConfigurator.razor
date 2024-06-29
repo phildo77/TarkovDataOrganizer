@@ -57,8 +57,9 @@
 
     private IEnumerable<string> FilteredWeaponNames =>
         string.IsNullOrEmpty(SelectedCategory)
-            ? WeaponNames
-            : WeaponNames.Where(item =>
-                item.Contains(SelectedCategory, StringComparison.OrdinalIgnoreCase));
+            ? WeaponNames.Distinct(StringComparer.OrdinalIgnoreCase)
+            : WeaponNames
+                .Where(item => item.Contains(SelectedCategory, StringComparison.OrdinalIgnoreCase))
+                .Distinct(StringComparer.OrdinalIgnoreCase);
 
 }
