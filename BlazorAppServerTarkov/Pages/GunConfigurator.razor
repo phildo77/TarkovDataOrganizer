@@ -11,7 +11,7 @@
 </select>
 
 <select>
-    @foreach (var item in WeaponNames)
+    @foreach (var item in FilteredWeaponNames)
     {
         <option value="@item">@item</option>
     }
@@ -54,4 +54,11 @@
 
         return itemNames;
     }
+
+    private IEnumerable<string> FilteredWeaponNames =>
+        string.IsNullOrEmpty(SelectedCategory)
+            ? WeaponNames
+            : WeaponNames.Where(item =>
+                item.Contains(SelectedCategory, StringComparison.OrdinalIgnoreCase));
+
 }
