@@ -8,10 +8,18 @@ public partial class TarkovData
 {
     public class TarkovItem
     {
-        
-        
-        public static Dictionary<string,TarkovItem> DataTable;
-        public static Dictionary<string, Dictionary<string,Slot>> DataTableSlots;
+        public static List<string> GetDistinctCategories()
+        {
+            return DataTable.Values
+                .Where(item => item.types.Split('|').Contains("gun", StringComparer.OrdinalIgnoreCase))
+                .Select(item => item.categoryName)
+                .Distinct()
+                .OrderBy(name => name)
+                .ToList();
+        }
+
+        public static Dictionary<string, TarkovItem> DataTable;
+        public static Dictionary<string, Dictionary<string, Slot>> DataTableSlots;
 
         public string id { get; set; }
         public string name { get; set; }
@@ -59,6 +67,7 @@ public partial class TarkovData
 
         //ItemPropWeapon
         public string caliber { get; set; }
+
         public float ergonomics { get; set; }
         public float fireRate { get; set; }
         public string fireModes { get; set; } //Can contain multiple strings delim |
@@ -84,6 +93,7 @@ public partial class TarkovData
         //public int ergonomics;  //This is the same as ergonomicsModifier - not needed
         //public float recoilModifier; //This is the same as recoilModifier only / 100 - not needed
         public float centerOfImpact { get; set; }
+
         public float deviationCurve { get; set; }
         public float deviationMax { get; set; }
 
@@ -105,12 +115,12 @@ public partial class TarkovData
             public string excludedIDs { get; set; } // mutliple delim | - Currently no data here?  FUture?
             public string excludedCategories { get; set; } // mutliple delim | - Currently no data here?  FUture?
         }
-        
+
         public static async Task DownloadTable(bool force = false)
         {
             Console.WriteLine("Downloading Item Data... (this might take a few seconds)");
-            DataTable = new Dictionary<string,TarkovItem>();
-            DataTableSlots = new Dictionary<string, Dictionary<string, Slot>>(); 
+            DataTable = new Dictionary<string, TarkovItem>();
+            DataTableSlots = new Dictionary<string, Dictionary<string, Slot>>();
 
             var graphData = await GraphQueries.QueryTarkovAPI(GraphQueries.QUERY_ITEMS_ALL_GENERIC_INFO);
 
@@ -121,9 +131,9 @@ public partial class TarkovData
                 tItem.name = graphItem.name;
                 tItem.shortName = graphItem.shortName;
                 tItem.description = graphItem.description;
-                if(tItem.description != null)
+                if (tItem.description != null)
                     tItem.description = tItem.description
-                        .Replace(",", "`").Replace(System.Environment.NewLine," ")
+                        .Replace(",", "`").Replace(System.Environment.NewLine, " ")
                         .Replace("\n", " ").Replace("\r", " ")
                         .Replace("\r\n", " ").Replace("\n\r", " "); // TODO more elegant solution to commas in all strings
                 tItem.categoryId = graphItem.category.id;
@@ -146,7 +156,7 @@ public partial class TarkovData
                 foreach (var conSlotId in graphItem.conflictingSlotIds)
                     tItem.conflictingSlotIds += conSlotId + "|";
                 tItem.conflictingSlotIds.TrimEnd('|');
-                
+
                 tItem.conflictingItemsIds = string.Empty;
                 tItem.conflictingItemsNames = string.Empty;
                 foreach (var conItem in graphItem.conflictingItems)
@@ -179,13 +189,11 @@ public partial class TarkovData
                 tItem.changeLast48h = graphItem.Value<int?>("changeLast48h") ?? 0;
                 tItem.changeLast48hPercent = graphItem.Value<float?>("changeLast48hPercent") ?? 0f;
                 tItem.lastOfferCount = graphItem.Value<int?>("lastOfferCount") ?? 0;
-                
-                
-                
+
                 if (HasValidValue(graphItem, "properties"))
                 {
                     //Item Properties Weapon
-                    if (tItem.types.Contains("gun")) //TODO const 
+                    if (tItem.types.Contains("gun")) //TODO const
                     {
                         tItem.caliber = graphItem.properties.caliber;
                         tItem.ergonomics = graphItem.properties.ergonomics;
@@ -209,8 +217,7 @@ public partial class TarkovData
                             tItem.defaultPresetBaseImageLink = graphItem.properties.defaultPreset.baseImageLink;
                             tItem.defaultPresetWikiLink = graphItem.properties.defaultPreset.wikiLink;
                         }
-                            
-                        
+
                         tItem.presetIds = string.Empty;
                         if (HasValidValue(graphItem.properties, "presets"))
                             foreach (var preset in graphItem.properties.presets)
@@ -232,7 +239,6 @@ public partial class TarkovData
                                 newSlot.allowedIDsStr += allowedItem.id + "|";
                                 newSlot.allowedIDs.Add(allowedItem.id.ToString());
                             }
-                                
 
                             foreach (var excludedItem in slot.filters.excludedItems)
                                 newSlot.excludedIDs += excludedItem.id + "|";
@@ -254,7 +260,7 @@ public partial class TarkovData
                             tItem.deviationCurve = graphItem.properties.deviationCurve;
                             tItem.deviationMax = graphItem.properties.deviationMax;
                         }
-                        
+
                         DataTableSlots.Add(tItem.id, new Dictionary<string, Slot>());
                         if (HasValidValue(graphItem.properties, "slots"))
                         {
@@ -288,19 +294,18 @@ public partial class TarkovData
                 }
 
                 DataTable.Add(tItem.id, tItem);
-
             }
-            
+
             Console.WriteLine("Done!");
         }
-        
+
         public static void WriteToCsv(string _itemsFilename = "tempItemData.csv", string _slotsFilename = "tempItemSlotData.csv")
         {
             var config = new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = "~" };
-            
+
             using var writerItems = new StreamWriter(_itemsFilename);
             using var csvItems = new CsvWriter(writerItems, config);
-            
+
             csvItems.WriteRecords(DataTable.Values.ToList());
 
             using var writerSlots = new StreamWriter(_slotsFilename);
@@ -309,19 +314,17 @@ public partial class TarkovData
             foreach (var itemId in DataTableSlots.Keys)
                 foreach (var slotEntry in DataTableSlots[itemId])
                     slotsList.Add(new SlotsCSVHelper()
-                        { ItemId = itemId, SlotId = slotEntry.Key, Desc = slotEntry.Value.name });
+                    { ItemId = itemId, SlotId = slotEntry.Key, Desc = slotEntry.Value.name });
             csvSlots.WriteRecords(slotsList);
-            
+
             Console.WriteLine("Successfully wrote Item Data to '" + _itemsFilename + "' and slot data to '" + _slotsFilename + "'");
         }
 
-        
         private class SlotsCSVHelper
         {
             public string ItemId { get; set; }
             public string SlotId { get; set; }
             public string Desc { get; set; }
         }
-
     }
 }

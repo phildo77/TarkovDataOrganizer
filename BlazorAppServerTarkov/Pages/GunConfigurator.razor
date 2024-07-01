@@ -1,43 +1,60 @@
-﻿@using System.Collections.Generic
-@using System.IO
-@page "/gun-configurator"
+﻿@page "/gun-configurator"
+@using TarkovDataOrganizer
 <h3>Gun Configurator</h3>
 
-<select @bind="SelectedCategory">
-    @foreach (var category in Categories)
-    {
-        <option value="@category">@category</option>
-    }
-</select>
+@if (IsLoading)
+{
+    <p>Loading, please wait...</p>
+}
+else if (ErrorMessage != null)
+{
+    <p style="color:red">@ErrorMessage</p>
+}
+else
+{
+    <select @bind="SelectedCategory">
+        @foreach (var category in Categories)
+        {
+            <option value="@category">@category</option>
+        }
+    </select>
 
-<select>
-    @foreach (var item in FilteredWeaponNames)
-    {
-        <option value="@item">@item</option>
-    }
-</select>
+    <select>
+        @foreach (var item in FilteredWeaponNames)
+        {
+            <option value="@item">@item</option>
+        }
+    </select>
+}
 
 @code {
     private List<string> WeaponNames = new List<string>();
-
     public string? SelectedCategory { get; set; }
+    public List<string> Categories { get; set; } = new();
 
-    public List<string> Categories { get; set; } = new List<string>
-    {
-        "Assault rifle",
-        "Stock",
-        "Receiver",
-        "Barrel",
-        "Gas block",
-        "Handguard",
-        "Charging handle"
-    };
+    private bool IsLoading { get; set; } = true;
+    private string? ErrorMessage { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var csvContent = await File.ReadAllTextAsync(Path.Combine(Environment.CurrentDirectory, "wwwroot", "testReportAllCombos - Copy.csv"));
-        WeaponNames = ParseCsv(csvContent);
+        try
+        {
+            await TarkovData.TarkovItem.DownloadTable();
+            Categories = TarkovData.TarkovItem.GetDistinctCategories();
+
+            var csvContent = await File.ReadAllTextAsync(Path.Combine(Environment.CurrentDirectory, "wwwroot", "testReportAllCombos.csv"));
+            WeaponNames = ParseCsv(csvContent);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
+
     private List<string> ParseCsv(string csvContent)
     {
         var lines = csvContent.Split('\n');
@@ -61,5 +78,4 @@
             : WeaponNames
                 .Where(item => item.Contains(SelectedCategory, StringComparison.OrdinalIgnoreCase))
                 .Distinct(StringComparer.OrdinalIgnoreCase);
-
 }
