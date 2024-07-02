@@ -30,6 +30,13 @@ else
         }
     </select>
 
+    <select @onchange="OnSelectedCaliberChanged">
+        @foreach (var caliber in Calibers)
+        {
+            <option value="@caliber">@caliber</option>
+        }
+    </select>
+
     @if (!string.IsNullOrEmpty(SelectedWeapon))
     {
         var selectedWeaponData = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
@@ -44,8 +51,10 @@ else
 
 @code {
     private List<string> WeaponNames = new List<string>();
+    private List<string> Calibers = new List<string>();
     public string? SelectedWeapon { get; set; }
     public string? SelectedCategory { get; set; }
+    public string? SelectedCaliber { get; set; }
     public List<string> Categories { get; set; } = new();
 
     private bool IsLoading { get; set; } = true;
@@ -57,14 +66,10 @@ else
         {
             await TarkovData.TarkovItem.DownloadTable();
             Categories = TarkovData.TarkovItem.GetDistinctCategories();
+            Calibers = TarkovData.TarkovItem.GetDistinctCalibers();
 
             var csvContent = await File.ReadAllTextAsync(Path.Combine(Environment.CurrentDirectory, "wwwroot", "testReportAllCombos.csv"));
             WeaponNames = ParseCsv(csvContent);
-
-            // Set selected weapon Component initialization to properly show image and UI updates
-            var firstWeaponInCategory = FilteredWeaponNames.ToArray()[1].ToString();
-            SelectedWeapon = firstWeaponInCategory;
-
         }
         catch (Exception ex)
         {
@@ -114,5 +119,11 @@ else
         var firstWeaponInCategory = FilteredWeaponNames.FirstOrDefault();
         SelectedWeapon = firstWeaponInCategory;
         Console.WriteLine($"SelectedWeapon reset to: {SelectedWeapon}");
+    }
+
+    private void OnSelectedCaliberChanged(ChangeEventArgs e)
+    {
+        SelectedCaliber = e.Value?.ToString();
+        Console.WriteLine($"SelectedCaliber changed to: {SelectedCaliber}");
     }
 }

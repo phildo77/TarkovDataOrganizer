@@ -18,6 +18,16 @@ public partial class TarkovData
                 .ToList();
         }
 
+        public static List<string> GetDistinctCalibers()
+        {
+            return DataTable.Values
+                .Where(item => !string.IsNullOrEmpty(item.caliber))
+                .Select(item => item.caliber)
+                .Distinct()
+                .OrderBy(caliber => caliber)
+                .ToList();
+        }
+
         public static Dictionary<string, TarkovItem> DataTable;
         public static Dictionary<string, Dictionary<string, Slot>> DataTableSlots;
 
