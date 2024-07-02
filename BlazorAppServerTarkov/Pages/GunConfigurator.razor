@@ -12,7 +12,7 @@ else if (ErrorMessage != null)
 }
 else
 {
-    <select @bind="SelectedCategory" @onchange="OnSelectedWeaponChanged">
+    <select @onchange="OnSelectedCategoryChanged">
         @foreach (var category in Categories)
         {
             <option value="@category">@category</option>
@@ -60,6 +60,11 @@ else
 
             var csvContent = await File.ReadAllTextAsync(Path.Combine(Environment.CurrentDirectory, "wwwroot", "testReportAllCombos.csv"));
             WeaponNames = ParseCsv(csvContent);
+
+            // Set selected weapon Component initialization to properly show image and UI updates
+            var firstWeaponInCategory = FilteredWeaponNames.ToArray()[1].ToString();
+            SelectedWeapon = firstWeaponInCategory;
+
         }
         catch (Exception ex)
         {
@@ -89,15 +94,25 @@ else
     }
 
     private IEnumerable<string> FilteredWeaponNames =>
-            string.IsNullOrEmpty(SelectedCategory)
-                ? WeaponNames.Distinct(StringComparer.OrdinalIgnoreCase)
-                : WeaponNames
-                    .Where(item => item.Contains(SelectedCategory, StringComparison.OrdinalIgnoreCase))
-                    .Distinct(StringComparer.OrdinalIgnoreCase);
+        string.IsNullOrEmpty(SelectedCategory)
+            ? WeaponNames.Distinct(StringComparer.OrdinalIgnoreCase)
+            : WeaponNames
+                .Where(item => item.Contains(SelectedCategory, StringComparison.OrdinalIgnoreCase))
+                .Distinct(StringComparer.OrdinalIgnoreCase);
 
     private void OnSelectedWeaponChanged(ChangeEventArgs e)
     {
-        SelectedWeapon = e.Value.ToString();
+        SelectedWeapon = e.Value?.ToString();
         Console.WriteLine($"SelectedWeapon changed to: {SelectedWeapon}");
+    }
+
+    private void OnSelectedCategoryChanged(ChangeEventArgs e)
+    {
+        SelectedCategory = e.Value?.ToString();
+        Console.WriteLine($"SelectedCategory changed to: {SelectedCategory}");
+        // Reset selected weapon and select the first available weapon in the new category, if any
+        var firstWeaponInCategory = FilteredWeaponNames.FirstOrDefault();
+        SelectedWeapon = firstWeaponInCategory;
+        Console.WriteLine($"SelectedWeapon reset to: {SelectedWeapon}");
     }
 }
