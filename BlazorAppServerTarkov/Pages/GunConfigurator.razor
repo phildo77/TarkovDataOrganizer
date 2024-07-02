@@ -1,5 +1,21 @@
 ﻿@page "/gun-configurator"
+@using Microsoft.JSInterop
 @using TarkovDataOrganizer
+
+<script>
+    function getSelectedValues(selectId) {
+        var select = document.getElementById(selectId);
+        var selectedValues = [];
+        for (var i = 0; i < select.options.length; i++) {
+            if (select.options[i].selected) {
+                selectedValues.push(select.options[i].value);
+            }
+        }
+        return selectedValues;
+    }
+</script>
+
+
 <h3>Gun Configurator</h3>
 
 @if (IsLoading)
@@ -12,30 +28,47 @@ else if (ErrorMessage != null)
 }
 else
 {
-    <select @onchange="OnSelectedCategoryChanged">
-        @foreach (var category in Categories)
-        {
-            <option value="@category">@category</option>
-        }
-    </select>
-
-    <select @onchange="OnSelectedWeaponChanged">
-        @foreach (var item in FilteredWeaponNames)
-        {
-            var weapon = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == item);
-            if (weapon != null)
-            {
-                <option value="@item">@item</option>
-            }
-        }
-    </select>
-
-    <select @onchange="OnSelectedCaliberChanged">
-        @foreach (var caliber in Calibers)
-        {
-            <option value="@caliber">@caliber</option>
-        }
-    </select>
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Weapon</th>
+                <th>Caliber</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <select id="categorySelect" multiple @onchange="OnSelectedCategoryChanged">
+                        @foreach (var category in Categories)
+                        {
+                            <option value="@category" selected="@SelectedCategories.Contains(category)">@category</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <select id="weaponSelect" multiple @onchange="OnSelectedWeaponChanged">
+                        @foreach (var item in FilteredWeaponNames)
+                        {
+                            var weapon = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == item);
+                            if (weapon != null)
+                            {
+                                <option value="@item" selected="@SelectedWeapons.Contains(item)">@item</option>
+                            }
+                        }
+                    </select>
+                </td>
+                <td>
+                    <select id="caliberSelect" multiple @onchange="OnSelectedCaliberChanged">
+                        @foreach (var caliber in Calibers)
+                        {
+                            <option value="@caliber" selected="@SelectedCalibers.Contains(caliber)">@caliber</option>
+                        }
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
     @if (!string.IsNullOrEmpty(SelectedWeapon))
     {
@@ -52,13 +85,16 @@ else
 @code {
     private List<string> WeaponNames = new List<string>();
     private List<string> Calibers = new List<string>();
+    public List<string> SelectedWeapons { get; set; } = new List<string>();
+    public List<string> SelectedCategories { get; set; } = new List<string>();
+    public List<string> SelectedCalibers { get; set; } = new List<string>();
     public string? SelectedWeapon { get; set; }
-    public string? SelectedCategory { get; set; }
-    public string? SelectedCaliber { get; set; }
     public List<string> Categories { get; set; } = new();
 
     private bool IsLoading { get; set; } = true;
     private string? ErrorMessage { get; set; }
+
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -99,31 +135,32 @@ else
     }
 
     private IEnumerable<string> FilteredWeaponNames =>
-        string.IsNullOrEmpty(SelectedCategory)
+        !SelectedCategories.Any()
             ? WeaponNames.Distinct(StringComparer.OrdinalIgnoreCase)
             : WeaponNames
-                .Where(item => item.Contains(SelectedCategory, StringComparison.OrdinalIgnoreCase))
+                .Where(item => SelectedCategories.Any(category => item.Contains(category, StringComparison.OrdinalIgnoreCase)))
                 .Distinct(StringComparer.OrdinalIgnoreCase);
 
-    private void OnSelectedWeaponChanged(ChangeEventArgs e)
+    private async Task OnSelectedCategoryChanged(ChangeEventArgs e)
     {
-        SelectedWeapon = e.Value?.ToString();
-        Console.WriteLine($"SelectedWeapon changed to: {SelectedWeapon}");
+        SelectedCategories = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "categorySelect");
+        StateHasChanged(); // Ensure the state is updated
+        Console.WriteLine($"SelectedCategories changed to: {string.Join(", ", SelectedCategories)}");
     }
 
-    private void OnSelectedCategoryChanged(ChangeEventArgs e)
+    private async Task OnSelectedWeaponChanged(ChangeEventArgs e)
     {
-        SelectedCategory = e.Value?.ToString();
-        Console.WriteLine($"SelectedCategory changed to: {SelectedCategory}");
-        // Reset selected weapon and select the first available weapon in the new category, if any
-        var firstWeaponInCategory = FilteredWeaponNames.FirstOrDefault();
-        SelectedWeapon = firstWeaponInCategory;
-        Console.WriteLine($"SelectedWeapon reset to: {SelectedWeapon}");
+        SelectedWeapons = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "weaponSelect");
+        if (SelectedWeapons.Any())
+        {
+            SelectedWeapon = SelectedWeapons.First();
+        }
+        Console.WriteLine($"SelectedWeapons changed to: {string.Join(", ", SelectedWeapons)}");
     }
 
-    private void OnSelectedCaliberChanged(ChangeEventArgs e)
+    private async Task OnSelectedCaliberChanged(ChangeEventArgs e)
     {
-        SelectedCaliber = e.Value?.ToString();
-        Console.WriteLine($"SelectedCaliber changed to: {SelectedCaliber}");
+        SelectedCalibers = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "caliberSelect");
+        Console.WriteLine($"SelectedCalibers changed to: {string.Join(", ", SelectedCalibers)}");
     }
 }
