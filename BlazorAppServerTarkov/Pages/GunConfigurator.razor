@@ -12,23 +12,39 @@ else if (ErrorMessage != null)
 }
 else
 {
-    <select @bind="SelectedCategory">
+    <select @bind="SelectedCategory" @onchange="OnSelectedWeaponChanged">
         @foreach (var category in Categories)
         {
             <option value="@category">@category</option>
         }
     </select>
 
-    <select>
+    <select @onchange="OnSelectedWeaponChanged">
         @foreach (var item in FilteredWeaponNames)
         {
-            <option value="@item">@item</option>
+            var weapon = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == item);
+            if (weapon != null)
+            {
+                <option value="@item">@item</option>
+            }
         }
     </select>
+
+    @if (!string.IsNullOrEmpty(SelectedWeapon))
+    {
+        var selectedWeaponData = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
+        if (selectedWeaponData != null)
+        {
+            <div id="weaponDisplay">
+                <img id="weaponImage" src="@selectedWeaponData.gridImageLink" alt="Selected Weapon Image" />
+            </div>
+        }
+    }
 }
 
 @code {
     private List<string> WeaponNames = new List<string>();
+    public string? SelectedWeapon { get; set; }
     public string? SelectedCategory { get; set; }
     public List<string> Categories { get; set; } = new();
 
@@ -73,9 +89,15 @@ else
     }
 
     private IEnumerable<string> FilteredWeaponNames =>
-        string.IsNullOrEmpty(SelectedCategory)
-            ? WeaponNames.Distinct(StringComparer.OrdinalIgnoreCase)
-            : WeaponNames
-                .Where(item => item.Contains(SelectedCategory, StringComparison.OrdinalIgnoreCase))
-                .Distinct(StringComparer.OrdinalIgnoreCase);
+            string.IsNullOrEmpty(SelectedCategory)
+                ? WeaponNames.Distinct(StringComparer.OrdinalIgnoreCase)
+                : WeaponNames
+                    .Where(item => item.Contains(SelectedCategory, StringComparison.OrdinalIgnoreCase))
+                    .Distinct(StringComparer.OrdinalIgnoreCase);
+
+    private void OnSelectedWeaponChanged(ChangeEventArgs e)
+    {
+        SelectedWeapon = e.Value.ToString();
+        Console.WriteLine($"SelectedWeapon changed to: {SelectedWeapon}");
+    }
 }
