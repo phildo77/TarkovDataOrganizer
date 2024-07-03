@@ -3,20 +3,21 @@
 @using TarkovDataOrganizer
 
 <script>
-    function getSelectedValues(selectId) {
-        var select = document.getElementById(selectId);
+    function toggleSelection(rowId) {
+        var row = document.getElementById(rowId);
+        row.classList.toggle('selected');
+
         var selectedValues = [];
-        for (var i = 0; i < select.options.length; i++) {
-            if (select.options[i].selected) {
-                selectedValues.push(select.options[i].value);
-            }
-        }
-        return selectedValues;
+        var selectedRows = document.querySelectorAll('.weapon-row.selected');
+        selectedRows.forEach(row => {
+            selectedValues.push(row.getAttribute('data-value'));
+        });
+
+        DotNet.invokeMethodAsync('YourAssemblyName', 'UpdateSelectedWeapons', selectedValues);
     }
 </script>
 
 <style>
-
     .weapon-image-container {
         display: flex;
         flex-direction: column;
@@ -29,8 +30,25 @@
         height: 50px;
         margin: 5px;
     }
-</style>
 
+    .weapon-table {
+        width: 100%;
+    }
+
+    .weapon-table-td {
+        height: 79px;
+        display: flex;
+        overflow-y: scroll;
+    }
+
+    .weapon-row {
+        cursor: pointer;
+    }
+
+        .weapon-row.selected {
+            background-color: #d3d3d3; /* Highlight selected row */
+        }
+</style>
 
 <h3>Gun Configurator</h3>
 
@@ -49,7 +67,6 @@ else
             <tr>
                 <th>Category</th>
                 <th>Weapon</th>
-                <th>Image</th>
                 <th>Caliber</th>
             </tr>
         </thead>
@@ -63,21 +80,18 @@ else
                         }
                     </select>
                 </td>
-                <td>
-                    <select id="weaponSelect" multiple @onchange="OnSelectedWeaponChanged">
+                <td class="weapon-table-td">
+                    <table class="weapon-table">
                         @foreach (var weapon in FilteredWeaponNames)
                         {
-                            <option value="@weapon.name" selected="@SelectedWeapons.Contains(weapon.name)">@weapon.name</option>
+                            <tr id="weapon-@weapon.shortName" class="weapon-row" data-value="@weapon.shortName" @onclick="() => OnWeaponRowClicked(weapon.name)">
+                                <td>
+                                    <img src="@weapon.defaultPresetGridImageLink" alt="@weapon.shortName" class="weapon-image" />
+                                    @weapon.shortName
+                                </td>
+                            </tr>
                         }
-                    </select>
-                </td>
-                <td>
-                    <div class="weapon-image-container">
-                        @foreach (var weapon in FilteredWeaponNames)
-                        {
-                            <img src="@weapon.gridImageLink" alt="@weapon.name" class="weapon-image" />
-                        }
-                    </div>
+                    </table>
                 </td>
                 <td>
                     <select id="caliberSelect" multiple @onchange="OnSelectedCaliberChanged">
@@ -165,5 +179,23 @@ else
     {
         SelectedCalibers = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "caliberSelect");
         Console.WriteLine($"SelectedCalibers changed to: {string.Join(", ", SelectedCalibers)}");
+    }
+
+    [JSInvokable]
+    public void UpdateSelectedWeapons(List<string> selectedWeapons)
+    {
+        SelectedWeapons = selectedWeapons;
+        if (SelectedWeapons.Any())
+        {
+            SelectedWeapon = SelectedWeapons.First();
+        }
+        StateHasChanged();
+    }
+
+    private void OnWeaponRowClicked(string weaponName)
+    {
+        SelectedWeapons = new List<string> { weaponName };
+        SelectedWeapon = weaponName;
+        StateHasChanged();
     }
 }
