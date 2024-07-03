@@ -3,6 +3,17 @@
 @using TarkovDataOrganizer
 
 <script>
+    function getSelectedValues(selectId) {
+        var select = document.getElementById(selectId);
+        var selectedValues = [];
+        for (var i = 0; i < select.options.length; i++) {
+            if (select.options[i].selected) {
+                selectedValues.push(select.options[i].value);
+            }
+        }
+        return selectedValues;
+    }
+
     function toggleSelection(rowId) {
         var row = document.getElementById(rowId);
         row.classList.toggle('selected');
