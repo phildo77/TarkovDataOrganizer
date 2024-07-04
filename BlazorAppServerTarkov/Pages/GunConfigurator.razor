@@ -83,6 +83,7 @@ else
                 {
                     <th>Recoil</th>
                     <th>Velocity</th>
+                    <th>Base Price</th>
                 }
             </tr>
         </thead>
@@ -144,6 +145,18 @@ else
                             }
                         </select>
                     </td>
+                    <td>
+                        <select id="basePriceSelect" multiple @onchange="OnSelectedBasePriceChanged">
+                            @if (SelectedWeapon != null)
+                            {
+                                var selectedWeaponDataPrice = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
+                                if (selectedWeaponDataPrice != null)
+                                {
+                                    <option value="@selectedWeaponDataPrice.basePrice">Base Price: @selectedWeaponDataPrice.basePrice.ToString("C0")</option>
+                                }
+                            }
+                        </select>
+                    </td>
                 }
             </tr>
         </tbody>
@@ -160,6 +173,7 @@ else
                 <p>Recoil Vertical: @selectedWeaponData.recoilVertical</p>
                 <p>Recoil Horizontal: @selectedWeaponData.recoilHorizontal</p>
                 <p>Velocity: @selectedWeaponData.velocity</p>
+                <p>Base Price: @selectedWeaponData.basePrice</p>
             </div>
         }
     }
@@ -173,6 +187,7 @@ else
     public List<string> SelectedCalibers { get; set; } = new List<string>();
     public List<float> SelectedRecoilVerticals { get; set; } = new List<float>();
     public float SelectedVelocity { get; set; }
+    public int SelectedBasePrice { get; set; }
     public string? SelectedWeapon { get; set; }
     public List<string> Categories { get; set; } = new();
 
@@ -246,6 +261,16 @@ else
             SelectedVelocity = float.Parse(selectedValues.First());
         }
         Console.WriteLine($"SelectedVelocity changed to: {SelectedVelocity}");
+    }
+
+    private async Task OnSelectedBasePriceChanged(ChangeEventArgs e)
+    {
+        var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "basePriceSelect");
+        if (selectedValues.Any())
+        {
+            SelectedBasePrice = int.Parse(selectedValues.First());
+        }
+        Console.WriteLine($"SelectedBasePrice changed to: {SelectedBasePrice}");
     }
 
     [JSInvokable]
