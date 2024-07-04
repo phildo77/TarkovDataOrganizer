@@ -28,6 +28,16 @@ public partial class TarkovData
                 .ToList();
         }
 
+        public static List<float> GetDistinctRecoilVerticals()
+        {
+            return DataTable.Values
+                .Where(item => item.recoilVertical > 0)
+                .Select(item => item.recoilVertical)
+                .Distinct()
+                .OrderBy(recoil => recoil)
+                .ToList();
+        }
+
         public static Dictionary<string, TarkovItem> DataTable;
         public static Dictionary<string, Dictionary<string, Slot>> DataTableSlots;
 

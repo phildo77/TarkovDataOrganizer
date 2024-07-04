@@ -79,6 +79,10 @@ else
                 <th>Category</th>
                 <th>Weapon</th>
                 <th>Caliber</th>
+                @if (!string.IsNullOrEmpty(SelectedWeapon))
+                {
+                    <th>Recoil</th>
+                }
             </tr>
         </thead>
         <tbody>
@@ -112,6 +116,22 @@ else
                         }
                     </select>
                 </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(SelectedWeapon))
+                    {
+                        <select id="recoilVerticalSelect" multiple @onchange="OnSelectedRecoilVerticalChanged">
+                            @if (SelectedWeapon != null)
+                            {
+                                var selectedWeaponDataRecoil = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
+                                if (selectedWeaponDataRecoil != null)
+                                {
+                                    <option value="@selectedWeaponDataRecoil.recoilVertical">Recoil V: @selectedWeaponDataRecoil.recoilVertical</option>
+                                    <option value="@selectedWeaponDataRecoil.recoilHorizontal">Recoil H: @selectedWeaponDataRecoil.recoilHorizontal</option>
+                                }
+                            }
+                        </select>
+                    }
+                </td>
             </tr>
         </tbody>
     </table>
@@ -124,18 +144,17 @@ else
             <div id="weaponDisplay">
                 <h3>@selectedWeaponData.name</h3>
                 <img id="weaponImage" src="@selectedWeaponData.defaultPresetBaseImageLink" alt="Selected Weapon Image" />
-                <p>Recoil Vertical: @selectedWeaponData.recoilVertical</p>
-                <p>Recoil Horizontal: @selectedWeaponData.recoilHorizontal</p>
             </div>
         }
     }
 }
-
 @code {
     private List<string> Calibers = new List<string>();
+    private List<float> RecoilVerticals = new List<float>();
     public List<string> SelectedWeapons { get; set; } = new List<string>();
     public List<string> SelectedCategories { get; set; } = new List<string>();
     public List<string> SelectedCalibers { get; set; } = new List<string>();
+    public List<float> SelectedRecoilVerticals { get; set; } = new List<float>();
     public string? SelectedWeapon { get; set; }
     public List<string> Categories { get; set; } = new();
 
@@ -192,6 +211,13 @@ else
     {
         SelectedCalibers = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "caliberSelect");
         Console.WriteLine($"SelectedCalibers changed to: {string.Join(", ", SelectedCalibers)}");
+    }
+
+    private async Task OnSelectedRecoilVerticalChanged(ChangeEventArgs e)
+    {
+        var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "recoilVerticalSelect");
+        SelectedRecoilVerticals = selectedValues.Select(float.Parse).ToList();
+        Console.WriteLine($"SelectedRecoilVerticals changed to: {string.Join(", ", SelectedRecoilVerticals)}");
     }
 
     [JSInvokable]
