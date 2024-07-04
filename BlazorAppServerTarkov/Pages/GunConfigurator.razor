@@ -85,6 +85,7 @@ else
                     <th>Velocity</th>
                     <th>Base Price</th>
                     <th>Accuracy Modifier</th>
+                    <th>Weight</th>
                 }
             </tr>
         </thead>
@@ -170,6 +171,18 @@ else
                             }
                         </select>
                     </td>
+                    <td>
+                        <select id="weightSelect" multiple @onchange="OnSelectedWeightChanged">
+                            @if (SelectedWeapon != null)
+                            {
+                                var selectedWeaponDataWeight = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
+                                if (selectedWeaponDataWeight != null)
+                                {
+                                    <option value="@selectedWeaponDataWeight.weight">Weight: @selectedWeaponDataWeight.weight</option>
+                                }
+                            }
+                        </select>
+                    </td>
                 }
             </tr>
         </tbody>
@@ -188,6 +201,7 @@ else
                 <p>Velocity: @selectedWeaponData.velocity</p>
                 <p>Base Price: @selectedWeaponData.basePrice</p>
                 <p>Accuracy Modifier: @selectedWeaponData.accuracyModifier</p>
+                <p>Weight: @selectedWeaponData.weight</p>
             </div>
         }
     }
@@ -203,6 +217,7 @@ else
     public float SelectedVelocity { get; set; }
     public int SelectedBasePrice { get; set; }
     public float SelectedAccuracyModifier { get; set; }
+    public float SelectedWeight { get; set; }
     public string? SelectedWeapon { get; set; }
     public List<string> Categories { get; set; } = new();
 
@@ -296,6 +311,16 @@ else
             SelectedAccuracyModifier = float.Parse(selectedValues.First());
         }
         Console.WriteLine($"SelectedAccuracyModifier changed to: {SelectedAccuracyModifier}");
+    }
+
+    private async Task OnSelectedWeightChanged(ChangeEventArgs e)
+    {
+        var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "weightSelect");
+        if (selectedValues.Any())
+        {
+            SelectedWeight = float.Parse(selectedValues.First());
+        }
+        Console.WriteLine($"SelectedWeight changed to: {SelectedWeight}");
     }
 
     [JSInvokable]
