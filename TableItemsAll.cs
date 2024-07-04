@@ -8,7 +8,7 @@ public partial class TarkovData
 {
     public class TarkovItem
     {
-        
+        public const string CATEGORY_NAME_BARREL = "Barrel";
         
         public static Dictionary<string,TarkovItem> DataTable;
         public static Dictionary<string, Dictionary<string,Slot>> DataTableSlots;
@@ -248,7 +248,7 @@ public partial class TarkovData
                     //Item properties Weapon Mod - TODO double slots code
                     else if (tItem.types.Contains("mods")) // TODO const - missing anything by doing this?
                     {
-                        if (tItem.categoryName.Contains("Barrel"))
+                        if (tItem.categoryName.Contains(CATEGORY_NAME_BARREL))
                         {
                             tItem.centerOfImpact = graphItem.properties.centerOfImpact;
                             tItem.deviationCurve = graphItem.properties.deviationCurve;

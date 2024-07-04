@@ -31,6 +31,8 @@ public partial class TarkovData
             Console.WriteLine("Found " + allCombos.Count + " Combinations!");
             
             //Test uniqueness
+            /*
+            Console.WriteLine("Testing that all combos are unique...");
             for (int idx = 0; idx < allCombos.Count(); ++idx)
             {
                 var checkSet = new HashSet<string>(allCombos[idx]);
@@ -44,6 +46,9 @@ public partial class TarkovData
                     }
                 }
             }
+            
+            Console.WriteLine("Done!");
+            */
             return allCombos;
         }
         
@@ -257,7 +262,7 @@ public partial class TarkovData
                     RecoilHorizontal = item.recoilHorizontal;
                     RecoilVertical = item.recoilVertical;
                 }
-                else if(item.types.Contains("barrel"))
+                else if(item.categoryName.Contains(TarkovItem.CATEGORY_NAME_BARREL))
                 {
                     CenterOfImpact = item.centerOfImpact;
                     DeviationCurve = item.deviationCurve;
