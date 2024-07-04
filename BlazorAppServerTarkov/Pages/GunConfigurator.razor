@@ -82,6 +82,7 @@ else
                 @if (!string.IsNullOrEmpty(SelectedWeapon))
                 {
                     <th>Recoil</th>
+                    <th>Velocity</th>
                 }
             </tr>
         </thead>
@@ -116,9 +117,9 @@ else
                         }
                     </select>
                 </td>
-                <td>
-                    @if (!string.IsNullOrEmpty(SelectedWeapon))
-                    {
+                @if (!string.IsNullOrEmpty(SelectedWeapon))
+                {
+                    <td>
                         <select id="recoilVerticalSelect" multiple @onchange="OnSelectedRecoilVerticalChanged">
                             @if (SelectedWeapon != null)
                             {
@@ -130,8 +131,20 @@ else
                                 }
                             }
                         </select>
-                    }
-                </td>
+                    </td>
+                    <td>
+                        <select id="velocitySelect" multiple @onchange="OnSelectedVelocityChanged">
+                            @if (SelectedWeapon != null)
+                            {
+                                var selectedWeaponDataVelocity = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
+                                if (selectedWeaponDataVelocity != null)
+                                {
+                                    <option value="@selectedWeaponDataVelocity.velocity">Velocity: @selectedWeaponDataVelocity.velocity</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                }
             </tr>
         </tbody>
     </table>
@@ -144,10 +157,14 @@ else
             <div id="weaponDisplay">
                 <h3>@selectedWeaponData.name</h3>
                 <img id="weaponImage" src="@selectedWeaponData.defaultPresetBaseImageLink" alt="Selected Weapon Image" />
+                <p>Recoil Vertical: @selectedWeaponData.recoilVertical</p>
+                <p>Recoil Horizontal: @selectedWeaponData.recoilHorizontal</p>
+                <p>Velocity: @selectedWeaponData.velocity</p>
             </div>
         }
     }
 }
+
 @code {
     private List<string> Calibers = new List<string>();
     private List<float> RecoilVerticals = new List<float>();
@@ -155,6 +172,7 @@ else
     public List<string> SelectedCategories { get; set; } = new List<string>();
     public List<string> SelectedCalibers { get; set; } = new List<string>();
     public List<float> SelectedRecoilVerticals { get; set; } = new List<float>();
+    public float SelectedVelocity { get; set; }
     public string? SelectedWeapon { get; set; }
     public List<string> Categories { get; set; } = new();
 
@@ -218,6 +236,16 @@ else
         var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "recoilVerticalSelect");
         SelectedRecoilVerticals = selectedValues.Select(float.Parse).ToList();
         Console.WriteLine($"SelectedRecoilVerticals changed to: {string.Join(", ", SelectedRecoilVerticals)}");
+    }
+
+    private async Task OnSelectedVelocityChanged(ChangeEventArgs e)
+    {
+        var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "velocitySelect");
+        if (selectedValues.Any())
+        {
+            SelectedVelocity = float.Parse(selectedValues.First());
+        }
+        Console.WriteLine($"SelectedVelocity changed to: {SelectedVelocity}");
     }
 
     [JSInvokable]
