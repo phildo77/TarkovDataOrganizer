@@ -84,6 +84,7 @@ else
                     <th>Recoil</th>
                     <th>Velocity</th>
                     <th>Base Price</th>
+                    <th>Accuracy Modifier</th>
                 }
             </tr>
         </thead>
@@ -157,6 +158,18 @@ else
                             }
                         </select>
                     </td>
+                    <td>
+                        <select id="accuracyModifierSelect" multiple @onchange="OnSelectedAccuracyModifierChanged">
+                            @if (SelectedWeapon != null)
+                            {
+                                var selectedWeaponDataAccuracy = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
+                                if (selectedWeaponDataAccuracy != null)
+                                {
+                                    <option value="@selectedWeaponDataAccuracy.accuracyModifier">Accuracy Modifier: @selectedWeaponDataAccuracy.accuracyModifier</option>
+                                }
+                            }
+                        </select>
+                    </td>
                 }
             </tr>
         </tbody>
@@ -174,6 +187,7 @@ else
                 <p>Recoil Horizontal: @selectedWeaponData.recoilHorizontal</p>
                 <p>Velocity: @selectedWeaponData.velocity</p>
                 <p>Base Price: @selectedWeaponData.basePrice</p>
+                <p>Accuracy Modifier: @selectedWeaponData.accuracyModifier</p>
             </div>
         }
     }
@@ -188,6 +202,7 @@ else
     public List<float> SelectedRecoilVerticals { get; set; } = new List<float>();
     public float SelectedVelocity { get; set; }
     public int SelectedBasePrice { get; set; }
+    public float SelectedAccuracyModifier { get; set; }
     public string? SelectedWeapon { get; set; }
     public List<string> Categories { get; set; } = new();
 
@@ -271,6 +286,16 @@ else
             SelectedBasePrice = int.Parse(selectedValues.First());
         }
         Console.WriteLine($"SelectedBasePrice changed to: {SelectedBasePrice}");
+    }
+
+    private async Task OnSelectedAccuracyModifierChanged(ChangeEventArgs e)
+    {
+        var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "accuracyModifierSelect");
+        if (selectedValues.Any())
+        {
+            SelectedAccuracyModifier = float.Parse(selectedValues.First());
+        }
+        Console.WriteLine($"SelectedAccuracyModifier changed to: {SelectedAccuracyModifier}");
     }
 
     [JSInvokable]
