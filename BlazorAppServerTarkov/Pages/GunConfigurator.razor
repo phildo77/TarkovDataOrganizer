@@ -1,5 +1,6 @@
 ﻿@page "/gun-configurator"
 @using Microsoft.JSInterop
+@using MudExtensions
 @using TarkovDataOrganizer
 
 <script>
@@ -73,6 +74,18 @@ else if (ErrorMessage != null)
 }
 else
 {
+    <MudSplitter>
+        <StartContent>
+            <div style="padding: 16px;">
+                Left Pane Content
+            </div>
+        </StartContent>
+        <EndContent>
+            <div style="padding: 16px;">
+                Right Pane Content
+            </div>
+        </EndContent>
+    </MudSplitter>
     <table>
         <thead>
             <tr>

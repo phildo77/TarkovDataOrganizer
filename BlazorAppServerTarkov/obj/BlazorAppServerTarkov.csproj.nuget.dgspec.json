@@ -54,9 +54,13 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "CodeBeam.MudBlazor.Extensions": {
+              "target": "Package",
+              "version": "[7.0.0-rc.1, )"
+            },
             "MudBlazor": {
               "target": "Package",
-              "version": "[7.2.0, )"
+              "version": "[7.3.0, )"
             }
           },
           "imports": [

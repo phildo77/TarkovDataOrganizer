@@ -2,6 +2,39 @@
   "version": 3,
   "targets": {
     "net8.0": {
+      "BuildBundlerMinifier/3.2.449": {
+        "type": "package",
+        "build": {
+          "build/_._": {}
+        }
+      },
+      "CodeBeam.MudBlazor.Extensions/7.0.0-rc.1": {
+        "type": "package",
+        "dependencies": {
+          "BuildBundlerMinifier": "3.2.449",
+          "CsvHelper": "31.0.3",
+          "Microsoft.AspNetCore.Components": "8.0.6",
+          "Microsoft.AspNetCore.Components.Web": "8.0.6",
+          "MudBlazor": "7.0.0-rc.2",
+          "ZXing.Net": "0.16.9"
+        },
+        "compile": {
+          "lib/net8.0/CodeBeam.MudBlazor.Extensions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/CodeBeam.MudBlazor.Extensions.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/CodeBeam.MudBlazor.Extensions.props": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/CodeBeam.MudBlazor.Extensions.props": {}
+        }
+      },
       "CsvHelper/33.0.1": {
         "type": "package",
         "compile": {
@@ -321,7 +354,7 @@
           }
         }
       },
-      "MudBlazor/7.2.0": {
+      "MudBlazor/7.3.0": {
         "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Components": "8.0.6",
@@ -391,6 +424,19 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
+      "ZXing.Net/0.16.9": {
+        "type": "package",
+        "compile": {
+          "lib/net7.0/zxing.dll": {
+            "related": ".XML"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/zxing.dll": {
+            "related": ".XML"
+          }
+        }
+      },
       "TarkovDataOrganizer/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
@@ -411,6 +457,59 @@
     }
   },
   "libraries": {
+    "BuildBundlerMinifier/3.2.449": {
+      "sha512": "uA9sYDy4VepL3xwzBTLcP2LyuVYMt0ZIT3gaSiXvGoX15Ob+rOP+hGydhevlSVd+rFo+Y+VQFEHDuWU8HBW+XA==",
+      "type": "package",
+      "path": "buildbundlerminifier/3.2.449",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/BuildBundlerMinifier.targets",
+        "buildbundlerminifier.3.2.449.nupkg.sha512",
+        "buildbundlerminifier.nuspec",
+        "tools/net46/BundlerMinifier.dll",
+        "tools/net46/NUglify.dll",
+        "tools/net46/Newtonsoft.Json.dll",
+        "tools/netcoreapp2.0/BundlerMinifier.dll",
+        "tools/netcoreapp2.0/NUglify.dll",
+        "tools/netcoreapp2.0/Newtonsoft.Json.dll",
+        "tools/netcoreapp3.0/BundlerMinifier.dll",
+        "tools/netcoreapp3.0/NUglify.dll",
+        "tools/netcoreapp3.0/Newtonsoft.Json.dll",
+        "tools/netcoreapp3.1/BundlerMinifier.dll",
+        "tools/netcoreapp3.1/NUglify.dll",
+        "tools/netcoreapp3.1/Newtonsoft.Json.dll",
+        "tools/netstandard1.3/BundlerMinifier.dll",
+        "tools/netstandard1.3/NUglify.dll",
+        "tools/netstandard1.3/Newtonsoft.Json.dll"
+      ]
+    },
+    "CodeBeam.MudBlazor.Extensions/7.0.0-rc.1": {
+      "sha512": "+XHLD7dSvp8xQ7/cYXQrRLtqOoSLDT5/uJCkDmzirUYx2KaXNvFWdMJ/IChBhaIP0qSqpoQRUThjKttHkd34tg==",
+      "type": "package",
+      "path": "codebeam.mudblazor.extensions/7.0.0-rc.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Mud_Secondary.png",
+        "build/CodeBeam.MudBlazor.Extensions.props",
+        "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "buildMultiTargeting/CodeBeam.MudBlazor.Extensions.props",
+        "buildTransitive/CodeBeam.MudBlazor.Extensions.props",
+        "codebeam.mudblazor.extensions.7.0.0-rc.1.nupkg.sha512",
+        "codebeam.mudblazor.extensions.nuspec",
+        "lib/net7.0/CodeBeam.MudBlazor.Extensions.dll",
+        "lib/net7.0/CodeBeam.MudBlazor.Extensions.xml",
+        "lib/net8.0/CodeBeam.MudBlazor.Extensions.dll",
+        "lib/net8.0/CodeBeam.MudBlazor.Extensions.xml",
+        "staticwebassets/MudExtensions.min.css",
+        "staticwebassets/MudExtensions.min.js",
+        "staticwebassets/Mud_Secondary.png",
+        "staticwebassets/eraser.cur",
+        "staticwebassets/pencil.cur"
+      ]
+    },
     "CsvHelper/33.0.1": {
       "sha512": "fev4lynklAU2A9GVMLtwarkwaanjSYB4wUqO2nOJX5hnzObORzUqVLe+bDYCUyIIRQM4o5Bsq3CcyJR89iMmEQ==",
       "type": "package",
@@ -887,10 +986,10 @@
         "microsoft.jsinterop.nuspec"
       ]
     },
-    "MudBlazor/7.2.0": {
-      "sha512": "Gh7cXbg7D1ds4zuZJO8pkOicNom4rzyxSUfG7fJ1g5ZKP9pc2KShiZdWqwmG0rEz126HlxX2gCNOLJYZALyzWA==",
+    "MudBlazor/7.3.0": {
+      "sha512": "yLZbuZUQaGGCpEbj0eebLIxtvlLFlWug7oI68ecX/QbCKr+474q6qUN5sCstMMDYkdnzExk3puEa+Hif3rLDEQ==",
       "type": "package",
-      "path": "mudblazor/7.2.0",
+      "path": "mudblazor/7.3.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -907,7 +1006,7 @@
         "lib/net7.0/MudBlazor.xml",
         "lib/net8.0/MudBlazor.dll",
         "lib/net8.0/MudBlazor.xml",
-        "mudblazor.7.2.0.nupkg.sha512",
+        "mudblazor.7.3.0.nupkg.sha512",
         "mudblazor.nuspec",
         "staticwebassets/MudBlazor.min.css",
         "staticwebassets/MudBlazor.min.js"
@@ -1000,6 +1099,89 @@
         "system.reactive.nuspec"
       ]
     },
+    "ZXing.Net/0.16.9": {
+      "sha512": "7WaVMHklpT3Ye2ragqRIwlFRsb6kOk63BOGADV0fan3ulVfGLUYkDi5yNUsZS/7FVNkWbtHAlDLmu4WnHGfqvQ==",
+      "type": "package",
+      "path": "zxing.net/0.16.9",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/native/zxing.XML",
+        "lib/native/zxing.pri",
+        "lib/native/zxing.winmd",
+        "lib/net20-cf/zxing.ce2.0.dll",
+        "lib/net20-cf/zxing.ce2.0.xml",
+        "lib/net20/zxing.XML",
+        "lib/net20/zxing.dll",
+        "lib/net35-cf/zxing.ce3.5.dll",
+        "lib/net35-cf/zxing.ce3.5.xml",
+        "lib/net35/zxing.XML",
+        "lib/net35/zxing.dll",
+        "lib/net40/zxing.XML",
+        "lib/net40/zxing.dll",
+        "lib/net40/zxing.presentation.XML",
+        "lib/net40/zxing.presentation.dll",
+        "lib/net45/zxing.XML",
+        "lib/net45/zxing.dll",
+        "lib/net45/zxing.presentation.XML",
+        "lib/net45/zxing.presentation.dll",
+        "lib/net461/zxing.XML",
+        "lib/net461/zxing.dll",
+        "lib/net461/zxing.presentation.XML",
+        "lib/net461/zxing.presentation.dll",
+        "lib/net47/zxing.XML",
+        "lib/net47/zxing.dll",
+        "lib/net47/zxing.presentation.XML",
+        "lib/net47/zxing.presentation.dll",
+        "lib/net48/zxing.XML",
+        "lib/net48/zxing.dll",
+        "lib/net48/zxing.presentation.XML",
+        "lib/net48/zxing.presentation.dll",
+        "lib/net5.0/zxing.XML",
+        "lib/net5.0/zxing.dll",
+        "lib/net6.0/zxing.XML",
+        "lib/net6.0/zxing.dll",
+        "lib/net7.0/zxing.XML",
+        "lib/net7.0/zxing.dll",
+        "lib/netcoreapp3.0/zxing.dll",
+        "lib/netcoreapp3.0/zxing.xml",
+        "lib/netcoreapp3.1/zxing.dll",
+        "lib/netcoreapp3.1/zxing.xml",
+        "lib/netstandard1.0/zxing.dll",
+        "lib/netstandard1.0/zxing.xml",
+        "lib/netstandard1.1/zxing.dll",
+        "lib/netstandard1.1/zxing.xml",
+        "lib/netstandard1.3/zxing.dll",
+        "lib/netstandard1.3/zxing.xml",
+        "lib/netstandard2.0/zxing.dll",
+        "lib/netstandard2.0/zxing.xml",
+        "lib/netstandard2.1/zxing.dll",
+        "lib/netstandard2.1/zxing.xml",
+        "lib/portable-win+net40+sl4+sl5+wp7+wp71+wp8/zxing.portable.XML",
+        "lib/portable-win+net40+sl4+sl5+wp7+wp71+wp8/zxing.portable.dll",
+        "lib/sl3-wp/zxing.wp7.0.XML",
+        "lib/sl3-wp/zxing.wp7.0.dll",
+        "lib/sl4-wp71/zxing.wp7.1.XML",
+        "lib/sl4-wp71/zxing.wp7.1.dll",
+        "lib/sl4/zxing.sl4.XML",
+        "lib/sl4/zxing.sl4.dll",
+        "lib/sl5/zxing.sl5.XML",
+        "lib/sl5/zxing.sl5.dll",
+        "lib/uap10/zxing.dll",
+        "lib/uap10/zxing.pri",
+        "lib/uap10/zxing.xml",
+        "lib/windows8-managed/zxing.winrt.XML",
+        "lib/windows8-managed/zxing.winrt.dll",
+        "lib/windows8/zxing.XML",
+        "lib/windows8/zxing.pri",
+        "lib/windows8/zxing.winmd",
+        "lib/wp8/zxing.wp8.0.XML",
+        "lib/wp8/zxing.wp8.0.dll",
+        "logo.jpg",
+        "zxing.net.0.16.9.nupkg.sha512",
+        "zxing.net.nuspec"
+      ]
+    },
     "TarkovDataOrganizer/1.0.0": {
       "type": "project",
       "path": "../TarkovDataOrganizer/TarkovDataOrganizer.csproj",
@@ -1008,7 +1190,8 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "MudBlazor >= 7.2.0",
+      "CodeBeam.MudBlazor.Extensions >= 7.0.0-rc.1",
+      "MudBlazor >= 7.3.0",
       "TarkovDataOrganizer >= 1.0.0"
     ]
   },
@@ -1066,9 +1249,13 @@
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
+          "CodeBeam.MudBlazor.Extensions": {
+            "target": "Package",
+            "version": "[7.0.0-rc.1, )"
+          },
           "MudBlazor": {
             "target": "Package",
-            "version": "[7.2.0, )"
+            "version": "[7.3.0, )"
           }
         },
         "imports": [

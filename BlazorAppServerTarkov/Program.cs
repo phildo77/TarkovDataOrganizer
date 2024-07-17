@@ -1,14 +1,15 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor.Services;
+using MudExtensions.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddMudServices(); // Move this line before the app is built
-
+builder.Services.AddMudServices();
+builder.Services.AddMudExtensions();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
