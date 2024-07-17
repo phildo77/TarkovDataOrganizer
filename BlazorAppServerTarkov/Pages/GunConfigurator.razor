@@ -77,147 +77,155 @@ else
     <MudSplitter>
         <StartContent>
             <div style="padding: 16px;">
-                Left Pane Content
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Weapon</th>
+                            <th>Caliber</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <select id="categorySelect" multiple @onchange="OnSelectedCategoryChanged">
+                                    @foreach (var category in Categories)
+                                    {
+                                        <option value="@category" selected="@SelectedCategories.Contains(category)">@category</option>
+                                    }
+                                </select>
+                            </td>
+                            <td class="weapon-table-td">
+                                <table class="weapon-table">
+                                    @foreach (var weapon in FilteredWeaponNames)
+                                    {
+                                        <tr id="weapon-@weapon.shortName" class="weapon-row" data-value="@weapon.shortName" @onclick="() => OnWeaponRowClicked(weapon.name)">
+                                            <td>
+                                                <img src="@weapon.defaultPresetGridImageLink" alt="@weapon.shortName" class="weapon-image" />
+                                                @weapon.shortName
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            </td>
+                            <td>
+                                <select id="caliberSelect" multiple @onchange="OnSelectedCaliberChanged">
+                                    @foreach (var caliber in Calibers)
+                                    {
+                                        <option value="@caliber" selected="@SelectedCalibers.Contains(caliber)">@caliber</option>
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </StartContent>
         <EndContent>
             <div style="padding: 16px;">
-                Right Pane Content
+                <table>
+                    <thead>
+                        <tr>
+                            @if (!string.IsNullOrEmpty(SelectedWeapon))
+                            {
+                                <th>Recoil</th>
+                                <th>Velocity</th>
+                                <th>Base Price</th>
+                                <th>Accuracy Modifier</th>
+                                <th>Weight</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            @if (!string.IsNullOrEmpty(SelectedWeapon))
+                            {
+                                <td>
+                                    <select id="recoilVerticalSelect" multiple @onchange="OnSelectedRecoilVerticalChanged">
+                                        @if (SelectedWeapon != null)
+                                        {
+                                            var selectedWeaponDataRecoil = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
+                                            if (selectedWeaponDataRecoil != null)
+                                            {
+                                                <option value="@selectedWeaponDataRecoil.recoilVertical">Recoil V: @selectedWeaponDataRecoil.recoilVertical</option>
+                                                <option value="@selectedWeaponDataRecoil.recoilHorizontal">Recoil H: @selectedWeaponDataRecoil.recoilHorizontal</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="velocitySelect" multiple @onchange="OnSelectedVelocityChanged">
+                                        @if (SelectedWeapon != null)
+                                        {
+                                            var selectedWeaponDataVelocity = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
+                                            if (selectedWeaponDataVelocity != null)
+                                            {
+                                                <option value="@selectedWeaponDataVelocity.velocity">Velocity: @selectedWeaponDataVelocity.velocity</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="basePriceSelect" multiple @onchange="OnSelectedBasePriceChanged">
+                                        @if (SelectedWeapon != null)
+                                        {
+                                            var selectedWeaponDataPrice = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
+                                            if (selectedWeaponDataPrice != null)
+                                            {
+                                                <option value="@selectedWeaponDataPrice.basePrice">Base Price: @selectedWeaponDataPrice.basePrice.ToString("C0")</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="accuracyModifierSelect" multiple @onchange="OnSelectedAccuracyModifierChanged">
+                                        @if (SelectedWeapon != null)
+                                        {
+                                            var selectedWeaponDataAccuracy = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
+                                            if (selectedWeaponDataAccuracy != null)
+                                            {
+                                                <option value="@selectedWeaponDataAccuracy.accuracyModifier">Accuracy Modifier: @selectedWeaponDataAccuracy.accuracyModifier</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="weightSelect" multiple @onchange="OnSelectedWeightChanged">
+                                        @if (SelectedWeapon != null)
+                                        {
+                                            var selectedWeaponDataWeight = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
+                                            if (selectedWeaponDataWeight != null)
+                                            {
+                                                <option value="@selectedWeaponDataWeight.weight">Weight: @selectedWeaponDataWeight.weight</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                            }
+                        </tr>
+                    </tbody>
+                </table>
+
+                @if (!string.IsNullOrEmpty(SelectedWeapon))
+                {
+                    var selectedWeaponData = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
+                    if (selectedWeaponData != null)
+                    {
+                        <div id="weaponDisplay">
+                            <h3>@selectedWeaponData.name</h3>
+                            <img id="weaponImage" src="@selectedWeaponData.defaultPresetBaseImageLink" alt="Selected Weapon Image" />
+                            <p>Recoil Vertical: @selectedWeaponData.recoilVertical</p>
+                            <p>Recoil Horizontal: @selectedWeaponData.recoilHorizontal</p>
+                            <p>Velocity: @selectedWeaponData.velocity</p>
+                            <p>Base Price: @selectedWeaponData.basePrice</p>
+                            <p>Accuracy Modifier: @selectedWeaponData.accuracyModifier</p>
+                            <p>Weight: @selectedWeaponData.weight</p>
+                        </div>
+                    }
+                }
             </div>
         </EndContent>
     </MudSplitter>
-    <table>
-        <thead>
-            <tr>
-                <th>Category</th>
-                <th>Weapon</th>
-                <th>Caliber</th>
-                @if (!string.IsNullOrEmpty(SelectedWeapon))
-                {
-                    <th>Recoil</th>
-                    <th>Velocity</th>
-                    <th>Base Price</th>
-                    <th>Accuracy Modifier</th>
-                    <th>Weight</th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>
-                    <select id="categorySelect" multiple @onchange="OnSelectedCategoryChanged">
-                        @foreach (var category in Categories)
-                        {
-                            <option value="@category" selected="@SelectedCategories.Contains(category)">@category</option>
-                        }
-                    </select>
-                </td>
-                <td class="weapon-table-td">
-                    <table class="weapon-table">
-                        @foreach (var weapon in FilteredWeaponNames)
-                        {
-                            <tr id="weapon-@weapon.shortName" class="weapon-row" data-value="@weapon.shortName" @onclick="() => OnWeaponRowClicked(weapon.name)">
-                                <td>
-                                    <img src="@weapon.defaultPresetGridImageLink" alt="@weapon.shortName" class="weapon-image" />
-                                    @weapon.shortName
-                                </td>
-                            </tr>
-                        }
-                    </table>
-                </td>
-                <td>
-                    <select id="caliberSelect" multiple @onchange="OnSelectedCaliberChanged">
-                        @foreach (var caliber in Calibers)
-                        {
-                            <option value="@caliber" selected="@SelectedCalibers.Contains(caliber)">@caliber</option>
-                        }
-                    </select>
-                </td>
-                @if (!string.IsNullOrEmpty(SelectedWeapon))
-                {
-                    <td>
-                        <select id="recoilVerticalSelect" multiple @onchange="OnSelectedRecoilVerticalChanged">
-                            @if (SelectedWeapon != null)
-                            {
-                                var selectedWeaponDataRecoil = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
-                                if (selectedWeaponDataRecoil != null)
-                                {
-                                    <option value="@selectedWeaponDataRecoil.recoilVertical">Recoil V: @selectedWeaponDataRecoil.recoilVertical</option>
-                                    <option value="@selectedWeaponDataRecoil.recoilHorizontal">Recoil H: @selectedWeaponDataRecoil.recoilHorizontal</option>
-                                }
-                            }
-                        </select>
-                    </td>
-                    <td>
-                        <select id="velocitySelect" multiple @onchange="OnSelectedVelocityChanged">
-                            @if (SelectedWeapon != null)
-                            {
-                                var selectedWeaponDataVelocity = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
-                                if (selectedWeaponDataVelocity != null)
-                                {
-                                    <option value="@selectedWeaponDataVelocity.velocity">Velocity: @selectedWeaponDataVelocity.velocity</option>
-                                }
-                            }
-                        </select>
-                    </td>
-                    <td>
-                        <select id="basePriceSelect" multiple @onchange="OnSelectedBasePriceChanged">
-                            @if (SelectedWeapon != null)
-                            {
-                                var selectedWeaponDataPrice = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
-                                if (selectedWeaponDataPrice != null)
-                                {
-                                    <option value="@selectedWeaponDataPrice.basePrice">Base Price: @selectedWeaponDataPrice.basePrice.ToString("C0")</option>
-                                }
-                            }
-                        </select>
-                    </td>
-                    <td>
-                        <select id="accuracyModifierSelect" multiple @onchange="OnSelectedAccuracyModifierChanged">
-                            @if (SelectedWeapon != null)
-                            {
-                                var selectedWeaponDataAccuracy = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
-                                if (selectedWeaponDataAccuracy != null)
-                                {
-                                    <option value="@selectedWeaponDataAccuracy.accuracyModifier">Accuracy Modifier: @selectedWeaponDataAccuracy.accuracyModifier</option>
-                                }
-                            }
-                        </select>
-                    </td>
-                    <td>
-                        <select id="weightSelect" multiple @onchange="OnSelectedWeightChanged">
-                            @if (SelectedWeapon != null)
-                            {
-                                var selectedWeaponDataWeight = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
-                                if (selectedWeaponDataWeight != null)
-                                {
-                                    <option value="@selectedWeaponDataWeight.weight">Weight: @selectedWeaponDataWeight.weight</option>
-                                }
-                            }
-                        </select>
-                    </td>
-                }
-            </tr>
-        </tbody>
-    </table>
-
-    @if (!string.IsNullOrEmpty(SelectedWeapon))
-    {
-        var selectedWeaponData = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
-        if (selectedWeaponData != null)
-        {
-            <div id="weaponDisplay">
-                <h3>@selectedWeaponData.name</h3>
-                <img id="weaponImage" src="@selectedWeaponData.defaultPresetBaseImageLink" alt="Selected Weapon Image" />
-                <p>Recoil Vertical: @selectedWeaponData.recoilVertical</p>
-                <p>Recoil Horizontal: @selectedWeaponData.recoilHorizontal</p>
-                <p>Velocity: @selectedWeaponData.velocity</p>
-                <p>Base Price: @selectedWeaponData.basePrice</p>
-                <p>Accuracy Modifier: @selectedWeaponData.accuracyModifier</p>
-                <p>Weight: @selectedWeaponData.weight</p>
-            </div>
-        }
-    }
 }
 
 @code {
