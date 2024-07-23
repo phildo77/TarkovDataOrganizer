@@ -109,12 +109,12 @@ else
                                 </table>
                             </td>
                             <td>
-                                <select id="caliberSelect" multiple @onchange="OnSelectedCaliberChanged">
+                                <MudSelect @bind-Value="SelectedCaliber" Label="Select Calibers" @bind-SelectedValues="SelectedCalibers" Variant="Variant.Filled" InputId="caliberSelect" MultiSelection="true">
                                     @foreach (var caliber in Calibers)
                                     {
-                                        <option value="@caliber" selected="@SelectedCalibers.Contains(caliber)">@caliber</option>
+                                        <MudSelectItem Value="@caliber">@caliber</MudSelectItem>
                                     }
-                                </select>
+                                </MudSelect>
                             </td>
                         </tr>
                     </tbody>
@@ -233,8 +233,9 @@ else
     private List<float> RecoilVerticals = new List<float>();
     public List<string> SelectedWeapons { get; set; } = new List<string>();
     public string? SelectedCategory { get; set; }
+    public string? SelectedCaliber { get; set; }
     public IEnumerable<string> SelectedCategories { get; set; } = new List<string>();
-    public List<string> SelectedCalibers { get; set; } = new List<string>();
+    public IEnumerable<string> SelectedCalibers { get; set; } = new List<string>();
     public List<float> SelectedRecoilVerticals { get; set; } = new List<float>();
     public float SelectedVelocity { get; set; }
     public int SelectedBasePrice { get; set; }
@@ -291,7 +292,7 @@ else
         Console.WriteLine($"SelectedWeapons changed to: {string.Join(", ", SelectedWeapons)}");
     }
 
-    private async Task OnSelectedCaliberChanged(ChangeEventArgs e)
+    private async Task OnSelectedCaliberChanged()
     {
         SelectedCalibers = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "caliberSelect");
         Console.WriteLine($"SelectedCalibers changed to: {string.Join(", ", SelectedCalibers)}");
