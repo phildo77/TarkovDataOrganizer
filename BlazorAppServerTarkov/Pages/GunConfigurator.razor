@@ -162,16 +162,16 @@ else
                                     </MudSelect>
                                 </td>
                                 <td>
-                                    <select id="velocitySelect" multiple @onchange="OnSelectedVelocityChanged">
+                                    <MudSelect @bind-Value="SelectedVelocity" Variant="Variant.Filled" InputId="velocitySelect" MultiSelection="true">
                                         @if (SelectedWeapon != null)
                                         {
                                             var selectedWeaponDataVelocity = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
                                             if (selectedWeaponDataVelocity != null)
                                             {
-                                                <option value="@selectedWeaponDataVelocity.velocity">Velocity: @selectedWeaponDataVelocity.velocity</option>
+                                                <MudSelectItem Value="@selectedWeaponDataVelocity.velocity">Velocity: @selectedWeaponDataVelocity.velocity</MudSelectItem>
                                             }
                                         }
-                                    </select>
+                                    </MudSelect>
                                 </td>
                                 <td>
                                     <select id="basePriceSelect" multiple @onchange="OnSelectedBasePriceChanged">
