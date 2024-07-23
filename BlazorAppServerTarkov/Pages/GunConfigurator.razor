@@ -6,13 +6,18 @@
 <script>
     function getSelectedValues(selectId) {
         var select = document.getElementById(selectId);
-        var selectedValues = [];
-        for (var i = 0; i < select.options.length; i++) {
-            if (select.options[i].selected) {
-                selectedValues.push(select.options[i].value);
+        if (select) {
+            var selectedValues = [];
+            for (var i = 0; i < select.options.length; i++) {
+                if (select.options[i].selected) {
+                    selectedValues.push(select.options[i].value);
+                }
             }
+            return selectedValues;
+        } else {
+            console.error(`Element with id ${selectId} not found.`);
+            return [];
         }
-        return selectedValues;
     }
 
     function toggleSelection(rowId) {
@@ -109,10 +114,10 @@ else
                                 </table>
                             </td>
                             <td>
-                                <MudSelect @bind-Value="SelectedCaliber" Label="Select Calibers" @bind-SelectedValues="SelectedCalibers" Variant="Variant.Filled" InputId="caliberSelect" MultiSelection="true">
+                                <MudSelect T="string" Label="Select Caliber" @bind-Value="SelectedCaliber" @bind-SelectedValues="SelectedCalibers" id="caliberSelect" MultiSelection="true" OnClose="OnSelectedCaliberChanged">
                                     @foreach (var caliber in Calibers)
                                     {
-                                        <MudSelectItem Value="@caliber">@caliber</MudSelectItem>
+                                        <MudSelectItem T="string" Value="@caliber">@caliber</MudSelectItem>
                                     }
                                 </MudSelect>
                             </td>
@@ -141,17 +146,20 @@ else
                             @if (!string.IsNullOrEmpty(SelectedWeapon))
                             {
                                 <td>
-                                    <select id="recoilVerticalSelect" multiple @onchange="OnSelectedRecoilVerticalChanged">
+                                    <MudSelect T="float" @bind-Value="SelectedVerticalRecoil" @bind-SelectedValues="SelectedVerticalRecoils" Variant="Variant.Filled" InputId="recoilVerticalSelect" MultiSelection="true">
                                         @if (SelectedWeapon != null)
                                         {
-                                            var selectedWeaponDataRecoil = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
-                                            if (selectedWeaponDataRecoil != null)
+                                            var TarkovItem = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
+                                            if (TarkovItem != null)
                                             {
-                                                <option value="@selectedWeaponDataRecoil.recoilVertical">Recoil V: @selectedWeaponDataRecoil.recoilVertical</option>
-                                                <option value="@selectedWeaponDataRecoil.recoilHorizontal">Recoil H: @selectedWeaponDataRecoil.recoilHorizontal</option>
+                                                if (!SelectedVerticalRecoils.Contains(TarkovItem.recoilVertical))
+                                                {
+                                                    SelectedVerticalRecoils = SelectedVerticalRecoils.Append(TarkovItem.recoilVertical);
+                                                }
+                                                <MudSelectItem Value="@TarkovItem.recoilVertical">Recoil V: @TarkovItem.recoilVertical</MudSelectItem>
                                             }
                                         }
-                                    </select>
+                                    </MudSelect>
                                 </td>
                                 <td>
                                     <select id="velocitySelect" multiple @onchange="OnSelectedVelocityChanged">
@@ -236,7 +244,8 @@ else
     public string? SelectedCaliber { get; set; }
     public IEnumerable<string> SelectedCategories { get; set; } = new List<string>();
     public IEnumerable<string> SelectedCalibers { get; set; } = new List<string>();
-    public List<float> SelectedRecoilVerticals { get; set; } = new List<float>();
+    public IEnumerable<float> SelectedVerticalRecoils { get; set; } = new List<float>();
+    public float SelectedVerticalRecoil { get; set; }
     public float SelectedVelocity { get; set; }
     public int SelectedBasePrice { get; set; }
     public float SelectedAccuracyModifier { get; set; }
@@ -298,11 +307,11 @@ else
         Console.WriteLine($"SelectedCalibers changed to: {string.Join(", ", SelectedCalibers)}");
     }
 
-    private async Task OnSelectedRecoilVerticalChanged(ChangeEventArgs e)
+    private async Task OnSelectedRecoilVerticalChanged()
     {
         var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "recoilVerticalSelect");
-        SelectedRecoilVerticals = selectedValues.Select(float.Parse).ToList();
-        Console.WriteLine($"SelectedRecoilVerticals changed to: {string.Join(", ", SelectedRecoilVerticals)}");
+        SelectedVerticalRecoils = selectedValues.Select(float.Parse);
+        Console.WriteLine($"SelectedRecoilVerticals changed to: {string.Join(", ", SelectedVerticalRecoils)}");
     }
 
     private async Task OnSelectedVelocityChanged(ChangeEventArgs e)
