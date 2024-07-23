@@ -88,12 +88,12 @@ else
                     <tbody>
                         <tr>
                             <td>
-                                <select id="categorySelect" multiple @onchange="OnSelectedCategoryChanged">
+                                <MudSelect T="string" Label="Select Categories" Variant="Variant.Filled" @bind-Value="SelectedCategory" @bind-SelectedValues="SelectedCategories" MultiSelection="true" OnClose="OnSelectedCategoryChanged">
                                     @foreach (var category in Categories)
                                     {
-                                        <option value="@category" selected="@SelectedCategories.Contains(category)">@category</option>
+                                        <MudSelectItem T="string" Value="@category">@category</MudSelectItem>
                                     }
-                                </select>
+                                </MudSelect>
                             </td>
                             <td class="weapon-table-td">
                                 <table class="weapon-table">
@@ -232,7 +232,8 @@ else
     private List<string> Calibers = new List<string>();
     private List<float> RecoilVerticals = new List<float>();
     public List<string> SelectedWeapons { get; set; } = new List<string>();
-    public List<string> SelectedCategories { get; set; } = new List<string>();
+    public string? SelectedCategory { get; set; }
+    public IEnumerable<string> SelectedCategories { get; set; } = new List<string>();
     public List<string> SelectedCalibers { get; set; } = new List<string>();
     public List<float> SelectedRecoilVerticals { get; set; } = new List<float>();
     public float SelectedVelocity { get; set; }
@@ -273,9 +274,8 @@ else
                 .Where(item => item.types.Split('|').Contains("gun", StringComparer.OrdinalIgnoreCase) &&
                                SelectedCategories.Contains(item.categoryName));
 
-    private async Task OnSelectedCategoryChanged(ChangeEventArgs e)
+    private void OnSelectedCategoryChanged()
     {
-        SelectedCategories = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "categorySelect");
         SelectedWeapons.Clear(); // Clear selected weapons to refresh the list
         StateHasChanged(); // Ensure the state is updated
         Console.WriteLine($"SelectedCategories changed to: {string.Join(", ", SelectedCategories)}");
