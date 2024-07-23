@@ -174,16 +174,16 @@ else
                                     </MudSelect>
                                 </td>
                                 <td>
-                                    <select id="basePriceSelect" multiple @onchange="OnSelectedBasePriceChanged">
+                                    <MudSelect @bind-Value="SelectedBasePrice" Variant="Variant.Filled" InputId="basePriceSelect" MultiSelection="true">
                                         @if (SelectedWeapon != null)
                                         {
                                             var selectedWeaponDataPrice = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
                                             if (selectedWeaponDataPrice != null)
                                             {
-                                                <option value="@selectedWeaponDataPrice.basePrice">Base Price: @selectedWeaponDataPrice.basePrice.ToString("C0")</option>
+                                                <MudSelectItem Value="@selectedWeaponDataPrice.basePrice">Base Price: @selectedWeaponDataPrice.basePrice.ToString("C0")</MudSelectItem>
                                             }
                                         }
-                                    </select>
+                                    </MudSelect>
                                 </td>
                                 <td>
                                     <select id="accuracyModifierSelect" multiple @onchange="OnSelectedAccuracyModifierChanged">
