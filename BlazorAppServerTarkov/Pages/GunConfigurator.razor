@@ -114,7 +114,7 @@ else
                                 </table>
                             </td>
                             <td>
-                                <MudSelect T="string" Label="Select Caliber" @bind-Value="SelectedCaliber" @bind-SelectedValues="SelectedCalibers" id="caliberSelect" MultiSelection="true" OnClose="OnSelectedCaliberChanged">
+                                <MudSelect T="string" Label="Select Caliber" Variant="Variant.Filled" @bind-Value="SelectedCaliber" @bind-SelectedValues="SelectedCalibers" id="caliberSelect" MultiSelection="true" OnClose="OnSelectedCaliberChanged">
                                     @foreach (var caliber in Calibers)
                                     {
                                         <MudSelectItem T="string" Value="@caliber">@caliber</MudSelectItem>
