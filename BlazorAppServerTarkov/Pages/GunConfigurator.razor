@@ -104,7 +104,7 @@ else
                                 <table class="weapon-table">
                                     @foreach (var weapon in FilteredWeaponNames)
                                     {
-                                        <tr id="weapon-@weapon.shortName" class="weapon-row" data-value="@weapon.shortName" @onclick="() => OnWeaponRowClicked(weapon.name)">
+                                        <tr id="weapon-@weapon.shortName" class="weapon-row" data-value="@weapon.name" @onclick="() => OnWeaponRowClicked(weapon)">
                                             <td>
                                                 <img src="@weapon.defaultPresetGridImageLink" alt="@weapon.shortName" class="weapon-image" />
                                                 @weapon.shortName
@@ -131,8 +131,9 @@ else
                 <table>
                     <thead>
                         <tr>
-                            @if (!string.IsNullOrEmpty(SelectedWeapon))
+                            @if (SelectedWeapon != null)
                             {
+                                <th>Attachments</th>
                                 <th>Recoil</th>
                                 <th>Velocity</th>
                                 <th>Base Price</th>
@@ -143,21 +144,29 @@ else
                     </thead>
                     <tbody>
                         <tr>
-                            @if (!string.IsNullOrEmpty(SelectedWeapon))
+                            @if (SelectedWeapon != null)
                             {
+                                <td>
+                                    <MudSelect T="string" @bind-Value="SelectedAttachment" Variant="Variant.Filled" InputId="attachmentSelect">
+                                        @if (SelectedWeapon != null)
+                                        {
+                                            @foreach (var slot in AvailableSlots)
+                                            {
+                                                <MudSelectItem Value="@slot.AllowedItemId">@slot.SlotName: @slot.AllowedItemName</MudSelectItem>
+                                            }
+                                        }
+                                    </MudSelect>
+
+                                </td>
                                 <td>
                                     <MudSelect T="float" @bind-Value="SelectedVerticalRecoil" @bind-SelectedValues="SelectedVerticalRecoils" Variant="Variant.Filled" InputId="recoilVerticalSelect" MultiSelection="true">
                                         @if (SelectedWeapon != null)
                                         {
-                                            var TarkovItem = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
-                                            if (TarkovItem != null)
+                                            if (!SelectedVerticalRecoils.Contains(SelectedWeapon.recoilVertical))
                                             {
-                                                if (!SelectedVerticalRecoils.Contains(TarkovItem.recoilVertical))
-                                                {
-                                                    SelectedVerticalRecoils = SelectedVerticalRecoils.Append(TarkovItem.recoilVertical);
-                                                }
-                                                <MudSelectItem Value="@TarkovItem.recoilVertical">Recoil V: @TarkovItem.recoilVertical</MudSelectItem>
+                                                SelectedVerticalRecoils = SelectedVerticalRecoils.Append(SelectedWeapon.recoilVertical);
                                             }
+                                            <MudSelectItem Value="@SelectedWeapon.recoilVertical">Recoil V: @SelectedWeapon.recoilVertical</MudSelectItem>
                                         }
                                     </MudSelect>
                                 </td>
@@ -165,11 +174,7 @@ else
                                     <MudSelect @bind-Value="SelectedVelocity" Variant="Variant.Filled" InputId="velocitySelect" MultiSelection="true">
                                         @if (SelectedWeapon != null)
                                         {
-                                            var selectedWeaponDataVelocity = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
-                                            if (selectedWeaponDataVelocity != null)
-                                            {
-                                                <MudSelectItem Value="@selectedWeaponDataVelocity.velocity">Velocity: @selectedWeaponDataVelocity.velocity</MudSelectItem>
-                                            }
+                                            <MudSelectItem Value="@SelectedWeapon.velocity">Velocity: @SelectedWeapon.velocity</MudSelectItem>
                                         }
                                     </MudSelect>
                                 </td>
@@ -177,11 +182,7 @@ else
                                     <MudSelect @bind-Value="SelectedBasePrice" Variant="Variant.Filled" InputId="basePriceSelect" MultiSelection="true">
                                         @if (SelectedWeapon != null)
                                         {
-                                            var selectedWeaponDataPrice = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
-                                            if (selectedWeaponDataPrice != null)
-                                            {
-                                                <MudSelectItem Value="@selectedWeaponDataPrice.basePrice">Base Price: @selectedWeaponDataPrice.basePrice.ToString("C0")</MudSelectItem>
-                                            }
+                                            <MudSelectItem Value="@SelectedWeapon.basePrice">Base Price: @SelectedWeapon.basePrice.ToString("C0")</MudSelectItem>
                                         }
                                     </MudSelect>
                                 </td>
@@ -189,11 +190,7 @@ else
                                     <select id="accuracyModifierSelect" multiple @onchange="OnSelectedAccuracyModifierChanged">
                                         @if (SelectedWeapon != null)
                                         {
-                                            var selectedWeaponDataAccuracy = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
-                                            if (selectedWeaponDataAccuracy != null)
-                                            {
-                                                <option value="@selectedWeaponDataAccuracy.accuracyModifier">Accuracy Modifier: @selectedWeaponDataAccuracy.accuracyModifier</option>
-                                            }
+                                            <option value="@SelectedWeapon.accuracyModifier">Accuracy Modifier: @SelectedWeapon.accuracyModifier</option>
                                         }
                                     </select>
                                 </td>
@@ -201,11 +198,7 @@ else
                                     <select id="weightSelect" multiple @onchange="OnSelectedWeightChanged">
                                         @if (SelectedWeapon != null)
                                         {
-                                            var selectedWeaponDataWeight = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
-                                            if (selectedWeaponDataWeight != null)
-                                            {
-                                                <option value="@selectedWeaponDataWeight.weight">Weight: @selectedWeaponDataWeight.weight</option>
-                                            }
+                                            <option value="@SelectedWeapon.weight">Weight: @SelectedWeapon.weight</option>
                                         }
                                     </select>
                                 </td>
@@ -214,22 +207,18 @@ else
                     </tbody>
                 </table>
 
-                @if (!string.IsNullOrEmpty(SelectedWeapon))
+                @if (SelectedWeapon != null)
                 {
-                    var selectedWeaponData = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapon);
-                    if (selectedWeaponData != null)
-                    {
-                        <div id="weaponDisplay">
-                            <h3>@selectedWeaponData.name</h3>
-                            <img id="weaponImage" src="@selectedWeaponData.defaultPresetBaseImageLink" alt="Selected Weapon Image" />
-                            <p>Recoil Vertical: @selectedWeaponData.recoilVertical</p>
-                            <p>Recoil Horizontal: @selectedWeaponData.recoilHorizontal</p>
-                            <p>Velocity: @selectedWeaponData.velocity</p>
-                            <p>Base Price: @selectedWeaponData.basePrice</p>
-                            <p>Accuracy Modifier: @selectedWeaponData.accuracyModifier</p>
-                            <p>Weight: @selectedWeaponData.weight</p>
-                        </div>
-                    }
+                    <div id="weaponDisplay">
+                        <h3>@SelectedWeapon.name</h3>
+                        <img id="weaponImage" src="@SelectedWeapon.defaultPresetBaseImageLink" alt="Selected Weapon Image" />
+                        <p>Recoil Vertical: @SelectedWeapon.recoilVertical</p>
+                        <p>Recoil Horizontal: @SelectedWeapon.recoilHorizontal</p>
+                        <p>Velocity: @SelectedWeapon.velocity</p>
+                        <p>Base Price: @SelectedWeapon.basePrice</p>
+                        <p>Accuracy Modifier: @SelectedWeapon.accuracyModifier</p>
+                        <p>Weight: @SelectedWeapon.weight</p>
+                    </div>
                 }
             </div>
         </EndContent>
@@ -241,6 +230,7 @@ else
     private List<float> RecoilVerticals = new List<float>();
     public List<string> SelectedWeapons { get; set; } = new List<string>();
     public string? SelectedCategory { get; set; }
+    public string? SelectedAttachment { get; set; }
     public string? SelectedCaliber { get; set; }
     public IEnumerable<string> SelectedCategories { get; set; } = new List<string>();
     public IEnumerable<string> SelectedCalibers { get; set; } = new List<string>();
@@ -250,8 +240,58 @@ else
     public int SelectedBasePrice { get; set; }
     public float SelectedAccuracyModifier { get; set; }
     public float SelectedWeight { get; set; }
-    public string? SelectedWeapon { get; set; }
+    public TarkovData.TarkovItem? SelectedWeapon { get; set; }
     public List<string> Categories { get; set; } = new();
+    public class DisplaySlot
+    {
+        public string ItemId { get; set; }
+        public string SlotId { get; set; }
+        public string SlotName { get; set; }
+        public string AllowedItemId { get; set; }
+        public string AllowedItemName { get; set; }
+    }
+
+
+    private List<DisplaySlot> AvailableSlots { get; set; } = new List<DisplaySlot>();
+
+    private void UpdateAvailableSlots(TarkovData.TarkovItem selectedWeapon)
+    {
+        AvailableSlots.Clear();
+
+        if (selectedWeapon != null && TarkovData.TarkovItem.DataTableSlots.TryGetValue(selectedWeapon.id, out var weaponSlots))
+        {
+            foreach (var slot in weaponSlots.Values)
+            {
+                foreach (var allowedId in slot.allowedIDs)
+                {
+                    var allowedItem = TarkovData.TarkovItem.DataTable.GetValueOrDefault(allowedId);
+                    if (allowedItem != null)
+                    {
+                        AvailableSlots.Add(new DisplaySlot
+                            {
+                                ItemId = slot.itemId,
+                                SlotId = slot.slotId,
+                                SlotName = slot.name,
+                                AllowedItemId = allowedItem.id,
+                                AllowedItemName = allowedItem.name
+                            });
+                    }
+                }
+            }
+        }
+    }
+
+
+    private void OnWeaponRowClicked(TarkovData.TarkovItem weapon)
+    {
+        SelectedWeapons = new List<string> { weapon.name };
+        SelectedWeapon = weapon;
+        UpdateAvailableSlots(SelectedWeapon); // Update available slots
+        StateHasChanged();
+    }
+
+
+
 
     private bool IsLoading { get; set; } = true;
     private string? ErrorMessage { get; set; }
@@ -296,7 +336,7 @@ else
         SelectedWeapons = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "weaponSelect");
         if (SelectedWeapons.Any())
         {
-            SelectedWeapon = SelectedWeapons.First();
+            SelectedWeapon = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapons.First());
         }
         Console.WriteLine($"SelectedWeapons changed to: {string.Join(", ", SelectedWeapons)}");
     }
@@ -360,15 +400,8 @@ else
         SelectedWeapons = selectedWeapons;
         if (SelectedWeapons.Any())
         {
-            SelectedWeapon = SelectedWeapons.First();
+            SelectedWeapon = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapons.First());
         }
-        StateHasChanged();
-    }
-
-    private void OnWeaponRowClicked(string weaponName)
-    {
-        SelectedWeapons = new List<string> { weaponName };
-        SelectedWeapon = weaponName;
         StateHasChanged();
     }
 }
