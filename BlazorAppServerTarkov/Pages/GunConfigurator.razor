@@ -203,12 +203,12 @@ else
                                     </select>
                                 </td>
                                 <td>
-                                    <select id="weightSelect" multiple @onchange="OnSelectedWeightChanged">
-                                        @if (SelectedWeapon != null)
+                                    <MudSelect T="float" @bind-SelectedValues="SelectedWeights" Variant="Variant.Filled" InputId="weightSelect" MultiSelection="true">
+                                        @if (SelectedWeapon != null && SelectedWeapon.weight > 0)
                                         {
-                                            <option value="@SelectedWeapon.weight">Weight: @SelectedWeapon.weight</option>
+                                            <MudSelectItem Value="@SelectedWeapon.weight">Weight: @SelectedWeapon.weight</MudSelectItem>
                                         }
-                                    </select>
+                                    </MudSelect>
                                 </td>
                             }
                         </tr>
@@ -257,6 +257,17 @@ else
         public string SlotName { get; set; }
         public string AllowedItemId { get; set; }
         public string AllowedItemName { get; set; }
+    }
+    private IEnumerable<float> SelectedWeights { get; set; } = new List<float>();
+
+    private async Task OnSelectedWeightChanged(ChangeEventArgs e)
+    {
+        var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "weightSelect");
+        if (selectedValues.Any())
+        {
+            SelectedWeights = selectedValues.Select(float.Parse);
+        }
+        Console.WriteLine($"SelectedWeights changed to: {string.Join(", ", SelectedWeights)}");
     }
 
 
@@ -403,16 +414,6 @@ else
             SelectedAccuracyModifier = float.Parse(selectedValues.First());
         }
         Console.WriteLine($"SelectedAccuracyModifier changed to: {SelectedAccuracyModifier}");
-    }
-
-    private async Task OnSelectedWeightChanged(ChangeEventArgs e)
-    {
-        var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "weightSelect");
-        if (selectedValues.Any())
-        {
-            SelectedWeight = float.Parse(selectedValues.First());
-        }
-        Console.WriteLine($"SelectedWeight changed to: {SelectedWeight}");
     }
 
     [JSInvokable]
