@@ -88,6 +88,7 @@ else
                         <th>Category</th>
                         <th>Weapon</th>
                         <th>Caliber</th>
+                        <th>Attachments</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -121,6 +122,17 @@ else
                                 }
                             </MudSelect>
                         </td>
+                        @if(SelectedWeapon != null)
+                        {
+                            <td>
+                                <MudSelect T="string" @bind-Value="SelectedAttachment" Variant="Variant.Filled" InputId="attachmentSelect">
+                                    @foreach (var slot in AvailableSlots)
+                                    {
+                                        <MudSelectItem Value="@slot.AllowedItemId">@slot.SlotName: @slot.AllowedItemName</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </td>
+                        }
                     </tr>
                 </tbody>
             </table>
@@ -133,7 +145,6 @@ else
                     <tr>
                         @if (SelectedWeapon != null)
                         {
-                            <th>Attachments</th>
                             <th>Recoil</th>
                             <th>Ergo</th>
                             <th>Velocity</th>
@@ -147,14 +158,6 @@ else
                     <tr>
                         @if (SelectedWeapon != null)
                         {
-                            <td>
-                                <MudSelect T="string" @bind-Value="SelectedAttachment" Variant="Variant.Filled" InputId="attachmentSelect">
-                                    @foreach (var slot in AvailableSlots)
-                                    {
-                                        <MudSelectItem Value="@slot.AllowedItemId">@slot.SlotName: @slot.AllowedItemName</MudSelectItem>
-                                    }
-                                </MudSelect>
-                            </td>
                             <td>
                                 <MudSelect T="float" @bind-Value="SelectedVerticalRecoil" @bind-SelectedValues="SelectedVerticalRecoils" Variant="Variant.Filled" InputId="recoilVerticalSelect" MultiSelection="true">
                                     @if (!SelectedVerticalRecoils.Contains(SelectedWeapon.recoilVertical))
