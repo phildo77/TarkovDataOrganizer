@@ -195,12 +195,12 @@ else
                                     </MudSelect>
                                 </td>
                                 <td>
-                                    <select id="accuracyModifierSelect" multiple @onchange="OnSelectedAccuracyModifierChanged">
+                                    <MudSelect T="float" @bind-SelectedValues="SelectedAccuracyModifiers" Variant="Variant.Filled" InputId="accuracyModifierSelect" MultiSelection="true">
                                         @if (SelectedWeapon != null)
                                         {
-                                            <option value="@SelectedWeapon.accuracyModifier">Accuracy Modifier: @SelectedWeapon.accuracyModifier</option>
+                                            <MudSelectItem Value="@SelectedWeapon.accuracyModifier">Accuracy Modifier: @SelectedWeapon.accuracyModifier</MudSelectItem>
                                         }
-                                    </select>
+                                    </MudSelect>
                                 </td>
                                 <td>
                                     <MudSelect T="float" @bind-SelectedValues="SelectedWeights" Variant="Variant.Filled" InputId="weightSelect" MultiSelection="true">
@@ -405,15 +405,16 @@ else
         }
         Console.WriteLine($"SelectedBasePrice changed to: {SelectedBasePrice}");
     }
+    private IEnumerable<float> SelectedAccuracyModifiers { get; set; } = new List<float>();
 
     private async Task OnSelectedAccuracyModifierChanged(ChangeEventArgs e)
     {
         var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "accuracyModifierSelect");
         if (selectedValues.Any())
         {
-            SelectedAccuracyModifier = float.Parse(selectedValues.First());
+            SelectedAccuracyModifiers = selectedValues.Select(float.Parse);
         }
-        Console.WriteLine($"SelectedAccuracyModifier changed to: {SelectedAccuracyModifier}");
+        Console.WriteLine($"SelectedAccuracyModifiers changed to: {string.Join(", ", SelectedAccuracyModifiers)}");
     }
 
     [JSInvokable]
