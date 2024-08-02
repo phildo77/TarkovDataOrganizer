@@ -135,6 +135,7 @@ else
                             {
                                 <th>Attachments</th>
                                 <th>Recoil</th>
+                                <th>Ergo</th>
                                 <th>Velocity</th>
                                 <th>Base Price</th>
                                 <th>Accuracy Modifier</th>
@@ -156,7 +157,6 @@ else
                                             }
                                         }
                                     </MudSelect>
-
                                 </td>
                                 <td>
                                     <MudSelect T="float" @bind-Value="SelectedVerticalRecoil" @bind-SelectedValues="SelectedVerticalRecoils" Variant="Variant.Filled" InputId="recoilVerticalSelect" MultiSelection="true">
@@ -167,6 +167,14 @@ else
                                                 SelectedVerticalRecoils = SelectedVerticalRecoils.Append(SelectedWeapon.recoilVertical);
                                             }
                                             <MudSelectItem Value="@SelectedWeapon.recoilVertical">Recoil V: @SelectedWeapon.recoilVertical</MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </td>
+                                <td>
+                                    <MudSelect T="float" @bind-Value="SelectedErgonomics" Variant="Variant.Filled" InputId="ergonomicsSelect">
+                                        @if (SelectedWeapon != null)
+                                        {
+                                            <MudSelectItem Value="@SelectedWeapon.ergonomics">Ergonomics: @SelectedWeapon.ergonomics</MudSelectItem>
                                         }
                                     </MudSelect>
                                 </td>
@@ -279,6 +287,19 @@ else
                 }
             }
         }
+    }
+
+
+    private float SelectedErgonomics { get; set; }
+
+    private async Task OnSelectedErgonomicsChanged(ChangeEventArgs e)
+    {
+        var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "ergonomicsSelect");
+        if (selectedValues.Any())
+        {
+            SelectedErgonomics = float.Parse(selectedValues.First());
+        }
+        Console.WriteLine($"SelectedErgonomics changed to: {SelectedErgonomics}");
     }
 
 
