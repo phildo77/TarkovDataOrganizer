@@ -79,158 +79,143 @@ else if (ErrorMessage != null)
 }
 else
 {
-    <MudSplitter>
-        <StartContent>
-            <div style="padding: 16px;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Category</th>
-                            <th>Weapon</th>
-                            <th>Caliber</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <MudSelect T="string" Label="Select Categories" Variant="Variant.Filled" @bind-Value="SelectedCategory" @bind-SelectedValues="SelectedCategories" MultiSelection="true" OnClose="OnSelectedCategoryChanged">
-                                    @foreach (var category in Categories)
-                                    {
-                                        <MudSelectItem T="string" Value="@category">@category</MudSelectItem>
-                                    }
-                                </MudSelect>
-                            </td>
-                            <td class="weapon-table-td">
-                                <table class="weapon-table">
-                                    @foreach (var weapon in FilteredWeaponNames)
-                                    {
-                                        <tr id="weapon-@weapon.shortName" class="weapon-row" data-value="@weapon.name" @onclick="() => OnWeaponRowClicked(weapon)">
-                                            <td>
-                                                <img src="@weapon.defaultPresetGridImageLink" alt="@weapon.shortName" class="weapon-image" />
-                                                @weapon.shortName
-                                            </td>
-                                        </tr>
-                                    }
-                                </table>
-                            </td>
-                            <td>
-                                <MudSelect T="string" Label="Select Caliber" Variant="Variant.Filled" @bind-Value="SelectedCaliber" @bind-SelectedValues="SelectedCalibers" id="caliberSelect" MultiSelection="true" OnClose="OnSelectedCaliberChanged">
-                                    @foreach (var caliber in Calibers)
-                                    {
-                                        <MudSelectItem T="string" Value="@caliber">@caliber</MudSelectItem>
-                                    }
-                                </MudSelect>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </StartContent>
-        <EndContent>
-            <div style="padding: 16px;">
-                <table>
-                    <thead>
-                        <tr>
-                            @if (SelectedWeapon != null)
-                            {
-                                <th>Attachments</th>
-                                <th>Recoil</th>
-                                <th>Ergo</th>
-                                <th>Velocity</th>
-                                <th>Base Price</th>
-                                <th>Accuracy Modifier</th>
-                                <th>Weight</th>
-                            }
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            @if (SelectedWeapon != null)
-                            {
-                                <td>
-                                    <MudSelect T="string" @bind-Value="SelectedAttachment" Variant="Variant.Filled" InputId="attachmentSelect">
-                                        @if (SelectedWeapon != null)
-                                        {
-                                            @foreach (var slot in AvailableSlots)
-                                            {
-                                                <MudSelectItem Value="@slot.AllowedItemId">@slot.SlotName: @slot.AllowedItemName</MudSelectItem>
-                                            }
-                                        }
-                                    </MudSelect>
-                                </td>
-                                <td>
-                                    <MudSelect T="float" @bind-Value="SelectedVerticalRecoil" @bind-SelectedValues="SelectedVerticalRecoils" Variant="Variant.Filled" InputId="recoilVerticalSelect" MultiSelection="true">
-                                        @if (SelectedWeapon != null)
-                                        {
-                                            if (!SelectedVerticalRecoils.Contains(SelectedWeapon.recoilVertical))
-                                            {
-                                                SelectedVerticalRecoils = SelectedVerticalRecoils.Append(SelectedWeapon.recoilVertical);
-                                            }
-                                            <MudSelectItem Value="@SelectedWeapon.recoilVertical">Recoil V: @SelectedWeapon.recoilVertical</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </td>
-                                <td>
-                                    <MudSelect T="float" @bind-Value="SelectedErgonomics" Variant="Variant.Filled" InputId="ergonomicsSelect">
-                                        @if (SelectedWeapon != null)
-                                        {
-                                            <MudSelectItem Value="@SelectedWeapon.ergonomics">Ergonomics: @SelectedWeapon.ergonomics</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </td>
-                                <td>
-                                    <MudSelect @bind-Value="SelectedVelocity" Variant="Variant.Filled" InputId="velocitySelect" MultiSelection="true">
-                                        @if (SelectedWeapon != null)
-                                        {
-                                            <MudSelectItem Value="@SelectedWeapon.velocity">Velocity: @SelectedWeapon.velocity</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </td>
-                                <td>
-                                    <MudSelect @bind-Value="SelectedBasePrice" Variant="Variant.Filled" InputId="basePriceSelect" MultiSelection="true">
-                                        @if (SelectedWeapon != null)
-                                        {
-                                            <MudSelectItem Value="@SelectedWeapon.basePrice">Base Price: @SelectedWeapon.basePrice.ToString("C0")</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </td>
-                                <td>
-                                    <MudSelect T="float" @bind-SelectedValues="SelectedAccuracyModifiers" Variant="Variant.Filled" InputId="accuracyModifierSelect" MultiSelection="true">
-                                        @if (SelectedWeapon != null)
-                                        {
-                                            <MudSelectItem Value="@SelectedWeapon.accuracyModifier">Accuracy Modifier: @SelectedWeapon.accuracyModifier</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </td>
-                                <td>
-                                    <MudSelect T="float" @bind-SelectedValues="SelectedWeights" Variant="Variant.Filled" InputId="weightSelect" MultiSelection="true">
-                                        @if (SelectedWeapon != null && SelectedWeapon.weight > 0)
-                                        {
-                                            <MudSelectItem Value="@SelectedWeapon.weight">Weight: @SelectedWeapon.weight</MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </td>
-                            }
-                        </tr>
-                    </tbody>
-                </table>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; padding: 16px;">
+        <!-- First Pane -->
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Weapon</th>
+                        <th>Caliber</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <MudSelect T="string" Label="Select Categories" Variant="Variant.Filled" @bind-Value="SelectedCategory" @bind-SelectedValues="SelectedCategories" MultiSelection="true" OnClose="OnSelectedCategoryChanged">
+                                @foreach (var category in Categories)
+                                {
+                                    <MudSelectItem T="string" Value="@category">@category</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </td>
+                        <td class="weapon-table-td">
+                            <table class="weapon-table">
+                                @foreach (var weapon in FilteredWeaponNames)
+                                {
+                                    <tr id="weapon-@weapon.shortName" class="weapon-row" data-value="@weapon.name" @onclick="() => OnWeaponRowClicked(weapon)">
+                                        <td>
+                                            <img src="@weapon.defaultPresetGridImageLink" alt="@weapon.shortName" class="weapon-image" />
+                                            @weapon.shortName
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </td>
+                        <td>
+                            <MudSelect T="string" Label="Select Caliber" Variant="Variant.Filled" @bind-Value="SelectedCaliber" @bind-SelectedValues="SelectedCalibers" id="caliberSelect" MultiSelection="true" OnClose="OnSelectedCaliberChanged">
+                                @foreach (var caliber in Calibers)
+                                {
+                                    <MudSelectItem T="string" Value="@caliber">@caliber</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-                @if (SelectedWeapon != null)
-                {
-                    <div id="weaponDisplay">
-                        <h3>@SelectedWeapon.name</h3>
-                        <img id="weaponImage" src="@SelectedWeapon.defaultPresetBaseImageLink" alt="Selected Weapon Image" />
-                        <p>Recoil Vertical: @SelectedWeapon.recoilVertical</p>
-                        <p>Recoil Horizontal: @SelectedWeapon.recoilHorizontal</p>
-                        <p>Velocity: @SelectedWeapon.velocity</p>
-                        <p>Base Price: @SelectedWeapon.basePrice</p>
-                        <p>Accuracy Modifier: @SelectedWeapon.accuracyModifier</p>
-                        <p>Weight: @SelectedWeapon.weight</p>
-                    </div>
-                }
-            </div>
-        </EndContent>
-    </MudSplitter>
+        <!-- Second Pane -->
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        @if (SelectedWeapon != null)
+                        {
+                            <th>Attachments</th>
+                            <th>Recoil</th>
+                            <th>Ergo</th>
+                            <th>Velocity</th>
+                            <th>Base Price</th>
+                            <th>Accuracy Modifier</th>
+                            <th>Weight</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        @if (SelectedWeapon != null)
+                        {
+                            <td>
+                                <MudSelect T="string" @bind-Value="SelectedAttachment" Variant="Variant.Filled" InputId="attachmentSelect">
+                                    @foreach (var slot in AvailableSlots)
+                                    {
+                                        <MudSelectItem Value="@slot.AllowedItemId">@slot.SlotName: @slot.AllowedItemName</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </td>
+                            <td>
+                                <MudSelect T="float" @bind-Value="SelectedVerticalRecoil" @bind-SelectedValues="SelectedVerticalRecoils" Variant="Variant.Filled" InputId="recoilVerticalSelect" MultiSelection="true">
+                                    @if (!SelectedVerticalRecoils.Contains(SelectedWeapon.recoilVertical))
+                                    {
+                                        SelectedVerticalRecoils = SelectedVerticalRecoils.Append(SelectedWeapon.recoilVertical);
+                                    }
+                                    <MudSelectItem Value="@SelectedWeapon.recoilVertical">Recoil V: @SelectedWeapon.recoilVertical</MudSelectItem>
+                                </MudSelect>
+                            </td>
+                            <td>
+                                <MudSelect T="float" @bind-Value="SelectedErgonomics" Variant="Variant.Filled" InputId="ergonomicsSelect">
+                                    <MudSelectItem Value="@SelectedWeapon.ergonomics">Ergonomics: @SelectedWeapon.ergonomics</MudSelectItem>
+                                </MudSelect>
+                            </td>
+                            <td>
+                                <MudSelect @bind-Value="SelectedVelocity" Variant="Variant.Filled" InputId="velocitySelect" MultiSelection="true">
+                                    <MudSelectItem Value="@SelectedWeapon.velocity">Velocity: @SelectedWeapon.velocity</MudSelectItem>
+                                </MudSelect>
+                            </td>
+                            <td>
+                                <MudSelect @bind-Value="SelectedBasePrice" Variant="Variant.Filled" InputId="basePriceSelect" MultiSelection="true">
+                                    <MudSelectItem Value="@SelectedWeapon.basePrice">Base Price: @SelectedWeapon.basePrice.ToString("C0")</MudSelectItem>
+                                </MudSelect>
+                            </td>
+                            <td>
+                                <MudSelect T="float" @bind-SelectedValues="SelectedAccuracyModifiers" Variant="Variant.Filled" InputId="accuracyModifierSelect" MultiSelection="true">
+                                    <MudSelectItem Value="@SelectedWeapon.accuracyModifier">Accuracy Modifier: @SelectedWeapon.accuracyModifier</MudSelectItem>
+                                </MudSelect>
+                            </td>
+                            <td>
+                                <MudSelect T="float" @bind-SelectedValues="SelectedWeights" Variant="Variant.Filled" InputId="weightSelect" MultiSelection="true">
+                                    @if (SelectedWeapon.weight > 0)
+                                    {
+                                        <MudSelectItem Value="@SelectedWeapon.weight">Weight: @SelectedWeapon.weight</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </td>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Third Pane -->
+        <div>
+            @if (SelectedWeapon != null)
+            {
+                <div id="weaponDisplay">
+                    <h3>@SelectedWeapon.name</h3>
+                    <img id="weaponImage" src="@SelectedWeapon.defaultPresetBaseImageLink" alt="Selected Weapon Image" />
+                    <p>Recoil Vertical: @SelectedWeapon.recoilVertical</p>
+                    <p>Recoil Horizontal: @SelectedWeapon.recoilHorizontal</p>
+                    <p>Velocity: @SelectedWeapon.velocity</p>
+                    <p>Base Price: @SelectedWeapon.basePrice</p>
+                    <p>Accuracy Modifier: @SelectedWeapon.accuracyModifier</p>
+                    <p>Weight: @SelectedWeapon.weight</p>
+                </div>
+            }
+        </div>
+    </div>
+
 }
 
 @code {
