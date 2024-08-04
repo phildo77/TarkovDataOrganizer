@@ -79,7 +79,7 @@ else if (ErrorMessage != null)
 }
 else
 {
-    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; padding: 16px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px;">
         <!-- First Pane -->
         <div>
             <table>
@@ -122,7 +122,7 @@ else
                                 }
                             </MudSelect>
                         </td>
-                        @if(SelectedWeapon != null)
+                        @if (SelectedWeapon != null)
                         {
                             <td>
                                 <MudSelect T="string" @bind-Value="SelectedAttachment" Variant="Variant.Filled" InputId="attachmentSelect">
@@ -200,25 +200,24 @@ else
                 </tbody>
             </table>
         </div>
-
-        <!-- Third Pane -->
-        <div>
-            @if (SelectedWeapon != null)
-            {
-                <div id="weaponDisplay">
-                    <h3>@SelectedWeapon.name</h3>
-                    <img id="weaponImage" src="@SelectedWeapon.defaultPresetBaseImageLink" alt="Selected Weapon Image" />
-                    <p>Recoil Vertical: @SelectedWeapon.recoilVertical</p>
-                    <p>Recoil Horizontal: @SelectedWeapon.recoilHorizontal</p>
-                    <p>Velocity: @SelectedWeapon.velocity</p>
-                    <p>Base Price: @SelectedWeapon.basePrice</p>
-                    <p>Accuracy Modifier: @SelectedWeapon.accuracyModifier</p>
-                    <p>Weight: @SelectedWeapon.weight</p>
-                </div>
-            }
-        </div>
     </div>
 
+    <!-- Third Pane -->
+    <div style="padding: 16px;">
+        @if (SelectedWeapon != null)
+        {
+            <div id="weaponDisplay">
+                <h3>@SelectedWeapon.name</h3>
+                <img id="weaponImage" src="@SelectedWeapon.defaultPresetBaseImageLink" alt="Selected Weapon Image" />
+                <p>Recoil Vertical: @SelectedWeapon.recoilVertical</p>
+                <p>Recoil Horizontal: @SelectedWeapon.recoilHorizontal</p>
+                <p>Velocity: @SelectedWeapon.velocity</p>
+                <p>Base Price: @SelectedWeapon.basePrice</p>
+                <p>Accuracy Modifier: @SelectedWeapon.accuracyModifier</p>
+                <p>Weight: @SelectedWeapon.weight</p>
+            </div>
+        }
+    </div>
 }
 
 @code {
