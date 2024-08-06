@@ -176,9 +176,12 @@ else
                                 <p>Velocity: @SelectedVelocity</p>
                             </td>
                             <td>
-                                <MudSelect Format="C3" @bind-Value="SelectedBasePrice" Variant="Variant.Filled" InputId="basePriceSelect" MultiSelection="true">
-                                    <MudSelectItem Value="@SelectedWeapon.basePrice">Base Price: @SelectedWeapon.basePrice.ToString("C0")</MudSelectItem>
-                                </MudSelect>
+                                <MudSlider @bind-Value="SelectedBasePrice"
+                                           Min="0" Max="@(SelectedWeapon.basePrice * 2)" Step="100"
+                                           Variant="Variant.Filled"
+                                           ValueLabelFormat="C2" />
+                                <p>basePrice: @($"{SelectedBasePrice:C2}")</p>
+
                             </td>
                             <td>
                                 <MudSelect T="float" @bind-SelectedValues="SelectedAccuracyModifiers" Variant="Variant.Filled" InputId="accuracyModifierSelect" MultiSelection="true">
