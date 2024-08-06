@@ -168,17 +168,15 @@ else
                                 </MudSelect>
                             </td>
                             <td>
-                                <MudSelect T="float" @bind-Value="SelectedErgonomics" Variant="Variant.Filled" InputId="ergonomicsSelect">
-                                    <MudSelectItem Value="@SelectedWeapon.ergonomics">Ergonomics: @SelectedWeapon.ergonomics</MudSelectItem>
-                                </MudSelect>
+                                <MudSlider T="float" Min="@(SelectedWeapon.ergonomics / 2)" Max="@(SelectedWeapon.ergonomics * 2)" Step="1" @bind-Value="SelectedErgonomics" Variant="Variant.Filled" />
+                                <p>Ergonomics: @SelectedErgonomics</p>
                             </td>
                             <td>
-                                <MudSelect @bind-Value="SelectedVelocity" Variant="Variant.Filled" InputId="velocitySelect" MultiSelection="true">
-                                    <MudSelectItem Value="@SelectedWeapon.velocity">Velocity: @SelectedWeapon.velocity</MudSelectItem>
-                                </MudSelect>
+                                <MudSlider T="float" Min="@(SelectedWeapon.velocity / 2)" Max="@(SelectedWeapon.velocity * 2)" Step="10" @bind-Value="SelectedVelocity" Variant="Variant.Filled" />
+                                <p>Velocity: @SelectedVelocity</p>
                             </td>
                             <td>
-                                <MudSelect @bind-Value="SelectedBasePrice" Variant="Variant.Filled" InputId="basePriceSelect" MultiSelection="true">
+                                <MudSelect Format="C3" @bind-Value="SelectedBasePrice" Variant="Variant.Filled" InputId="basePriceSelect" MultiSelection="true">
                                     <MudSelectItem Value="@SelectedWeapon.basePrice">Base Price: @SelectedWeapon.basePrice.ToString("C0")</MudSelectItem>
                                 </MudSelect>
                             </td>
