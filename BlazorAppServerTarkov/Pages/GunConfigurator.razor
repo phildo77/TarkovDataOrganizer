@@ -102,17 +102,17 @@ else
                             </MudSelect>
                         </td>
                         <td class="weapon-table-td">
-                            <table class="weapon-table">
+                            <MudSelect Label="Select a Weapon" @bind-Value="SelectedWeapon" Variant="Variant.Filled">
                                 @foreach (var weapon in FilteredWeaponNames)
                                 {
-                                    <tr id="weapon-@weapon.shortName" class="weapon-row" data-value="@weapon.name" @onclick="() => OnWeaponRowClicked(weapon)">
-                                        <td>
-                                            <img src="@weapon.defaultPresetGridImageLink" alt="@weapon.shortName" class="weapon-image" />
+                                    <MudSelectItem Value="@weapon" OnClick="() => OnWeaponRowClicked(weapon)">
+                                        <div style="display: flex; align-items: center;">
+                                            <img src="@weapon.defaultPresetGridImageLink" alt="@weapon.shortName" class="weapon-image" style="width: 30px; height: 30px; margin-right: 8px;" />
                                             @weapon.shortName
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </MudSelectItem>
                                 }
-                            </table>
+                            </MudSelect>
                         </td>
                         <td>
                             <MudSelect T="string" Label="Select Caliber" Variant="Variant.Filled" @bind-Value="SelectedCaliber" @bind-SelectedValues="SelectedCalibers" id="caliberSelect" MultiSelection="true" OnClose="OnSelectedCaliberChanged">
