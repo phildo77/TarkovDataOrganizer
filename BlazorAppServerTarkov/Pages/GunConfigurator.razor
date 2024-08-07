@@ -159,13 +159,13 @@ else
                         @if (SelectedWeapon != null)
                         {
                             <td>
-                                <MudSelect T="float" @bind-Value="SelectedVerticalRecoil" @bind-SelectedValues="SelectedVerticalRecoils" Variant="Variant.Filled" InputId="recoilVerticalSelect" MultiSelection="true">
-                                    @if (!SelectedVerticalRecoils.Contains(SelectedWeapon.recoilVertical))
-                                    {
-                                        SelectedVerticalRecoils = SelectedVerticalRecoils.Append(SelectedWeapon.recoilVertical);
-                                    }
-                                    <MudSelectItem Value="@SelectedWeapon.recoilVertical">Recoil V: @SelectedWeapon.recoilVertical</MudSelectItem>
-                                </MudSelect>
+                                <MudSlider T="float"
+                                           @bind-Value="SelectedVerticalRecoil"
+                                           Min="@(SelectedWeapon.recoilVertical / 2)"
+                                           Max="@(SelectedWeapon.recoilVertical * 2)"
+                                           Step="1"
+                                           Variant="Variant.Filled" />
+                                <p>Recoil Vertical: @SelectedVerticalRecoil</p>
                             </td>
                             <td>
                                 <MudSlider T="float" Min="@(SelectedWeapon.ergonomics / 2)" Max="@(SelectedWeapon.ergonomics * 2)" Step="1" @bind-Value="SelectedErgonomics" Variant="Variant.Filled" />
