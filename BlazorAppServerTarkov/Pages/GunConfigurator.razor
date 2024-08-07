@@ -184,9 +184,12 @@ else
 
                             </td>
                             <td>
-                                <MudSelect T="float" @bind-SelectedValues="SelectedAccuracyModifiers" Variant="Variant.Filled" InputId="accuracyModifierSelect" MultiSelection="true">
-                                    <MudSelectItem Value="@SelectedWeapon.accuracyModifier">Accuracy Modifier: @SelectedWeapon.accuracyModifier</MudSelectItem>
-                                </MudSelect>
+                                <MudSlider T="float"
+                                           @bind-Value="SelectedAccuracyModifier"
+                                           Min="0" Max="2" Step="0.01f"
+                                           Variant="Variant.Filled"
+                                           />
+                                <p>Accuracy Modifier: @SelectedAccuracyModifier</p>
                             </td>
                             <td>
                                 <MudSelect T="float" @bind-SelectedValues="SelectedWeights" Variant="Variant.Filled" InputId="weightSelect" MultiSelection="true">
