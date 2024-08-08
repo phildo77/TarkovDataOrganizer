@@ -145,12 +145,16 @@ else
                     <tr>
                         @if (SelectedWeapon != null)
                         {
-                            <th>Recoil</th>
-                            <th>Ergo</th>
+                            <th>Recoil Vertical</th>
+                            <th>Ergonomics</th>
                             <th>Velocity</th>
                             <th>Base Price</th>
                             <th>Accuracy Modifier</th>
                             <th>Weight</th>
+                            <th>Fire Rate</th>
+                            <th>Center of Impact</th>
+                            <th>Deviation Curve</th>
+                            <th>Deviation Max</th>
                         }
                     </tr>
                 </thead>
@@ -218,6 +222,46 @@ else
                                 <p>Weight: @SelectedWeight</p>
                                 <small>Range: @($"{SelectedWeapon.weight / 2} - {SelectedWeapon.weight * 2}")</small>
                             </td>
+                            <td>
+                                <MudSlider T="float"
+                                           @bind-Value="SelectedFireRate"
+                                           Min="@(SelectedWeapon.fireRate / 2)"
+                                           Max="@(SelectedWeapon.fireRate * 2)"
+                                           Step="1"
+                                           Variant="Variant.Filled" />
+                                <p>Fire Rate: @SelectedFireRate</p>
+                                <small>Range: @($"{SelectedWeapon.fireRate / 2} - {SelectedWeapon.fireRate * 2}")</small>
+                            </td>
+                            <td>
+                                <MudSlider T="float"
+                                           @bind-Value="SelectedCenterOfImpact"
+                                           Min="@(SelectedWeapon.centerOfImpact / 2)"
+                                           Max="@(SelectedWeapon.centerOfImpact * 2)"
+                                           Step="0.1f"
+                                           Variant="Variant.Filled" />
+                                <p>Center of Impact: @SelectedCenterOfImpact</p>
+                                <small>Range: @($"{SelectedWeapon.centerOfImpact / 2} - {SelectedWeapon.centerOfImpact * 2}")</small>
+                            </td>
+                            <td>
+                                <MudSlider T="float"
+                                           @bind-Value="SelectedDeviationCurve"
+                                           Min="@(SelectedWeapon.deviationCurve / 2)"
+                                           Max="@(SelectedWeapon.deviationCurve * 2)"
+                                           Step="0.1f"
+                                           Variant="Variant.Filled" />
+                                <p>Deviation Curve: @SelectedDeviationCurve</p>
+                                <small>Range: @($"{SelectedWeapon.deviationCurve / 2} - {SelectedWeapon.deviationCurve * 2}")</small>
+                            </td>
+                            <td>
+                                <MudSlider T="float"
+                                           @bind-Value="SelectedDeviationMax"
+                                           Min="@(SelectedWeapon.deviationMax / 2)"
+                                           Max="@(SelectedWeapon.deviationMax * 2)"
+                                           Step="0.1f"
+                                           Variant="Variant.Filled" />
+                                <p>Deviation Max: @SelectedDeviationMax</p>
+                                <small>Range: @($"{SelectedWeapon.deviationMax / 2} - {SelectedWeapon.deviationMax * 2}")</small>
+                            </td>
                         }
                     </tr>
                 </tbody>
@@ -271,7 +315,10 @@ else
     private float SelectedErgonomics { get; set; }
     private bool IsLoading { get; set; } = true;
     private string? ErrorMessage { get; set; }
-
+    private float SelectedFireRate { get; set; }
+    private float SelectedCenterOfImpact { get; set; }
+    private float SelectedDeviationCurve { get; set; }
+    private float SelectedDeviationMax { get; set; }
     // Define SelectedAccuracyModifiers
     private IEnumerable<float> SelectedAccuracyModifiers { get; set; } = new List<float>();
 
