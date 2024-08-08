@@ -166,38 +166,57 @@ else
                                            Step="1"
                                            Variant="Variant.Filled" />
                                 <p>Recoil Vertical: @SelectedVerticalRecoil</p>
+                                <small>Range: @($"{SelectedWeapon.recoilVertical / 2} - {SelectedWeapon.recoilVertical * 2}")</small>
                             </td>
                             <td>
-                                <MudSlider T="float" Min="@(SelectedWeapon.ergonomics / 2)" Max="@(SelectedWeapon.ergonomics * 2)" Step="1" @bind-Value="SelectedErgonomics" Variant="Variant.Filled" />
+                                <MudSlider T="float"
+                                           Min="@(SelectedWeapon.ergonomics / 2)"
+                                           Max="@(SelectedWeapon.ergonomics * 2)"
+                                           Step="1"
+                                           @bind-Value="SelectedErgonomics"
+                                           Variant="Variant.Filled" />
                                 <p>Ergonomics: @SelectedErgonomics</p>
+                                <small>Range: @($"{SelectedWeapon.ergonomics / 2} - {SelectedWeapon.ergonomics * 2}")</small>
                             </td>
                             <td>
-                                <MudSlider T="float" Min="@(SelectedWeapon.velocity / 2)" Max="@(SelectedWeapon.velocity * 2)" Step="10" @bind-Value="SelectedVelocity" Variant="Variant.Filled" />
+                                <MudSlider T="float"
+                                           Min="@(SelectedWeapon.velocity / 2)"
+                                           Max="@(SelectedWeapon.velocity * 2)"
+                                           Step="10"
+                                           @bind-Value="SelectedVelocity"
+                                           Variant="Variant.Filled" />
                                 <p>Velocity: @SelectedVelocity</p>
+                                <small>Range: @($"{SelectedWeapon.velocity / 2} - {SelectedWeapon.velocity * 2}")</small>
                             </td>
                             <td>
                                 <MudSlider @bind-Value="SelectedBasePrice"
-                                           Min="0" Max="@(SelectedWeapon.basePrice * 2)" Step="100"
+                                           Min="0"
+                                           Max="@(SelectedWeapon.basePrice * 2)"
+                                           Step="100"
                                            Variant="Variant.Filled"
                                            ValueLabelFormat="C2" />
-                                <p>basePrice: @($"{SelectedBasePrice:C2}")</p>
-
+                                <p>Base Price: @($"{SelectedBasePrice:C2}")</p>
+                                <small>Range: @($"0 - {SelectedWeapon.basePrice * 2:C2}")</small>
                             </td>
                             <td>
                                 <MudSlider T="float"
                                            @bind-Value="SelectedAccuracyModifier"
-                                           Min="0" Max="2" Step="0.01f"
-                                           Variant="Variant.Filled"
-                                           />
+                                           Min="0"
+                                           Max="2"
+                                           Step="0.01f"
+                                           Variant="Variant.Filled" />
                                 <p>Accuracy Modifier: @SelectedAccuracyModifier</p>
+                                <small>Range: 0 - 2</small>
                             </td>
                             <td>
-                                <MudSelect T="float" @bind-SelectedValues="SelectedWeights" Variant="Variant.Filled" InputId="weightSelect" MultiSelection="true">
-                                    @if (SelectedWeapon.weight > 0)
-                                    {
-                                        <MudSelectItem Value="@SelectedWeapon.weight">Weight: @SelectedWeapon.weight</MudSelectItem>
-                                    }
-                                </MudSelect>
+                                <MudSlider T="float"
+                                           @bind-Value="SelectedWeight"
+                                           Min="@(SelectedWeapon.weight / 2)"
+                                           Max="@(SelectedWeapon.weight * 2)"
+                                           Step="0.1f"
+                                           Variant="Variant.Filled" />
+                                <p>Weight: @SelectedWeight</p>
+                                <small>Range: @($"{SelectedWeapon.weight / 2} - {SelectedWeapon.weight * 2}")</small>
                             </td>
                         }
                     </tr>
