@@ -271,22 +271,18 @@ else
         <!-- Third Pane -->
         <div style="grid-column: span 2; justify-self: end;">
             <div style="display: flex; flex-wrap: wrap; gap: 16px;">
-                @foreach (var weaponName in SelectedWeapons)
+                @if (SelectedWeapon != null)
                 {
-                    var weapon = TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == weaponName);
-                    if (weapon != null)
-                    {
-                        <div id="weaponDisplay-@weapon.name" style="border: 1px solid #ccc; padding: 8px; width: 200px;">
-                            <h3>@weapon.name</h3>
-                            <img id="weaponImage-@weapon.name" src="@weapon.defaultPresetBaseImageLink" alt="Selected Weapon Image" style="width: 100%; height: auto;" />
-                            <p>Recoil Vertical: @weapon.recoilVertical</p>
-                            <p>Recoil Horizontal: @weapon.recoilHorizontal</p>
-                            <p>Velocity: @weapon.velocity</p>
-                            <p>Base Price: @weapon.basePrice</p>
-                            <p>Accuracy Modifier: @weapon.accuracyModifier</p>
-                            <p>Weight: @weapon.weight</p>
-                        </div>
-                    }
+                    <div id="weaponDisplay-@SelectedWeapon.name" style="border: 1px solid #ccc; padding: 8px; width: 200px;">
+                        <h3>@SelectedWeapon.name</h3>
+                        <img id="weaponImage-@SelectedWeapon.name" src="@SelectedWeapon.defaultPresetBaseImageLink" alt="Selected Weapon Image" style="width: 100%; height: auto;" />
+                        <p>Recoil Vertical: @SelectedWeapon.recoilVertical</p>
+                        <p>Recoil Horizontal: @SelectedWeapon.recoilHorizontal</p>
+                        <p>Velocity: @SelectedWeapon.velocity</p>
+                        <p>Base Price: @SelectedWeapon.basePrice</p>
+                        <p>Accuracy Modifier: @SelectedWeapon.accuracyModifier</p>
+                        <p>Weight: @SelectedWeapon.weight</p>
+                    </div>
                 }
             </div>
         </div>
