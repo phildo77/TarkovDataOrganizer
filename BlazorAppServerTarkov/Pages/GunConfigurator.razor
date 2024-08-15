@@ -2,6 +2,7 @@
 @using Microsoft.JSInterop
 @using MudExtensions
 @using TarkovDataOrganizer
+@using static TarkovDataOrganizer.TarkovData
 
 <script>
     function getSelectedValues(selectId) {
@@ -64,6 +65,24 @@
 
         .weapon-row.selected {
             background-color: #d3d3d3; /* Highlight selected row */
+        }
+
+    .scrollable-container {
+        max-height: 150px; /* Adjust the height as needed */
+        overflow-y: auto;
+        border: 1px solid #ccc; /* Optional: Adds a border around the container */
+        padding: 8px; /* Optional: Adds padding inside the container */
+        margin-bottom: 16px; /* Optional: Adds space between containers */
+    }
+
+        .scrollable-container ul {
+            list-style-type: none; /* Removes bullet points from the list */
+            padding: 0; /* Removes default padding */
+            margin: 0; /* Removes default margin */
+        }
+
+        .scrollable-container li {
+            margin: 4px 0; /* Optional: Adds space between list items */
         }
 </style>
 
@@ -273,6 +292,25 @@ else
             </table>
         </div>
 
+        @if (GeneratedCombinations.Any())
+        {
+            <div>
+                <h4>Available Combinations:</h4>
+                @foreach (var combination in GeneratedCombinations)
+                {
+                    <div class="scrollable-container">
+                        <ul>
+                            @foreach (var allowedId in combination)
+                            {
+                                <li>@allowedId</li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        }
+
+
         <!-- Third Pane -->
         <div style="grid-column: span 2; justify-self: end;">
             <div style="display: flex; flex-wrap: wrap; gap: 16px;">
@@ -322,6 +360,33 @@ else
     private float SelectedDeviationMax { get; set; }
     // Define SelectedAccuracyModifiers
     private IEnumerable<float> SelectedAccuracyModifiers { get; set; } = new List<float>();
+
+
+    private List<List<string>> GeneratedCombinations { get; set; } = new();
+
+    private void GenerateWeaponCombinations(TarkovItem selectedWeapon)
+    {
+        if (selectedWeapon == null) return;
+
+        // Clear previous combinations
+        GeneratedCombinations.Clear();
+
+        // Get the slots for the selected weapon
+        if (TarkovItem.DataTableSlots.TryGetValue(selectedWeapon.id, out var weaponSlots))
+        {
+            foreach (var slot in weaponSlots.Values)
+            {
+                if (slot.required)
+                {
+                    // Generate combinations for the required slots
+                    GeneratedCombinations.Add(slot.allowedIDs);
+                }
+            }
+        }
+
+        StateHasChanged(); // Update UI
+    }
+
 
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
@@ -404,6 +469,13 @@ else
         Console.WriteLine($"SelectedErgonomics changed to: {SelectedErgonomics}");
     }
 
+    private void OnWeaponSelected(TarkovItem weapon)
+    {
+        SelectedWeapon = weapon;
+        GenerateWeaponCombinations(SelectedWeapon);
+    }
+
+
     private void OnWeaponRowClicked(TarkovData.TarkovItem weapon)
     {
         if (SelectedWeapons.Contains(weapon.name))
@@ -419,7 +491,7 @@ else
         SelectedWeapon = SelectedWeapons.Any()
             ? TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapons.Last())
             : null;
-
+        OnWeaponSelected(SelectedWeapon);
         UpdateAvailableSlots(SelectedWeapon);
         StateHasChanged();
     }
