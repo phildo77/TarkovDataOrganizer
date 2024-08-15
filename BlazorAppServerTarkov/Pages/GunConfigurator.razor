@@ -115,7 +115,12 @@ else
                             </table>
                         </td>
                         <td>
-                            <MudSelect T="string" Label="Select Caliber" Variant="Variant.Filled" @bind-Value="SelectedCaliber" @bind-SelectedValues="SelectedCalibers" id="caliberSelect" MultiSelection="true" OnClose="OnSelectedCaliberChanged">
+                            <MudSelect T="string"
+                                       Label="Select Caliber"
+                                       Variant="Variant.Filled"
+                                       @bind-SelectedValues="SelectedCalibers"
+                                       MultiSelection="true"
+                                       OnClose="OnSelectedCaliberChanged">
                                 @foreach (var caliber in Calibers)
                                 {
                                     <MudSelectItem T="string" Value="@caliber">@caliber</MudSelectItem>
@@ -339,12 +344,11 @@ else
     }
 
     private IEnumerable<TarkovData.TarkovItem> FilteredWeaponNames =>
-        !SelectedCategories.Any()
-            ? TarkovData.TarkovItem.DataTable.Values
-                .Where(item => item.types.Split('|').Contains("gun", StringComparer.OrdinalIgnoreCase))
-            : TarkovData.TarkovItem.DataTable.Values
-                .Where(item => item.types.Split('|').Contains("gun", StringComparer.OrdinalIgnoreCase) &&
-                               SelectedCategories.Contains(item.categoryName));
+    TarkovData.TarkovItem.DataTable.Values
+        .Where(item => item.types.Split('|').Contains("gun", StringComparer.OrdinalIgnoreCase) &&
+                       (!SelectedCategories.Any() || SelectedCategories.Contains(item.categoryName)) &&
+                       (!SelectedCalibers.Any() || SelectedCalibers.Contains(item.caliber)));
+
 
     private void OnSelectedCategoryChanged()
     {
@@ -432,8 +436,11 @@ else
 
     private async Task OnSelectedCaliberChanged()
     {
-        SelectedCalibers = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "caliberSelect");
+        // Log selected calibers for debugging
         Console.WriteLine($"SelectedCalibers changed to: {string.Join(", ", SelectedCalibers)}");
+
+        // Update filtered weapons based on selected calibers
+        StateHasChanged();
     }
 
     private async Task OnSelectedRecoilVerticalChanged()
