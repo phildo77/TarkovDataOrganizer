@@ -302,7 +302,14 @@ else
                         <ul>
                             @foreach (var allowedId in combination)
                             {
-                                <li>@allowedId</li>
+                                var allowedItem = TarkovData.TarkovItem.DataTable.GetValueOrDefault(allowedId);
+                                if (allowedItem != null)
+                                {
+                                    <li>
+                                        <img src="@allowedItem.gridImageLink" alt="@allowedItem.name" class="weapon-image" />
+                                        @allowedItem.name
+                                    </li>
+                                }
                             }
                         </ul>
                     </div>
