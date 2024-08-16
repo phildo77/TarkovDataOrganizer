@@ -18,6 +18,71 @@ public partial class TarkovData
                 .ToList();
         }
 
+        public static List<Dictionary<string, List<TarkovItem>>> GenerateUniqueCombinations(TarkovItem selectedWeapon)
+        {
+            var uniqueCombinations = new List<Dictionary<string, List<TarkovItem>>>();
+
+            if (DataTableSlots.TryGetValue(selectedWeapon.id, out var weaponSlots))
+            {
+                var slotCombinations = new List<List<TarkovItem>>();
+
+                foreach (var slot in weaponSlots.Values)
+                {
+                    var allowedItems = slot.allowedIDs
+                        .Select(id => DataTable.GetValueOrDefault(id))
+                        .Where(item => item != null)
+                        .ToList();
+
+                    if (allowedItems.Any())
+                    {
+                        slotCombinations.Add(allowedItems);
+                    }
+                }
+
+                // Generate Cartesian Product of slot combinations
+                var cartesianProduct = CartesianProduct(slotCombinations);
+
+                foreach (var combination in cartesianProduct)
+                {
+                    var groupedCombination = combination
+                        .GroupBy(item =>
+                        {
+                            return weaponSlots.Values
+                                .FirstOrDefault(slot => slot.allowedIDs.Contains(item.id))?.name;
+                        })
+                        .ToDictionary(group => group.Key, group => group.ToList());
+
+                    uniqueCombinations.Add(groupedCombination);
+                }
+            }
+
+            return uniqueCombinations;
+        }
+
+        private static List<List<T>> CartesianProduct<T>(List<List<T>> lists)
+        {
+            var result = new List<List<T>>();
+            if (lists.Count == 0)
+            {
+                result.Add(new List<T>());
+                return result;
+            }
+
+            var firstList = lists[0];
+            var remainingLists = lists.Skip(1).ToList();
+
+            foreach (var item in firstList)
+            {
+                foreach (var resultList in CartesianProduct(remainingLists))
+                {
+                    resultList.Insert(0, item);
+                    result.Add(resultList);
+                }
+            }
+
+            return result;
+        }
+
         public static List<string> GetDistinctCalibers()
         {
             return DataTable.Values

@@ -342,33 +342,42 @@ else
                 </tbody>
             </table>
         </div>
-        @if (GeneratedCombinations.Any())
+
+
+        @if (SelectedWeapon != null)
         {
-            <div>
-                <h4>Available Combinations:</h4>
-                @foreach (var combination in GeneratedCombinations)
-                {
-                    @foreach (var allowedId in combination)
-                    {
-                        var allowedItem = TarkovData.TarkovItem.DataTable.GetValueOrDefault(allowedId);
-                        if (allowedItem != null && SelectedWeapon != null)
+            var uniqueCombinations = TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon);
+
+            @foreach (var combination in uniqueCombinations)
+            {
+                <div class="scrollable-container">
+                    <ul>
+                        <li>
+                            <img src="@SelectedWeapon.defaultPresetBaseImageLink" alt="@SelectedWeapon.name" class="weapon-default-image" />
+                            @SelectedWeapon.name
+                        </li>
+
+                        @foreach (var slotGroup in combination)
                         {
-                            <div class="scrollable-container">
-                                <ul>
-                                    @* <li>
-                                        <img src="@SelectedWeapon.defaultPresetBaseImageLink" alt="@SelectedWeapon.name" class="weapon-default-image" />
-                                        @SelectedWeapon.name
-                                    </li> *@
-                                    <li>
-                                        <img src="@allowedItem.gridImageLink" alt="@allowedItem.name" class="weapon-image" />
-                                        @allowedItem.name
-                                    </li>
-                                </ul>
-                            </div>
+                            @if (slotGroup.Key != null)
+                            {
+                                <li>
+                                    <strong>@slotGroup.Key</strong> <!-- Display Slot Name -->
+                                    <div>
+                                        @foreach (var attachment in slotGroup.Value)
+                                        {
+                                            <div>
+                                                <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" />
+                                                <span>@attachment.name</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </li>
+                            }
                         }
-                    }
-                }
-            </div>
+                    </ul>
+                </div>
+            }
         }
 
 
