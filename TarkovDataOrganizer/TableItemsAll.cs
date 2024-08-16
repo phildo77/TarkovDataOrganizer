@@ -40,6 +40,13 @@ public partial class TarkovData
 
                 foreach (var slot in weaponSlots.Values)
                 {
+                    // Exclude magazine slots
+                    if (slot.name.Equals("Magazine", StringComparison.OrdinalIgnoreCase) ||
+                        slot.name.Equals("Mag", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
                     var allowedItems = slot.allowedIDs
                         .Select(id => DataTable.GetValueOrDefault(id))
                         .Where(item => item != null)
@@ -63,7 +70,6 @@ public partial class TarkovData
                         })
                         .ToDictionary(group => group.Key, group => group.ToList());
 
-                    // Calculate combined stats
                     var weaponCombination = new WeaponCombination
                     {
                         SlotGroups = groupedCombination,
