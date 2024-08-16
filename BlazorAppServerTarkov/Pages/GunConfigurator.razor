@@ -199,109 +199,149 @@ else
                             <td>
                                 <MudSlider T="float"
                                            @bind-Value="SelectedVerticalRecoil"
-                                           Min="@(SelectedWeapon.recoilVertical / 2)"
-                                           Max="@(SelectedWeapon.recoilVertical * 2)"
+                                           Min="@VerticalRecoilMin"
+                                           Max="@VerticalRecoilMax"
                                            Step="1"
                                            Variant="Variant.Filled" />
                                 <p>Recoil Vertical: @SelectedVerticalRecoil</p>
-                                <small>Range: @($"{SelectedWeapon.recoilVertical / 2} - {SelectedWeapon.recoilVertical * 2}")</small>
+                                <small>
+                                    Range:
+                                    <input type="number" @bind="VerticalRecoilMin" style="width: 50px;" /> -
+                                    <input type="number" @bind="VerticalRecoilMax" style="width: 50px;" />
+                                </small>
                             </td>
                             <td>
                                 <MudSlider T="float"
-                                           Min="@(SelectedWeapon.ergonomics / 2)"
-                                           Max="@(SelectedWeapon.ergonomics * 2)"
-                                           Step="1"
                                            @bind-Value="SelectedErgonomics"
+                                           Min="@ErgonomicsMin"
+                                           Max="@ErgonomicsMax"
+                                           Step="1"
                                            Variant="Variant.Filled" />
                                 <p>Ergonomics: @SelectedErgonomics</p>
-                                <small>Range: @($"{SelectedWeapon.ergonomics / 2} - {SelectedWeapon.ergonomics * 2}")</small>
+                                <small>
+                                    Range:
+                                    <input type="number" @bind="ErgonomicsMin" style="width: 50px;" /> -
+                                    <input type="number" @bind="ErgonomicsMax" style="width: 50px;" />
+                                </small>
                             </td>
                             <td>
                                 <MudSlider T="float"
-                                           Min="@(SelectedWeapon.velocity / 2)"
-                                           Max="@(SelectedWeapon.velocity * 2)"
-                                           Step="10"
                                            @bind-Value="SelectedVelocity"
+                                           Min="@VelocityMin"
+                                           Max="@VelocityMax"
+                                           Step="10"
                                            Variant="Variant.Filled" />
                                 <p>Velocity: @SelectedVelocity</p>
-                                <small>Range: @($"{SelectedWeapon.velocity / 2} - {SelectedWeapon.velocity * 2}")</small>
+                                <small>
+                                    Range:
+                                    <input type="number" @bind="VelocityMin" style="width: 50px;" /> -
+                                    <input type="number" @bind="VelocityMax" style="width: 50px;" />
+                                </small>
                             </td>
                             <td>
-                                <MudSlider @bind-Value="SelectedBasePrice"
-                                           Min="0"
-                                           Max="@(SelectedWeapon.basePrice * 2)"
+                                <MudSlider T="int"
+                                           @bind-Value="SelectedBasePrice"
+                                           Min="@BasePriceMin"
+                                           Max="@BasePriceMax"
                                            Step="100"
                                            Variant="Variant.Filled"
                                            ValueLabelFormat="C2" />
                                 <p>Base Price: @($"{SelectedBasePrice:C2}")</p>
-                                <small>Range: @($"0 - {SelectedWeapon.basePrice * 2:C2}")</small>
+                                <small>
+                                    Range:
+                                    <input type="number" @bind="BasePriceMin" style="width: 50px;" /> -
+                                    <input type="number" @bind="BasePriceMax" style="width: 50px;" />
+                                </small>
                             </td>
                             <td>
                                 <MudSlider T="float"
                                            @bind-Value="SelectedAccuracyModifier"
-                                           Min="0"
-                                           Max="2"
+                                           Min="@AccuracyModifierMin"
+                                           Max="@AccuracyModifierMax"
                                            Step="0.01f"
                                            Variant="Variant.Filled" />
                                 <p>Accuracy Modifier: @SelectedAccuracyModifier</p>
-                                <small>Range: 0 - 2</small>
+                                <small>
+                                    Range:
+                                    <input type="number" step="0.01" @bind="AccuracyModifierMin" style="width: 50px;" /> -
+                                    <input type="number" step="0.01" @bind="AccuracyModifierMax" style="width: 50px;" />
+                                </small>
                             </td>
                             <td>
                                 <MudSlider T="float"
                                            @bind-Value="SelectedWeight"
-                                           Min="@(SelectedWeapon.weight / 2)"
-                                           Max="@(SelectedWeapon.weight * 2)"
+                                           Min="@WeightMin"
+                                           Max="@WeightMax"
                                            Step="0.1f"
                                            Variant="Variant.Filled" />
                                 <p>Weight: @SelectedWeight</p>
-                                <small>Range: @($"{SelectedWeapon.weight / 2} - {SelectedWeapon.weight * 2}")</small>
+                                <small>
+                                    Range:
+                                    <input type="number" step="0.1" @bind="WeightMin" style="width: 50px;" /> -
+                                    <input type="number" step="0.1" @bind="WeightMax" style="width: 50px;" />
+                                </small>
                             </td>
                             <td>
                                 <MudSlider T="float"
                                            @bind-Value="SelectedFireRate"
-                                           Min="@(SelectedWeapon.fireRate / 2)"
-                                           Max="@(SelectedWeapon.fireRate * 2)"
+                                           Min="@FireRateMin"
+                                           Max="@FireRateMax"
                                            Step="1"
                                            Variant="Variant.Filled" />
                                 <p>Fire Rate: @SelectedFireRate</p>
-                                <small>Range: @($"{SelectedWeapon.fireRate / 2} - {SelectedWeapon.fireRate * 2}")</small>
+                                <small>
+                                    Range:
+                                    <input type="number" @bind="FireRateMin" style="width: 50px;" /> -
+                                    <input type="number" @bind="FireRateMax" style="width: 50px;" />
+                                </small>
                             </td>
                             <td>
                                 <MudSlider T="float"
                                            @bind-Value="SelectedCenterOfImpact"
-                                           Min="@(SelectedWeapon.centerOfImpact / 2)"
-                                           Max="@(SelectedWeapon.centerOfImpact * 2)"
+                                           Min="@CenterOfImpactMin"
+                                           Max="@CenterOfImpactMax"
                                            Step="0.1f"
                                            Variant="Variant.Filled" />
                                 <p>Center of Impact: @SelectedCenterOfImpact</p>
-                                <small>Range: @($"{SelectedWeapon.centerOfImpact / 2} - {SelectedWeapon.centerOfImpact * 2}")</small>
+                                <small>
+                                    Range:
+                                    <input type="number" step="0.1" @bind="CenterOfImpactMin" style="width: 50px;" /> -
+                                    <input type="number" step="0.1" @bind="CenterOfImpactMax" style="width: 50px;" />
+                                </small>
                             </td>
                             <td>
                                 <MudSlider T="float"
                                            @bind-Value="SelectedDeviationCurve"
-                                           Min="@(SelectedWeapon.deviationCurve / 2)"
-                                           Max="@(SelectedWeapon.deviationCurve * 2)"
+                                           Min="@DeviationCurveMin"
+                                           Max="@DeviationCurveMax"
                                            Step="0.1f"
                                            Variant="Variant.Filled" />
                                 <p>Deviation Curve: @SelectedDeviationCurve</p>
-                                <small>Range: @($"{SelectedWeapon.deviationCurve / 2} - {SelectedWeapon.deviationCurve * 2}")</small>
+                                <small>
+                                    Range:
+                                    <input type="number" step="0.1" @bind="DeviationCurveMin" style="width: 50px;" /> -
+                                    <input type="number" step="0.1" @bind="DeviationCurveMax" style="width: 50px;" />
+                                </small>
                             </td>
                             <td>
                                 <MudSlider T="float"
                                            @bind-Value="SelectedDeviationMax"
-                                           Min="@(SelectedWeapon.deviationMax / 2)"
-                                           Max="@(SelectedWeapon.deviationMax * 2)"
+                                           Min="@DeviationMaxMin"
+                                           Max="@DeviationMaxMax"
                                            Step="0.1f"
                                            Variant="Variant.Filled" />
                                 <p>Deviation Max: @SelectedDeviationMax</p>
-                                <small>Range: @($"{SelectedWeapon.deviationMax / 2} - {SelectedWeapon.deviationMax * 2}")</small>
+                                <small>
+                                    Range:
+                                    <input type="number" step="0.1" @bind="DeviationMaxMin" style="width: 50px;" /> -
+                                    <input type="number" step="0.1" @bind="DeviationMaxMax" style="width: 50px;" />
+                                </small>
                             </td>
                         }
                     </tr>
                 </tbody>
             </table>
         </div>
-
         @if (GeneratedCombinations.Any())
         {
             <div>
@@ -315,10 +355,10 @@ else
                         {
                             <div class="scrollable-container">
                                 <ul>
-                                    <li>
+                                    @* <li>
                                         <img src="@SelectedWeapon.defaultPresetBaseImageLink" alt="@SelectedWeapon.name" class="weapon-default-image" />
                                         @SelectedWeapon.name
-                                    </li>
+                                    </li> *@
                                     <li>
                                         <img src="@allowedItem.gridImageLink" alt="@allowedItem.name" class="weapon-image" />
                                         @allowedItem.name
@@ -379,9 +419,73 @@ else
     private float SelectedCenterOfImpact { get; set; }
     private float SelectedDeviationCurve { get; set; }
     private float SelectedDeviationMax { get; set; }
+
+    private float VerticalRecoilMin { get; set; }
+    private float VerticalRecoilMax { get; set; }
+
+    private float ErgonomicsMin { get; set; }
+    private float ErgonomicsMax { get; set; }
+
+    private float VelocityMin { get; set; }
+    private float VelocityMax { get; set; }
+
+    private int BasePriceMin { get; set; } = 0;
+    private int BasePriceMax { get; set; }
+
+    private float AccuracyModifierMin { get; set; } = 0;
+    private float AccuracyModifierMax { get; set; } = 2;
+
+    private float WeightMin { get; set; }
+    private float WeightMax { get; set; }
+
+    private float FireRateMin { get; set; }
+    private float FireRateMax { get; set; }
+
+    private float CenterOfImpactMin { get; set; }
+    private float CenterOfImpactMax { get; set; }
+
+    private float DeviationCurveMin { get; set; }
+    private float DeviationCurveMax { get; set; }
+
+    private float DeviationMaxMin { get; set; }
+    private float DeviationMaxMax { get; set; }
+
     // Define SelectedAccuracyModifiers
     private IEnumerable<float> SelectedAccuracyModifiers { get; set; } = new List<float>();
 
+
+    private void SetMinMaxSliders()
+    {
+        if (SelectedWeapon != null)
+        {
+            VerticalRecoilMin = SelectedWeapon.recoilVertical / 2;
+            VerticalRecoilMax = SelectedWeapon.recoilVertical * 2;
+
+            ErgonomicsMin = SelectedWeapon.ergonomics / 2;
+            ErgonomicsMax = SelectedWeapon.ergonomics * 2;
+
+            VelocityMin = SelectedWeapon.velocity / 2;
+            VelocityMax = SelectedWeapon.velocity * 2;
+
+            BasePriceMax = SelectedWeapon.basePrice * 2;
+
+            WeightMin = SelectedWeapon.weight / 2;
+            WeightMax = SelectedWeapon.weight * 2;
+
+            FireRateMin = SelectedWeapon.fireRate / 2;
+            FireRateMax = SelectedWeapon.fireRate * 2;
+
+            CenterOfImpactMin = SelectedWeapon.centerOfImpact / 2;
+            CenterOfImpactMax = SelectedWeapon.centerOfImpact * 2;
+
+            DeviationCurveMin = SelectedWeapon.deviationCurve / 2;
+            DeviationCurveMax = SelectedWeapon.deviationCurve * 2;
+
+            DeviationMaxMin = SelectedWeapon.deviationMax / 2;
+            DeviationMaxMax = SelectedWeapon.deviationMax * 2;
+        }
+
+    }
 
     private List<List<string>> GeneratedCombinations { get; set; } = new();
 
@@ -514,6 +618,7 @@ else
             : null;
         OnWeaponSelected(SelectedWeapon);
         UpdateAvailableSlots(SelectedWeapon);
+        SetMinMaxSliders();
         StateHasChanged();
     }
 

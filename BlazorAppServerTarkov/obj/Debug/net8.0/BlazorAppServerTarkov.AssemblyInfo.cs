@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BlazorAppServerTarkov")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+507b4dc11f0936b1eb5f84e5f521c879132099fa")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8902821f64ac2f43e5e5c7e9d456bcc7dd7ff3ad")]
 [assembly: System.Reflection.AssemblyProductAttribute("BlazorAppServerTarkov")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BlazorAppServerTarkov")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
