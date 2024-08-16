@@ -36,6 +36,16 @@
 </script>
 
 <style>
+
+    .weapon-default-image {
+        width: 100%; /* Ensure it takes up the full width of the container */
+        height: auto; /* Maintain the aspect ratio */
+        max-width: 200px; /* Adjust as needed to fit within your layout */
+        display: block; /* Ensure the image is treated as a block element */
+        margin: 0 auto; /* Center the image if needed */
+    }
+
+
     .weapon-image-container {
         display: flex;
         flex-direction: column;
@@ -298,21 +308,25 @@ else
                 <h4>Available Combinations:</h4>
                 @foreach (var combination in GeneratedCombinations)
                 {
-                    <div class="scrollable-container">
-                        <ul>
-                            @foreach (var allowedId in combination)
-                            {
-                                var allowedItem = TarkovData.TarkovItem.DataTable.GetValueOrDefault(allowedId);
-                                if (allowedItem != null)
-                                {
+                    @foreach (var allowedId in combination)
+                    {
+                        var allowedItem = TarkovData.TarkovItem.DataTable.GetValueOrDefault(allowedId);
+                        if (allowedItem != null && SelectedWeapon != null)
+                        {
+                            <div class="scrollable-container">
+                                <ul>
+                                    <li>
+                                        <img src="@SelectedWeapon.defaultPresetBaseImageLink" alt="@SelectedWeapon.name" class="weapon-default-image" />
+                                        @SelectedWeapon.name
+                                    </li>
                                     <li>
                                         <img src="@allowedItem.gridImageLink" alt="@allowedItem.name" class="weapon-image" />
                                         @allowedItem.name
                                     </li>
-                                }
-                            }
-                        </ul>
-                    </div>
+                                </ul>
+                            </div>
+                        }
+                    }
                 }
             </div>
         }
