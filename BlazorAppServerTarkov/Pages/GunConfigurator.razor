@@ -357,7 +357,7 @@ else
                             @SelectedWeapon.name
                         </li>
 
-                        @foreach (var slotGroup in combination)
+                        @foreach (var slotGroup in combination.SlotGroups)
                         {
                             @if (slotGroup.Key != null)
                             {
@@ -376,6 +376,16 @@ else
                             }
                         }
                     </ul>
+
+                    <div>
+                        <p><strong>Recoil Vertical:</strong> @combination.RecoilVertical</p>
+                        <p><strong>Ergonomics:</strong> @combination.Ergonomics</p>
+                        <p><strong>Velocity:</strong> @combination.Velocity</p>
+                        <p><strong>Accuracy Modifier:</strong> @combination.AccuracyModifier</p>
+                        <p><strong>Weight:</strong> @combination.Weight</p>
+                        <p><strong>Base Price:</strong> @($"{combination.BasePrice:C2}")</p>
+                        <!-- Add other stats as needed -->
+                    </div>
                 </div>
             }
         }

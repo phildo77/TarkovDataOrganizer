@@ -18,9 +18,21 @@ public partial class TarkovData
                 .ToList();
         }
 
-        public static List<Dictionary<string, List<TarkovItem>>> GenerateUniqueCombinations(TarkovItem selectedWeapon)
+        public class WeaponCombination
         {
-            var uniqueCombinations = new List<Dictionary<string, List<TarkovItem>>>();
+            public Dictionary<string, List<TarkovItem>> SlotGroups { get; set; }
+            public float RecoilVertical { get; set; }
+            public float Ergonomics { get; set; }
+            public float Velocity { get; set; }
+            public float AccuracyModifier { get; set; }
+            public float Weight { get; set; }
+            public int BasePrice { get; set; }
+            // Add other stats as needed
+        }
+
+        public static List<WeaponCombination> GenerateUniqueCombinations(TarkovItem selectedWeapon)
+        {
+            var uniqueCombinations = new List<WeaponCombination>();
 
             if (DataTableSlots.TryGetValue(selectedWeapon.id, out var weaponSlots))
             {
@@ -39,7 +51,6 @@ public partial class TarkovData
                     }
                 }
 
-                // Generate Cartesian Product of slot combinations
                 var cartesianProduct = CartesianProduct(slotCombinations);
 
                 foreach (var combination in cartesianProduct)
@@ -52,11 +63,53 @@ public partial class TarkovData
                         })
                         .ToDictionary(group => group.Key, group => group.ToList());
 
-                    uniqueCombinations.Add(groupedCombination);
+                    // Calculate combined stats
+                    var weaponCombination = new WeaponCombination
+                    {
+                        SlotGroups = groupedCombination,
+                        RecoilVertical = CalculateRecoilVertical(selectedWeapon, combination),
+                        Ergonomics = CalculateErgonomics(selectedWeapon, combination),
+                        Velocity = CalculateVelocity(selectedWeapon, combination),
+                        AccuracyModifier = CalculateAccuracyModifier(selectedWeapon, combination),
+                        Weight = CalculateWeight(selectedWeapon, combination),
+                        BasePrice = CalculateBasePrice(selectedWeapon, combination)
+                    };
+
+                    uniqueCombinations.Add(weaponCombination);
                 }
             }
 
             return uniqueCombinations;
+        }
+
+        private static float CalculateRecoilVertical(TarkovItem baseWeapon, List<TarkovItem> attachments)
+        {
+            return baseWeapon.recoilVertical + attachments.Sum(a => a.recoilModifier);
+        }
+
+        private static float CalculateErgonomics(TarkovItem baseWeapon, List<TarkovItem> attachments)
+        {
+            return baseWeapon.ergonomics + attachments.Sum(a => a.ergonomicsModifier);
+        }
+
+        private static float CalculateVelocity(TarkovItem baseWeapon, List<TarkovItem> attachments)
+        {
+            return baseWeapon.velocity + attachments.Sum(a => a.velocity);
+        }
+
+        private static float CalculateAccuracyModifier(TarkovItem baseWeapon, List<TarkovItem> attachments)
+        {
+            return baseWeapon.accuracyModifier + attachments.Sum(a => a.accuracyModifier);
+        }
+
+        private static float CalculateWeight(TarkovItem baseWeapon, List<TarkovItem> attachments)
+        {
+            return baseWeapon.weight + attachments.Sum(a => a.weight);
+        }
+
+        private static int CalculateBasePrice(TarkovItem baseWeapon, List<TarkovItem> attachments)
+        {
+            return baseWeapon.basePrice + attachments.Sum(a => a.basePrice);
         }
 
         private static List<List<T>> CartesianProduct<T>(List<List<T>> lists)
