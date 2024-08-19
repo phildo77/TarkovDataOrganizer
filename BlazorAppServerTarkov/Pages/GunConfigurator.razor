@@ -396,7 +396,7 @@ else
             <div style="display: flex; flex-wrap: wrap; gap: 16px;">
                 @if (SelectedWeapon != null)
                 {
-                    <div id="weaponDisplay-@SelectedWeapon.name" style="border: 1px solid #ccc; padding: 8px; width: 200px;">
+                    <div id="weaponDisplay-@SelectedWeapon.name" style="border: 1px solid #ccc; padding: 8px; width: 300px;">
                         <h3>@SelectedWeapon.name</h3>
                         <img id="weaponImage-@SelectedWeapon.name" src="@SelectedWeapon.defaultPresetBaseImageLink" alt="Selected Weapon Image" style="width: 100%; height: auto;" />
                         <p>Recoil Vertical: @SelectedWeapon.recoilVertical</p>
@@ -405,6 +405,30 @@ else
                         <p>Base Price: @SelectedWeapon.basePrice</p>
                         <p>Accuracy Modifier: @SelectedWeapon.accuracyModifier</p>
                         <p>Weight: @SelectedWeapon.weight</p>
+
+                        <!-- MudTreeView for showing attachment options -->
+                        <MudTreeView T="string">
+                            @foreach (var combination in TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon))
+                            {
+                                <MudTreeViewItem T="string" Text="Combination">
+                                    @foreach (var slotGroup in combination.SlotGroups)
+                                    {
+                                        if (slotGroup.Key != null)
+                                        {
+                                            <MudTreeViewItem T="string" Text="@slotGroup.Key">
+                                                @foreach (var attachment in slotGroup.Value)
+                                                {
+                                                    <MudTreeViewItem T="string" Text="@attachment.name">
+                                                        <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" />
+                                                        <p>@attachment.name</p>
+                                                    </MudTreeViewItem>
+                                                }
+                                            </MudTreeViewItem>
+                                        }
+                                    }
+                                </MudTreeViewItem>
+                            }
+                        </MudTreeView>
                     </div>
                 }
             </div>
