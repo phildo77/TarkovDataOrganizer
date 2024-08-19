@@ -384,6 +384,9 @@ else
                         <p><strong>Accuracy Modifier:</strong> @combination.AccuracyModifier</p>
                         <p><strong>Weight:</strong> @combination.Weight</p>
                         <p><strong>Base Price:</strong> @($"{combination.BasePrice:C2}")</p>
+                        <MudButton OnClick="() => HandleCombinationSelection(combination)">
+                            Select This Combination
+                        </MudButton>
                         <!-- Add other stats as needed -->
                     </div>
                 </div>
@@ -394,39 +397,34 @@ else
         <!-- Third Pane -->
         <div style="grid-column: span 2; justify-self: end;">
             <div style="display: flex; flex-wrap: wrap; gap: 16px;">
-                @if (SelectedWeapon != null)
+                @if (SelectedCombination != null)
                 {
-                    <div id="weaponDisplay-@SelectedWeapon.name" style="border: 1px solid #ccc; padding: 8px; width: 300px;">
+                    <div id="comboDisplay-@SelectedWeapon.name" style="border: 1px solid #ccc; padding: 8px; width: 300px;">
                         <h3>@SelectedWeapon.name</h3>
                         <img id="weaponImage-@SelectedWeapon.name" src="@SelectedWeapon.defaultPresetBaseImageLink" alt="Selected Weapon Image" style="width: 100%; height: auto;" />
-                        <p>Recoil Vertical: @SelectedWeapon.recoilVertical</p>
-                        <p>Recoil Horizontal: @SelectedWeapon.recoilHorizontal</p>
-                        <p>Velocity: @SelectedWeapon.velocity</p>
-                        <p>Base Price: @SelectedWeapon.basePrice</p>
-                        <p>Accuracy Modifier: @SelectedWeapon.accuracyModifier</p>
-                        <p>Weight: @SelectedWeapon.weight</p>
+                        <p>Recoil Vertical: @SelectedCombination.RecoilVertical</p>
+                        <p>Ergonomics: @SelectedCombination.Ergonomics</p>
+                        <p>Velocity: @SelectedCombination.Velocity</p>
+                        <p>Base Price: @SelectedCombination.BasePrice</p>
+                        <p>Accuracy Modifier: @SelectedCombination.AccuracyModifier</p>
+                        <p>Weight: @SelectedCombination.Weight</p>
 
-                        <!-- MudTreeView for showing attachment options -->
+                        <!-- MudTreeView for showing attachment options in the selected combination -->
                         <MudTreeView T="string">
-                            @foreach (var combination in TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon))
+                            @foreach (var slotGroup in SelectedCombination.SlotGroups)
                             {
-                                <MudTreeViewItem T="string" Text="Combination">
-                                    @foreach (var slotGroup in combination.SlotGroups)
-                                    {
-                                        if (slotGroup.Key != null)
+                                if (slotGroup.Key != null)
+                                {
+                                    <MudTreeViewItem T="string" Text="@slotGroup.Key">
+                                        @foreach (var attachment in slotGroup.Value)
                                         {
-                                            <MudTreeViewItem T="string" Text="@slotGroup.Key">
-                                                @foreach (var attachment in slotGroup.Value)
-                                                {
-                                                    <MudTreeViewItem T="string" Text="@attachment.name">
-                                                        <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" />
-                                                        <p>@attachment.name</p>
-                                                    </MudTreeViewItem>
-                                                }
+                                            <MudTreeViewItem T="string" Text="@attachment.name">
+                                                <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" />
+                                                <p>@attachment.name</p>
                                             </MudTreeViewItem>
                                         }
-                                    }
-                                </MudTreeViewItem>
+                                    </MudTreeViewItem>
+                                }
                             }
                         </MudTreeView>
                     </div>
@@ -496,6 +494,19 @@ else
     // Define SelectedAccuracyModifiers
     private IEnumerable<float> SelectedAccuracyModifiers { get; set; } = new List<float>();
 
+    private TarkovData.TarkovItem.WeaponCombination? SelectedCombination { get; set; }
+
+    private void OnCombinationSelected(TarkovData.TarkovItem.WeaponCombination combination)
+    {
+        SelectedCombination = combination;
+        StateHasChanged(); // Trigger a UI update
+    }
+
+    // Method to handle combination selection (you can link this method to your UI interactions)
+    private void HandleCombinationSelection(TarkovData.TarkovItem.WeaponCombination combination)
+    {
+        OnCombinationSelected(combination);
+    }
 
     private void SetMinMaxSliders()
     {
