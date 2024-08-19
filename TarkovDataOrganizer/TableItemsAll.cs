@@ -30,6 +30,13 @@ public partial class TarkovData
             // Add other stats as needed
         }
 
+        public bool HasSubSlots()
+        {
+            // Return true if this item has sub-slots; otherwise, false.
+            return DataTableSlots.TryGetValue(this.id, out var slots) && slots.Any();
+        }
+
+
         public static List<WeaponCombination> GenerateUniqueCombinations(TarkovItem selectedWeapon)
         {
             var uniqueCombinations = new List<WeaponCombination>();

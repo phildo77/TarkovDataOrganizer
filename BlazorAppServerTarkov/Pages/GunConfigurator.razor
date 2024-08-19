@@ -396,7 +396,7 @@ else
 
         <!-- Third Pane -->
         <div style="grid-column: span 2; justify-self: end;">
-            <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+            <div style="display: flex; flex-wrap; wrap; gap: 16px;">
                 @if (SelectedCombination != null)
                 {
                     <div id="comboDisplay-@SelectedWeapon.name" style="border: 1px solid #ccc; padding: 8px; width: 300px;">
@@ -410,17 +410,42 @@ else
                         <p>Weight: @SelectedCombination.Weight</p>
 
                         <!-- MudTreeView for showing attachment options in the selected combination -->
-                        <MudTreeView T="string">
-                            @foreach (var slotGroup in SelectedCombination.SlotGroups)
+                        @foreach (var slotGroup in SelectedCombination.SlotGroups)
+                        {
+                            if (slotGroup.Key != null)
                             {
-                                if (slotGroup.Key != null)
+                                var hasSubSlots = slotGroup.Value.Any(a => a.HasSubSlots());
+
+                                @if (!hasSubSlots)
                                 {
-                                    <MudTreeViewItem T="string" Text="@slotGroup.Key">
-                                        <div style="display: flex; align-items: center;">
-                                            <!-- Only display slot name if it's different from the attachment name -->
-                                            <span style="flex: 2;">
-                                                @foreach (var attachment in slotGroup.Value)
-                                                {
+                                    <!-- No attachment with sub-slots, render a single-level item -->
+                                    <div style="display: flex; align-items: center;">
+                                        <strong>@slotGroup.Key:</strong>
+                                        @foreach (var attachment in slotGroup.Value)
+                                        {
+                                            <div style="display: flex; align-items: center; margin-left: 10px;">
+                                                <img src="@attachment.gridImageLink" alt="@attachment.name" style="width: 50px; height: 50px; margin-right: 10px;" />
+                                                <span>@attachment.name</span>
+                                                <span style="margin-left: 10px;">
+                                                    <!-- Display attachment stats here -->
+                                                    Recoil Mod: @attachment.recoilModifier,
+                                                    Ergo Mod: @attachment.ergonomicsModifier,
+                                                    Velocity: @attachment.velocity,
+                                                    Weight: @attachment.weight
+                                                    <!-- Add more stats if necessary -->
+                                                </span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <!-- Render a TreeViewItem with the possibility to expand if needed -->
+                                    <MudTreeView T="string">
+                                        <MudTreeViewItem T="string" Text="@slotGroup.Key">
+                                            @foreach (var attachment in slotGroup.Value)
+                                            {
+                                                <MudTreeViewItem T="string" Text="@attachment.name">
                                                     <div style="display: flex; align-items: center;">
                                                         <img src="@attachment.gridImageLink" alt="@attachment.name" style="width: 50px; height: 50px; margin-right: 10px;" />
                                                         <span>@attachment.name</span>
@@ -433,13 +458,13 @@ else
                                                             <!-- Add more stats if necessary -->
                                                         </span>
                                                     </div>
-                                                }
-                                            </span>
-                                        </div>
-                                    </MudTreeViewItem>
+                                                </MudTreeViewItem>
+                                            }
+                                        </MudTreeViewItem>
+                                    </MudTreeView>
                                 }
                             }
-                        </MudTreeView>
+                        }
                     </div>
                 }
             </div>
