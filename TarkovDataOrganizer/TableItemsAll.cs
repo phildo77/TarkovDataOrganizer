@@ -36,6 +36,18 @@ public partial class TarkovData
             return DataTableSlots.TryGetValue(this.id, out var slots) && slots.Any();
         }
 
+        public List<Slot> GetSubSlots()
+        {
+            if (DataTableSlots.TryGetValue(this.id, out var slots))
+            {
+                return slots.Values
+                    .Where(slot => slot.required == false) // Example condition to filter subslots
+                    .ToList();
+            }
+
+            return new List<Slot>(); // Return an empty list if no subslots are found
+        }
+
 
         public static List<WeaponCombination> GenerateUniqueCombinations(TarkovItem selectedWeapon)
         {
