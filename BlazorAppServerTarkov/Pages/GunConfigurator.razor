@@ -441,7 +441,7 @@ else
                                                             var subslotItem = TarkovData.TarkovItem.DataTable.GetValueOrDefault(subslot.allowedIDs.FirstOrDefault());
                                                             if (subslotItem != null)
                                                             {
-                                                                <MudTreeViewItem T="string" Text="@subslotItem.name">
+                                                                <MudTreeViewItem T="string" Text="@subslotItem.categoryName">
                                                                     <div style="display: flex; align-items: center;">
                                                                         <img src="@subslotItem.gridImageLink" alt="@subslotItem.name" style="width: 40px; height: 40px; margin-right: 10px;" />
                                                                         <span>@subslotItem.name</span>
