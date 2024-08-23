@@ -412,15 +412,15 @@ else
                         <!-- Wrap each slot group in a container -->
                         @foreach (var slotGroup in SelectedCombination.SlotGroups)
                         {
-                            if (slotGroup.Key != null)
-                            {
-                                <div style="margin-bottom: 20px;">
-                                    <div style="display: flex; align-items: center;">
-                                        <strong>@slotGroup.Key:</strong>
-                                    </div>
-                                    <div style="margin-left: 10px;">
+                            <div style="margin-bottom: 20px;">
+                                <div style="display: flex; align-items: center;">
+                                    <strong>@slotGroup.Key:</strong>
+                                </div>
+                                <div style="margin-left: 10px;">
+                                    @if (slotGroup.Value.Any())
+                                    {
                                         @foreach (var attachment in slotGroup.Value)
-                                        {                                            
+                                        {
                                             <!-- Render TreeView for subslots if they exist -->
                                             @if (attachment.HasSubSlots())
                                             {
@@ -455,26 +455,33 @@ else
                                                                 </MudTreeViewItem>
                                                             }
                                                         }
-
                                                     </MudTreeView>
                                                 </div>
                                             }
-                                            else {
+                                            else
+                                            {
                                                 <div style="display: flex; align-items: center; margin-top: 10px;">
-                                                <img src="@attachment.gridImageLink" alt="@attachment.name" style="width: 50px; height: 50px; margin-right: 10px;" />
-                                                <span>@attachment.name</span>
-                                                <span style="margin-left: 10px;">
-                                                    Recoil Mod: @attachment.recoilModifier,
-                                                    Ergo Mod: @attachment.ergonomicsModifier,
-                                                    Velocity: @attachment.velocity,
-                                                    Weight: @attachment.weight
-                                                </span>
-                                            </div>
+                                                    <img src="@attachment.gridImageLink" alt="@attachment.name" style="width: 50px; height: 50px; margin-right: 10px;" />
+                                                    <span>@attachment.name</span>
+                                                    <span style="margin-left: 10px;">
+                                                        Recoil Mod: @attachment.recoilModifier,
+                                                        Ergo Mod: @attachment.ergonomicsModifier,
+                                                        Velocity: @attachment.velocity,
+                                                        Weight: @attachment.weight
+                                                    </span>
+                                                </div>
                                             }
                                         }
-                                    </div>
+                                    }
+                                    else
+                                    {
+                                        <!-- Display empty slot -->
+                                        <div style="display: flex; align-items: center; margin-top: 10px;">
+                                            <span style="color: gray;">(Empty Slot)</span>
+                                        </div>
+                                    }
                                 </div>
-                            }
+                            </div>
                         }
                     </div>
                 }

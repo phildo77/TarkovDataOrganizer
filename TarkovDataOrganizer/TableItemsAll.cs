@@ -75,19 +75,24 @@ public partial class TarkovData
                     {
                         slotCombinations.Add(allowedItems);
                     }
+                    else
+                    {
+                        // Add an empty list if there are no allowed items, indicating an empty slot
+                        slotCombinations.Add(new List<TarkovItem>());
+                    }
                 }
 
                 var cartesianProduct = CartesianProduct(slotCombinations);
 
                 foreach (var combination in cartesianProduct)
                 {
-                    var groupedCombination = combination
-                        .GroupBy(item =>
-                        {
-                            return weaponSlots.Values
-                                .FirstOrDefault(slot => slot.allowedIDs.Contains(item.id))?.name;
-                        })
-                        .ToDictionary(group => group.Key, group => group.ToList());
+                    var groupedCombination = weaponSlots.Values
+                        .ToDictionary(
+                            slot => slot.name,
+                            slot => combination
+                                .Where(item => slot.allowedIDs.Contains(item.id))
+                                .ToList()
+                        );
 
                     var weaponCombination = new WeaponCombination
                     {
