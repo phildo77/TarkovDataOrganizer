@@ -344,54 +344,62 @@ else
         </div>
 
 
-        @if (SelectedWeapon != null)
-        {
-            var uniqueCombinations = TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon);
+@if (SelectedWeapon != null)
+{
+    var uniqueCombinations = TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon);
 
-            @foreach (var combination in uniqueCombinations)
-            {
-                <div class="scrollable-container">
-                    <ul>
-                        <li>
-                            <img src="@SelectedWeapon.defaultPresetBaseImageLink" alt="@SelectedWeapon.name" class="weapon-default-image" />
-                            @SelectedWeapon.name
-                        </li>
+    <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" Items="uniqueCombinations" RowsPerPage="50" Dense="true" Hover="true" Bordered="true" Striped="true">
+        <Columns>
+            <PropertyColumn  Property="x => x.RecoilVertical" Title="Recoil Vertical" />
+            <PropertyColumn  Property="x => x.Ergonomics" Title="Ergonomics" />
+            <PropertyColumn  Property="x => x.Velocity" Title="Velocity" />
+            <PropertyColumn  Property="x => x.AccuracyModifier" Title="Accuracy Modifier" />
+            <PropertyColumn  Property="x => x.Weight" Title="Weight" />
+            <PropertyColumn  Property="x => x.BasePrice" Title="Base Price" Format="C2" />
 
-                        @foreach (var slotGroup in combination.SlotGroups)
-                        {
+            <!-- Template for Weapon Image -->
+            <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Weapon Image">
+                <CellTemplate>
+                    <img src="@SelectedWeapon.defaultPresetBaseImageLink" alt="@SelectedWeapon.name" class="weapon-default-image" />
+                    <span>@SelectedWeapon.name</span>
+                </CellTemplate>
+            </TemplateColumn>
+
+            <!-- Template for Attachments -->
+            <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Attachments">
+                <CellTemplate>
+                    @foreach (var slotGroup in context.Item.SlotGroups)
+                    {
+                        <div>
                             @if (slotGroup.Key != null)
                             {
-                                <li>
-                                    <strong>@slotGroup.Key</strong> <!-- Display Slot Name -->
-                                    <div>
-                                        @foreach (var attachment in slotGroup.Value)
-                                        {
-                                            <div>
-                                                <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" />
-                                                <span>@attachment.name</span>
-                                            </div>
-                                        }
-                                    </div>
-                                </li>
+                                <strong>@slotGroup.Key</strong> <!-- Display Slot Name -->
+                                <div>
+                                    @foreach (var attachment in slotGroup.Value)
+                                    {
+                                        <div>
+                                            <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" />
+                                            <span>@attachment.name</span>
+                                        </div>
+                                    }
+                                </div>
                             }
-                        }
-                    </ul>
+                        </div>
+                    }
+                </CellTemplate>
+            </TemplateColumn>
 
-                    <div>
-                        <p><strong>Recoil Vertical:</strong> @combination.RecoilVertical</p>
-                        <p><strong>Ergonomics:</strong> @combination.Ergonomics</p>
-                        <p><strong>Velocity:</strong> @combination.Velocity</p>
-                        <p><strong>Accuracy Modifier:</strong> @combination.AccuracyModifier</p>
-                        <p><strong>Weight:</strong> @combination.Weight</p>
-                        <p><strong>Base Price:</strong> @($"{combination.BasePrice:C2}")</p>
-                        <MudButton OnClick="() => HandleCombinationSelection(combination)">
-                            Select This Combination
-                        </MudButton>
-                        <!-- Add other stats as needed -->
-                    </div>
-                </div>
-            }
-        }
+            <!-- Template for Selection Button -->
+            <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination">
+                <CellTemplate>
+                    <MudButton OnClick="() => HandleCombinationSelection(context.Item)">
+                        Select This Combination
+                    </MudButton>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+}
 
 
         <!-- Third Pane -->
