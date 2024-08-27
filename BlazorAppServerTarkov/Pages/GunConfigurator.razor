@@ -147,6 +147,31 @@ else
                                             Weight: @attachment.weight
                                         </span>
                                     </div>
+
+                                    @if (attachment.HasSubSlots())
+                                    {
+                                        <MudTreeView T="string">
+                                            @foreach (var subslot in attachment.GetSubSlots())
+                                            {
+                                                var subslotItem = TarkovData.TarkovItem.DataTable.GetValueOrDefault(subslot.allowedIDs.FirstOrDefault());
+                                                if (subslotItem != null)
+                                                {
+                                                    <MudTreeViewItem T="string" Text="@subslotItem.name">
+                                                        <div style="display: flex; align-items: center;">
+                                                            <img src="@subslotItem.gridImageLink" alt="@subslotItem.name" style="width: 40px; height: 40px; margin-right: 10px;" />
+                                                            <span>@subslotItem.name</span>
+                                                            <span style="margin-left: 10px;">
+                                                                Recoil Mod: @subslotItem.recoilModifier,
+                                                                Ergo Mod: @subslotItem.ergonomicsModifier,
+                                                                Velocity: @subslotItem.velocity,
+                                                                Weight: @subslotItem.weight
+                                                            </span>
+                                                        </div>
+                                                    </MudTreeViewItem>
+                                                }
+                                            }
+                                        </MudTreeView>
+                                    }
                                 }
                             }
                             else
