@@ -346,9 +346,30 @@ else
 
 @if (SelectedWeapon != null)
 {
-    var uniqueCombinations = TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon);
+            // Total number of combinations
+            var totalCombinations = TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon);
 
-    <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" Items="uniqueCombinations" RowsPerPage="50" Dense="true" Hover="true" Bordered="true" Striped="true">
+            // Set the page size (number of items per page)
+            int pageSize = 20;
+
+            // Create a function to load data for the current page
+            async Task<GridData<TarkovData.TarkovItem.WeaponCombination>> LoadServerData(GridState<TarkovData.TarkovItem.WeaponCombination> state)
+            {
+                // Calculate the current page
+                var currentPage = state.Page;
+
+                // Get the items for the current page
+                var paginatedCombinations = totalCombinations.Skip(currentPage * pageSize).Take(pageSize).ToList();
+
+                // Return the data to the grid
+                return new GridData<TarkovData.TarkovItem.WeaponCombination>
+                        {
+                            Items = paginatedCombinations,
+                            TotalItems = totalCombinations.Count
+                        };
+            }
+
+            <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" ServerData="LoadServerData" RowsPerPage="pageSize" Dense="true" Hover="true" Bordered="true" Striped="true">
         <Columns>
             <PropertyColumn  Property="x => x.RecoilVertical" Title="Recoil Vertical" />
             <PropertyColumn  Property="x => x.Ergonomics" Title="Ergonomics" />
@@ -398,6 +419,9 @@ else
                 </CellTemplate>
             </TemplateColumn>
         </Columns>
+                <PagerContent>
+                    <MudDataGridPager PageSizeOptions=@(new int[] {5, 10, 20}) />
+                </PagerContent>
     </MudDataGrid>
 }
 
