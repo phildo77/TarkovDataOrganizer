@@ -112,7 +112,7 @@ else
 {
 
 
-    <MudDrawer Open="@isDrawerOpen" Anchor="Anchor.End" Variant="DrawerVariant.Mini" OverlayAutoClose="true">
+    <MudDrawer Open="@isDrawerOpen" Anchor="Anchor.End" Variant="DrawerVariant.Mini">
         <MudDrawerHeader>
             <MudText Typo="Typo.h6">Selected Weapon Combination</MudText>
         </MudDrawerHeader>
@@ -755,26 +755,26 @@ else
         try
         {
             // Check if the data file exists
-            if (File.Exists(filePath))
-            {
-                // Load data from file
-                var jsonData = await File.ReadAllTextAsync(filePath);
-                var loadedData = JsonSerializer.Deserialize<IEnumerable<TarkovData.TarkovItem>>(jsonData);
+            // if (File.Exists(filePath))
+            // {
+            //     // Load data from file
+            //     var jsonData = await File.ReadAllTextAsync(filePath);
+            //     var loadedData = JsonSerializer.Deserialize<IEnumerable<TarkovData.TarkovItem>>(jsonData);
 
-                // Implement this method in TarkovItem class to load the data into your application state
-                if (loadedData != null)
-                {
-                    TarkovData.TarkovItem.LoadData(loadedData); // Ensure this method exists and loads data appropriately
-                    Categories = TarkovData.TarkovItem.GetDistinctCategories();
-                    Calibers = TarkovData.TarkovItem.GetDistinctCalibers();
-                }
-                else
-                {
-                    throw new Exception("Failed to load data from file.");
-                }
-            }
-            else
-            {
+            //     // Implement this method in TarkovItem class to load the data into your application state
+            //     if (loadedData != null)
+            //     {
+            //         TarkovData.TarkovItem.LoadData(loadedData); // Ensure this method exists and loads data appropriately
+            //         Categories = TarkovData.TarkovItem.GetDistinctCategories();
+            //         Calibers = TarkovData.TarkovItem.GetDistinctCalibers();
+            //     }
+            //     else
+            //     {
+            //         throw new Exception("Failed to load data from file.");
+            //     }
+            // }
+            // else
+            // {
                 // Download data as a fallback
                 await TarkovData.TarkovItem.DownloadTable();
                 Categories = TarkovData.TarkovItem.GetDistinctCategories();
@@ -783,7 +783,7 @@ else
                 // Save downloaded data to a file
                 var jsonData = JsonSerializer.Serialize(TarkovData.TarkovItem.DataTable.Values);
                 await File.WriteAllTextAsync(filePath, jsonData);
-            }
+            // }
         }
         catch (Exception ex)
         {
