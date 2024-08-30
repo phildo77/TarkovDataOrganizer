@@ -284,6 +284,42 @@ public partial class TarkovData
             public string excludedCategories { get; set; } // mutliple delim | - Currently no data here?  FUture?
         }
 
+        public static void LoadData(IEnumerable<TarkovData.TarkovItem> items)
+        {
+            // Ensure DataTable is initialized
+            DataTable = items.ToDictionary(item => item.id, item => item);
+
+            // Ensure DataTableSlots is initialized
+            if (DataTableSlots == null)
+            {
+                DataTableSlots = new Dictionary<string, Dictionary<string, Slot>>();
+            }
+
+            // Initialize DataTableSlots based on items
+            foreach (var item in items)
+            {
+                // Ensure the item has a valid id
+                if (!string.IsNullOrEmpty(item.id))
+                {
+                    // Try to retrieve existing slots or create a new entry if not found
+                    if (!DataTableSlots.TryGetValue(item.id, out var slots))
+                    {
+                        slots = new Dictionary<string, Slot>();
+                        DataTableSlots[item.id] = slots;
+                    }
+
+                    // Additional processing if needed, for example, populating the slots dictionary
+                    // You can add slots logic here if there is more data that needs to be loaded
+                }
+                else
+                {
+                    // Handle cases where the item's id is missing or invalid if necessary
+                    Console.WriteLine($"Warning: Item with name '{item.name}' has an invalid or missing ID.");
+                }
+            }
+        }
+
+
         public static async Task DownloadTable(bool force = false)
         {
             Console.WriteLine("Downloading Item Data... (this might take a few seconds)");

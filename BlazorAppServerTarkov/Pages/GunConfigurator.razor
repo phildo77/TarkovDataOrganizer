@@ -1,6 +1,8 @@
 ﻿@page "/gun-configurator"
 @using Microsoft.JSInterop
 @using MudExtensions
+@using System.Text.Json;
+@using System.Text.Json.Serialization;
 @using TarkovDataOrganizer
 @using static TarkovDataOrganizer.TarkovData
 
@@ -111,9 +113,9 @@ else
 
 
     <MudDrawer Open="@isDrawerOpen" Anchor="Anchor.End" Variant="DrawerVariant.Mini" OverlayAutoClose="true">
-    <MudDrawerHeader>
-        <MudText Typo="Typo.h6">Selected Weapon Combination</MudText>
-    </MudDrawerHeader>
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Selected Weapon Combination</MudText>
+        </MudDrawerHeader>
         <div id="comboDisplay-@SelectedWeapon?.name" style="border: 1px solid #ccc; padding: 8px; width: 300px;">
             @if (SelectedCombination != null)
             {
@@ -425,8 +427,8 @@ else
         </div>
 
 
-@if (SelectedWeapon != null)
-{
+        @if (SelectedWeapon != null)
+        {
             // Total number of combinations
             var totalCombinations = TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon);
 
@@ -451,60 +453,60 @@ else
             }
 
             <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" ServerData="LoadServerData" RowsPerPage="pageSize" Dense="true" Hover="true" Bordered="true" Striped="true">
-        <Columns>
-            <PropertyColumn  Property="x => x.RecoilVertical" Title="Recoil Vertical" />
-            <PropertyColumn  Property="x => x.Ergonomics" Title="Ergonomics" />
-            <PropertyColumn  Property="x => x.Velocity" Title="Velocity" />
-            <PropertyColumn  Property="x => x.AccuracyModifier" Title="Accuracy Modifier" />
-            <PropertyColumn  Property="x => x.Weight" Title="Weight" />
-            <PropertyColumn  Property="x => x.BasePrice" Title="Base Price" Format="C2" />
+                <Columns>
+                    <PropertyColumn Property="x => x.RecoilVertical" Title="Recoil Vertical" />
+                    <PropertyColumn Property="x => x.Ergonomics" Title="Ergonomics" />
+                    <PropertyColumn Property="x => x.Velocity" Title="Velocity" />
+                    <PropertyColumn Property="x => x.AccuracyModifier" Title="Accuracy Modifier" />
+                    <PropertyColumn Property="x => x.Weight" Title="Weight" />
+                    <PropertyColumn Property="x => x.BasePrice" Title="Base Price" Format="C2" />
 
-            <!-- Template for Weapon Image -->
-            <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Weapon Image">
-                <CellTemplate>
-                    <img src="@SelectedWeapon.defaultPresetBaseImageLink" alt="@SelectedWeapon.name" class="weapon-default-image" />
-                    <span>@SelectedWeapon.name</span>
-                </CellTemplate>
-            </TemplateColumn>
+                    <!-- Template for Weapon Image -->
+                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Weapon Image">
+                        <CellTemplate>
+                            <img src="@SelectedWeapon.defaultPresetBaseImageLink" alt="@SelectedWeapon.name" class="weapon-default-image" />
+                            <span>@SelectedWeapon.name</span>
+                        </CellTemplate>
+                    </TemplateColumn>
 
-            <!-- Template for Attachments -->
-            <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Attachments">
-                <CellTemplate>
-                    @foreach (var slotGroup in context.Item.SlotGroups)
-                    {
-                        <div>
-                            @if (slotGroup.Key != null)
+                    <!-- Template for Attachments -->
+                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Attachments">
+                        <CellTemplate>
+                            @foreach (var slotGroup in context.Item.SlotGroups)
                             {
-                                <strong>@slotGroup.Key</strong> <!-- Display Slot Name -->
                                 <div>
-                                    @foreach (var attachment in slotGroup.Value)
+                                    @if (slotGroup.Key != null)
                                     {
+                                        <strong>@slotGroup.Key</strong> <!-- Display Slot Name -->
                                         <div>
-                                            <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" />
-                                            <span>@attachment.name</span>
+                                            @foreach (var attachment in slotGroup.Value)
+                                            {
+                                                <div>
+                                                    <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" />
+                                                    <span>@attachment.name</span>
+                                                </div>
+                                            }
                                         </div>
                                     }
                                 </div>
                             }
-                        </div>
-                    }
-                </CellTemplate>
-            </TemplateColumn>
+                        </CellTemplate>
+                    </TemplateColumn>
 
-            <!-- Template for Selection Button -->
-            <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination">
-                <CellTemplate>
-                    <MudButton OnClick="() => HandleCombinationSelection(context.Item)">
-                        Select This Combination
-                    </MudButton>
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
+                    <!-- Template for Selection Button -->
+                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination">
+                        <CellTemplate>
+                            <MudButton OnClick="() => HandleCombinationSelection(context.Item)">
+                                Select This Combination
+                            </MudButton>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
                 <PagerContent>
                     <MudDataGridPager PageSizeOptions=@(new int[] {5, 10, 20}) />
                 </PagerContent>
-    </MudDataGrid>
-}
+            </MudDataGrid>
+        }
 
 
         <!-- Third Pane -->
@@ -745,13 +747,43 @@ else
 
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
+
     protected override async Task OnInitializedAsync()
     {
+        string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TarkovData.json");
+
         try
         {
-            await TarkovData.TarkovItem.DownloadTable();
-            Categories = TarkovData.TarkovItem.GetDistinctCategories();
-            Calibers = TarkovData.TarkovItem.GetDistinctCalibers();
+            // Check if the data file exists
+            if (File.Exists(filePath))
+            {
+                // Load data from file
+                var jsonData = await File.ReadAllTextAsync(filePath);
+                var loadedData = JsonSerializer.Deserialize<IEnumerable<TarkovData.TarkovItem>>(jsonData);
+
+                // Implement this method in TarkovItem class to load the data into your application state
+                if (loadedData != null)
+                {
+                    TarkovData.TarkovItem.LoadData(loadedData); // Ensure this method exists and loads data appropriately
+                    Categories = TarkovData.TarkovItem.GetDistinctCategories();
+                    Calibers = TarkovData.TarkovItem.GetDistinctCalibers();
+                }
+                else
+                {
+                    throw new Exception("Failed to load data from file.");
+                }
+            }
+            else
+            {
+                // Download data as a fallback
+                await TarkovData.TarkovItem.DownloadTable();
+                Categories = TarkovData.TarkovItem.GetDistinctCategories();
+                Calibers = TarkovData.TarkovItem.GetDistinctCalibers();
+
+                // Save downloaded data to a file
+                var jsonData = JsonSerializer.Serialize(TarkovData.TarkovItem.DataTable.Values);
+                await File.WriteAllTextAsync(filePath, jsonData);
+            }
         }
         catch (Exception ex)
         {
@@ -761,25 +793,28 @@ else
         {
             IsLoading = false;
         }
+
     }
 
-    private IEnumerable<TarkovData.TarkovItem> FilteredWeaponNames =>
+
+    private IEnumerable<TarkovData.TarkovItem>
+    FilteredWeaponNames =>
     TarkovData.TarkovItem.DataTable.Values
-        .Where(item => item.types.Split('|').Contains("gun", StringComparer.OrdinalIgnoreCase) &&
-                       (!SelectedCategories.Any() || SelectedCategories.Contains(item.categoryName)) &&
-                       (!SelectedCalibers.Any() || SelectedCalibers.Contains(item.caliber)));
+    .Where(item => item.types.Split('|').Contains("gun", StringComparer.OrdinalIgnoreCase) &&
+    (!SelectedCategories.Any() || SelectedCategories.Contains(item.categoryName)) &&
+    (!SelectedCalibers.Any() || SelectedCalibers.Contains(item.caliber)));
 
 
     private void OnSelectedCategoryChanged()
     {
-        SelectedWeapons.Clear(); // Clear selected weapons to refresh the list
-        StateHasChanged(); // Ensure the state is updated
-        Console.WriteLine($"SelectedCategories changed to: {string.Join(", ", SelectedCategories)}");
+    SelectedWeapons.Clear(); // Clear selected weapons to refresh the list
+    StateHasChanged(); // Ensure the state is updated
+    Console.WriteLine($"SelectedCategories changed to: {string.Join(", ", SelectedCategories)}");
     }
 
     private async Task OnSelectedWeightChanged(ChangeEventArgs e)
     {
-        var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "weightSelect");
+    var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "weightSelect");
         if (selectedValues.Any())
         {
             SelectedWeights = selectedValues.Select(float.Parse);
