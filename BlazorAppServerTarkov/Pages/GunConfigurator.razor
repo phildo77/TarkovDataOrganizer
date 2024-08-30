@@ -112,43 +112,43 @@ else
 {
 
 
-<MudDrawer Open="@isDrawerOpen" Anchor="Anchor.End" Variant="DrawerVariant.Mini">
-    <MudDrawerHeader>
-        <MudText Typo="Typo.h6">Selected Weapon Combination</MudText>
-    </MudDrawerHeader>
-    <div id="comboDisplay-@SelectedWeapon?.name" style="border: 1px solid #ccc; padding: 8px; width: 300px;">
-        @if (SelectedCombination != null)
-        {
-            <h3>@SelectedWeapon?.name</h3>
-            <img id="weaponImage-@SelectedWeapon?.name" src="@SelectedWeapon?.defaultPresetBaseImageLink" alt="Selected Weapon Image" style="width: 100%; height: auto;" />
-            <p>Recoil Vertical: @SelectedCombination.RecoilVertical</p>
-            <p>Ergonomics: @SelectedCombination.Ergonomics</p>
-            <p>Velocity: @SelectedCombination.Velocity</p>
-            <p>Base Price: @SelectedCombination.BasePrice</p>
-            <p>Accuracy Modifier: @SelectedCombination.AccuracyModifier</p>
-            <p>Weight: @SelectedCombination.Weight</p>
-
-            @foreach (var slotGroup in SelectedCombination.SlotGroups)
+    <MudDrawer Open="@isDrawerOpen" Anchor="Anchor.End" Variant="DrawerVariant.Mini">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Selected Weapon Combination</MudText>
+        </MudDrawerHeader>
+        <div id="comboDisplay-@SelectedWeapon?.name" style="border: 1px solid #ccc; padding: 8px; width: 300px;">
+            @if (SelectedCombination != null)
             {
-                <div style="margin-bottom: 20px;">
-                    <div style="display: flex; align-items: center;">
-                        <strong>@slotGroup.Key:</strong>
-                    </div>
-                    <div style="margin-left: 10px;">
-                        @if (slotGroup.Value.Any())
-                        {
-                            @foreach (var attachment in slotGroup.Value)
+                <h3>@SelectedWeapon?.name</h3>
+                <img id="weaponImage-@SelectedWeapon?.name" src="@SelectedWeapon?.defaultPresetBaseImageLink" alt="Selected Weapon Image" style="width: 100%; height: auto;" />
+                <p>Recoil Vertical: @SelectedCombination.RecoilVertical</p>
+                <p>Ergonomics: @SelectedCombination.Ergonomics</p>
+                <p>Velocity: @SelectedCombination.Velocity</p>
+                <p>Base Price: @SelectedCombination.BasePrice</p>
+                <p>Accuracy Modifier: @SelectedCombination.AccuracyModifier</p>
+                <p>Weight: @SelectedCombination.Weight</p>
+
+                @foreach (var slotGroup in SelectedCombination.SlotGroups)
+                {
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center;">
+                            <strong>@slotGroup.Key:</strong>
+                        </div>
+                        <div style="margin-left: 10px;">
+                            @if (slotGroup.Value.Any())
                             {
-                                <div style="display: flex; align-items: center; margin-top: 10px;">
-                                    <img src="@attachment.gridImageLink" alt="@attachment.name" style="width: 50px; height: 50px; margin-right: 10px;" />
-                                    <span>@attachment.name</span>
-                                    <span style="margin-left: 10px;">
-                                        Recoil Mod: @attachment.recoilModifier,
-                                        Ergo Mod: @attachment.ergonomicsModifier,
-                                        Velocity: @attachment.velocity,
-                                        Weight: @attachment.weight
-                                    </span>
-                                </div>
+                                @foreach (var attachment in slotGroup.Value)
+                                {
+                                    <div style="display: flex; align-items: center; margin-top: 10px;">
+                                        <img src="@attachment.gridImageLink" alt="@attachment.name" style="width: 50px; height: 50px; margin-right: 10px;" />
+                                        <span>@attachment.name</span>
+                                        <span style="margin-left: 10px;">
+                                            Recoil Mod: @attachment.recoilModifier,
+                                            Ergo Mod: @attachment.ergonomicsModifier,
+                                            Velocity: @attachment.velocity,
+                                            Weight: @attachment.weight
+                                        </span>
+                                    </div>
 
                                     @if (attachment.HasSubSlots())
                                     {
@@ -178,19 +178,19 @@ else
                                         </MudTreeView>
                                     }
                                 }
-                        }
-                        else
-                        {
-                            <div style="display: flex; align-items: center; margin-top: 10px;">
-                                <span style="color: gray;">(Empty Slot)</span>
-                            </div>
-                        }
+                            }
+                            else
+                            {
+                                <div style="display: flex; align-items: center; margin-top: 10px;">
+                                    <span style="color: gray;">(Empty Slot)</span>
+                                </div>
+                            }
+                        </div>
                     </div>
-                </div>
+                }
             }
-        }
-    </div>
-</MudDrawer>
+        </div>
+    </MudDrawer>
 
 
 
@@ -457,14 +457,7 @@ else
 
             <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" ServerData="LoadServerData" RowsPerPage="pageSize" Dense="true" Hover="true" Bordered="true" Striped="true">
                 <Columns>
-                    <PropertyColumn Property="x => x.RecoilVertical" Title="Recoil Vertical" />
-                    <PropertyColumn Property="x => x.Ergonomics" Title="Ergonomics" />
-                    <PropertyColumn Property="x => x.Velocity" Title="Velocity" />
-                    <PropertyColumn Property="x => x.AccuracyModifier" Title="Accuracy Modifier" />
-                    <PropertyColumn Property="x => x.Weight" Title="Weight" />
-                    <PropertyColumn Property="x => x.BasePrice" Title="Base Price" Format="C2" />
-
-                    <!-- Template for Weapon Image -->
+                    <!-- Template for Weapon Image moved to the first column -->
                     <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Weapon Image">
                         <CellTemplate>
                             <img src="@SelectedWeapon.defaultPresetBaseImageLink" alt="@SelectedWeapon.name" class="weapon-default-image" />
@@ -472,27 +465,66 @@ else
                         </CellTemplate>
                     </TemplateColumn>
 
-                    <!-- Template for Attachments -->
+                    <PropertyColumn Property="x => x.RecoilVertical" Title="Recoil Vertical" />
+                    <PropertyColumn Property="x => x.Ergonomics" Title="Ergonomics" />
+                    <PropertyColumn Property="x => x.Velocity" Title="Velocity" />
+                    <PropertyColumn Property="x => x.AccuracyModifier" Title="Accuracy Modifier" />
+                    <PropertyColumn Property="x => x.Weight" Title="Weight" />
+                    <PropertyColumn Property="x => x.BasePrice" Title="Base Price" Format="C2" />
+
+                    <!-- Template for Attachments, adjusted to display horizontally -->
+                    @*                     <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Attachments">
+            <CellTemplate>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <!-- Flexbox for horizontal layout -->
+            @foreach (var slotGroup in context.Item.SlotGroups)
+            {
+            <div>
+            @if (slotGroup.Key != null)
+            {
+            <strong>@slotGroup.Key</strong> <!-- Display Slot Name -->
+            <div style="display: flex; gap: 5px; align-items: center;">
+            <!-- Flexbox for attachments -->
+            @foreach (var attachment in slotGroup.Value)
+            {
+            <div style="display: flex; flex-direction: column; align-items: center;">
+            <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" />
+            <span>@attachment.name</span>
+            </div>
+            }
+            </div>
+            }
+            </div>
+            }
+            </div>
+            </CellTemplate>
+            </TemplateColumn>
+            *@
+
                     <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Attachments">
                         <CellTemplate>
-                            @foreach (var slotGroup in context.Item.SlotGroups)
-                            {
-                                <div>
-                                    @if (slotGroup.Key != null)
-                                    {
-                                        <strong>@slotGroup.Key</strong> <!-- Display Slot Name -->
-                                        <div>
-                                            @foreach (var attachment in slotGroup.Value)
-                                            {
-                                                <div>
-                                                    <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" />
-                                                    <span>@attachment.name</span>
-                                                </div>
-                                            }
-                                        </div>
-                                    }
-                                </div>
-                            }
+                            <div style="display: flex; flex-wrap: nowrap; gap: 10px; padding: 10px; align-items: center;">
+                                <!-- Flexbox for horizontal layout -->
+                                @foreach (var slotGroup in context.Item.SlotGroups)
+                                {
+                                    <div>
+                                        @if (slotGroup.Key != null)
+                                        {
+                                            <strong>@slotGroup.Key</strong> <!-- Display Slot Name -->
+                                            <div style="display: flex; gap: 5px; align-items: center;">
+                                                <!-- Flexbox for attachments -->
+                                                @foreach (var attachment in slotGroup.Value)
+                                                {
+                                                    <div style="display: flex; flex-direction: column; align-items: center;">
+                                                        <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" />
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+
                         </CellTemplate>
                     </TemplateColumn>
 
@@ -778,14 +810,14 @@ else
             // }
             // else
             // {
-                // Download data as a fallback
-                await TarkovData.TarkovItem.DownloadTable();
-                Categories = TarkovData.TarkovItem.GetDistinctCategories();
-                Calibers = TarkovData.TarkovItem.GetDistinctCalibers();
+            // Download data as a fallback
+            await TarkovData.TarkovItem.DownloadTable();
+            Categories = TarkovData.TarkovItem.GetDistinctCategories();
+            Calibers = TarkovData.TarkovItem.GetDistinctCalibers();
 
-                // Save downloaded data to a file
-                var jsonData = JsonSerializer.Serialize(TarkovData.TarkovItem.DataTable.Values);
-                await File.WriteAllTextAsync(filePath, jsonData);
+            // Save downloaded data to a file
+            var jsonData = JsonSerializer.Serialize(TarkovData.TarkovItem.DataTable.Values);
+            await File.WriteAllTextAsync(filePath, jsonData);
             // }
         }
         catch (Exception ex)
@@ -810,14 +842,14 @@ else
 
     private void OnSelectedCategoryChanged()
     {
-    SelectedWeapons.Clear(); // Clear selected weapons to refresh the list
-    StateHasChanged(); // Ensure the state is updated
-    Console.WriteLine($"SelectedCategories changed to: {string.Join(", ", SelectedCategories)}");
+        SelectedWeapons.Clear(); // Clear selected weapons to refresh the list
+        StateHasChanged(); // Ensure the state is updated
+        Console.WriteLine($"SelectedCategories changed to: {string.Join(", ", SelectedCategories)}");
     }
 
     private async Task OnSelectedWeightChanged(ChangeEventArgs e)
     {
-    var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "weightSelect");
+        var selectedValues = await JSRuntime.InvokeAsync<List<string>>("getSelectedValues", "weightSelect");
         if (selectedValues.Any())
         {
             SelectedWeights = selectedValues.Select(float.Parse);
