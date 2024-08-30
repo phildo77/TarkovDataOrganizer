@@ -112,43 +112,43 @@ else
 {
 
 
-    <MudDrawer Open="@isDrawerOpen" Anchor="Anchor.End" Variant="DrawerVariant.Mini">
-        <MudDrawerHeader>
-            <MudText Typo="Typo.h6">Selected Weapon Combination</MudText>
-        </MudDrawerHeader>
-        <div id="comboDisplay-@SelectedWeapon?.name" style="border: 1px solid #ccc; padding: 8px; width: 300px;">
-            @if (SelectedCombination != null)
-            {
-                <h3>@SelectedWeapon?.name</h3>
-                <img id="weaponImage-@SelectedWeapon?.name" src="@SelectedWeapon?.defaultPresetBaseImageLink" alt="Selected Weapon Image" style="width: 100%; height: auto;" />
-                <p>Recoil Vertical: @SelectedCombination.RecoilVertical</p>
-                <p>Ergonomics: @SelectedCombination.Ergonomics</p>
-                <p>Velocity: @SelectedCombination.Velocity</p>
-                <p>Base Price: @SelectedCombination.BasePrice</p>
-                <p>Accuracy Modifier: @SelectedCombination.AccuracyModifier</p>
-                <p>Weight: @SelectedCombination.Weight</p>
+<MudDrawer Open="@isDrawerOpen" Anchor="Anchor.End" Variant="DrawerVariant.Mini">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">Selected Weapon Combination</MudText>
+    </MudDrawerHeader>
+    <div id="comboDisplay-@SelectedWeapon?.name" style="border: 1px solid #ccc; padding: 8px; width: 300px;">
+        @if (SelectedCombination != null)
+        {
+            <h3>@SelectedWeapon?.name</h3>
+            <img id="weaponImage-@SelectedWeapon?.name" src="@SelectedWeapon?.defaultPresetBaseImageLink" alt="Selected Weapon Image" style="width: 100%; height: auto;" />
+            <p>Recoil Vertical: @SelectedCombination.RecoilVertical</p>
+            <p>Ergonomics: @SelectedCombination.Ergonomics</p>
+            <p>Velocity: @SelectedCombination.Velocity</p>
+            <p>Base Price: @SelectedCombination.BasePrice</p>
+            <p>Accuracy Modifier: @SelectedCombination.AccuracyModifier</p>
+            <p>Weight: @SelectedCombination.Weight</p>
 
-                @foreach (var slotGroup in SelectedCombination.SlotGroups)
-                {
-                    <div style="margin-bottom: 20px;">
-                        <div style="display: flex; align-items: center;">
-                            <strong>@slotGroup.Key:</strong>
-                        </div>
-                        <div style="margin-left: 10px;">
-                            @if (slotGroup.Value.Any())
+            @foreach (var slotGroup in SelectedCombination.SlotGroups)
+            {
+                <div style="margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center;">
+                        <strong>@slotGroup.Key:</strong>
+                    </div>
+                    <div style="margin-left: 10px;">
+                        @if (slotGroup.Value.Any())
+                        {
+                            @foreach (var attachment in slotGroup.Value)
                             {
-                                @foreach (var attachment in slotGroup.Value)
-                                {
-                                    <div style="display: flex; align-items: center; margin-top: 10px;">
-                                        <img src="@attachment.gridImageLink" alt="@attachment.name" style="width: 50px; height: 50px; margin-right: 10px;" />
-                                        <span>@attachment.name</span>
-                                        <span style="margin-left: 10px;">
-                                            Recoil Mod: @attachment.recoilModifier,
-                                            Ergo Mod: @attachment.ergonomicsModifier,
-                                            Velocity: @attachment.velocity,
-                                            Weight: @attachment.weight
-                                        </span>
-                                    </div>
+                                <div style="display: flex; align-items: center; margin-top: 10px;">
+                                    <img src="@attachment.gridImageLink" alt="@attachment.name" style="width: 50px; height: 50px; margin-right: 10px;" />
+                                    <span>@attachment.name</span>
+                                    <span style="margin-left: 10px;">
+                                        Recoil Mod: @attachment.recoilModifier,
+                                        Ergo Mod: @attachment.ergonomicsModifier,
+                                        Velocity: @attachment.velocity,
+                                        Weight: @attachment.weight
+                                    </span>
+                                </div>
 
                                     @if (attachment.HasSubSlots())
                                     {
@@ -158,16 +158,19 @@ else
                                                 var subslotItem = TarkovData.TarkovItem.DataTable.GetValueOrDefault(subslot.allowedIDs.FirstOrDefault());
                                                 if (subslotItem != null)
                                                 {
-                                                    <MudTreeViewItem T="string" Text="@subslotItem.name">
-                                                        <div style="display: flex; align-items: center;">
-                                                            <img src="@subslotItem.gridImageLink" alt="@subslotItem.name" style="width: 40px; height: 40px; margin-right: 10px;" />
-                                                            <span>@subslotItem.name</span>
-                                                            <span style="margin-left: 10px;">
-                                                                Recoil Mod: @subslotItem.recoilModifier,
-                                                                Ergo Mod: @subslotItem.ergonomicsModifier,
-                                                                Velocity: @subslotItem.velocity,
-                                                                Weight: @subslotItem.weight
-                                                            </span>
+                                                    var slotType = subslot.name; // Retrieve the slot type
+                                                    <MudTreeViewItem T="string" Text="@slotType">
+                                                        <!-- Display Slot Type as the Text -->
+                                                        <!-- Matching structure to slotGroup snippet -->
+                                                        <div>
+                                                            <strong>@slotType</strong> <!-- Display Slot Name -->
+                                                            <div style="margin-left: 10px;">
+                                                                <!-- Margin to match layout style -->
+                                                                <div style="display: flex; align-items: center; margin-top: 10px;">
+                                                                    <img src="@subslotItem.gridImageLink" alt="@subslotItem.name" class="weapon-image" />
+                                                                    <span>@subslotItem.name</span>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </MudTreeViewItem>
                                                 }
@@ -175,19 +178,19 @@ else
                                         </MudTreeView>
                                     }
                                 }
-                            }
-                            else
-                            {
-                                <div style="display: flex; align-items: center; margin-top: 10px;">
-                                    <span style="color: gray;">(Empty Slot)</span>
-                                </div>
-                            }
-                        </div>
+                        }
+                        else
+                        {
+                            <div style="display: flex; align-items: center; margin-top: 10px;">
+                                <span style="color: gray;">(Empty Slot)</span>
+                            </div>
+                        }
                     </div>
-                }
+                </div>
             }
-        </div>
-    </MudDrawer>
+        }
+    </div>
+</MudDrawer>
 
 
 
