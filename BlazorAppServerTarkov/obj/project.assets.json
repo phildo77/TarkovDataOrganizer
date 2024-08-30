@@ -354,7 +354,7 @@
           }
         }
       },
-      "MudBlazor/7.3.0": {
+      "MudBlazor/7.6.0": {
         "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Components": "8.0.6",
@@ -986,10 +986,10 @@
         "microsoft.jsinterop.nuspec"
       ]
     },
-    "MudBlazor/7.3.0": {
-      "sha512": "yLZbuZUQaGGCpEbj0eebLIxtvlLFlWug7oI68ecX/QbCKr+474q6qUN5sCstMMDYkdnzExk3puEa+Hif3rLDEQ==",
+    "MudBlazor/7.6.0": {
+      "sha512": "6UVQ7TvIw/czNyjmqdUGYS+Fk3PJTvbhFy4/agqm2pzwam31lYJbZXPYr5w7CG4aw9QTgj02ajd6xTZaeROiiA==",
       "type": "package",
-      "path": "mudblazor/7.3.0",
+      "path": "mudblazor/7.6.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -1006,7 +1006,7 @@
         "lib/net7.0/MudBlazor.xml",
         "lib/net8.0/MudBlazor.dll",
         "lib/net8.0/MudBlazor.xml",
-        "mudblazor.7.3.0.nupkg.sha512",
+        "mudblazor.7.6.0.nupkg.sha512",
         "mudblazor.nuspec",
         "staticwebassets/MudBlazor.min.css",
         "staticwebassets/MudBlazor.min.js"
@@ -1191,7 +1191,7 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "CodeBeam.MudBlazor.Extensions >= 7.0.0-rc.1",
-      "MudBlazor >= 7.3.0",
+      "MudBlazor >= 7.6.0",
       "TarkovDataOrganizer >= 1.0.0"
     ]
   },
@@ -1255,7 +1255,7 @@
           },
           "MudBlazor": {
             "target": "Package",
-            "version": "[7.3.0, )"
+            "version": "[7.6.0, )"
           }
         },
         "imports": [

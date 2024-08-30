@@ -9,7 +9,7 @@
       "BlazorAppServerTarkov/1.0.0": {
         "dependencies": {
           "CodeBeam.MudBlazor.Extensions": "7.0.0-rc.1",
-          "MudBlazor": "7.3.0",
+          "MudBlazor": "7.6.0",
           "TarkovDataOrganizer": "1.0.0"
         },
         "runtime": {
@@ -23,7 +23,7 @@
           "CsvHelper": "33.0.1",
           "Microsoft.AspNetCore.Components": "8.0.6",
           "Microsoft.AspNetCore.Components.Web": "8.0.6",
-          "MudBlazor": "7.3.0",
+          "MudBlazor": "7.6.0",
           "ZXing.Net": "0.16.9"
         },
         "runtime": {
@@ -224,7 +224,7 @@
           }
         }
       },
-      "MudBlazor/7.3.0": {
+      "MudBlazor/7.6.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Components": "8.0.6",
           "Microsoft.AspNetCore.Components.Web": "8.0.6",
@@ -232,8 +232,8 @@
         },
         "runtime": {
           "lib/net8.0/MudBlazor.dll": {
-            "assemblyVersion": "7.3.0.0",
-            "fileVersion": "7.3.0.0"
+            "assemblyVersion": "7.6.0.0",
+            "fileVersion": "7.6.0.0"
           }
         }
       },
@@ -439,12 +439,12 @@
       "path": "microsoft.jsinterop/8.0.6",
       "hashPath": "microsoft.jsinterop.8.0.6.nupkg.sha512"
     },
-    "MudBlazor/7.3.0": {
+    "MudBlazor/7.6.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-yLZbuZUQaGGCpEbj0eebLIxtvlLFlWug7oI68ecX/QbCKr+474q6qUN5sCstMMDYkdnzExk3puEa+Hif3rLDEQ==",
-      "path": "mudblazor/7.3.0",
-      "hashPath": "mudblazor.7.3.0.nupkg.sha512"
+      "sha512": "sha512-6UVQ7TvIw/czNyjmqdUGYS+Fk3PJTvbhFy4/agqm2pzwam31lYJbZXPYr5w7CG4aw9QTgj02ajd6xTZaeROiiA==",
+      "path": "mudblazor/7.6.0",
+      "hashPath": "mudblazor.7.6.0.nupkg.sha512"
     },
     "Newtonsoft.Json/13.0.3": {
       "type": "package",
