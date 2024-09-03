@@ -111,12 +111,8 @@ else if (ErrorMessage != null)
 else
 {
 
-
-    <MudDrawer Open="@isDrawerOpen" Anchor="Anchor.End" Variant="DrawerVariant.Temporary">
-        <MudDrawerHeader>
-            <MudText Typo="Typo.h6">Selected Weapon Combination</MudText>
-        </MudDrawerHeader>
-        <div id="comboDisplay-@SelectedWeapon?.name" style="border: 1px solid #ccc; padding: 8px; width: 300px;">
+    <MudDrawerContainer>
+        <MudDrawer Open="@isDrawerOpen" Anchor="Anchor.End" Variant="DrawerVariant.Temporary" Elevation="5" Style="padding: 10px;">
             @if (SelectedCombination != null)
             {
                 <h3>@SelectedWeapon?.name</h3>
@@ -189,8 +185,10 @@ else
                     </div>
                 }
             }
-        </div>
-    </MudDrawer>
+
+        </MudDrawer>
+
+    </MudDrawerContainer>
 
 
 
