@@ -112,7 +112,7 @@ else
 {
 
 
-    <MudDrawer Open="@isDrawerOpen" Anchor="Anchor.End" Variant="DrawerVariant.Mini">
+    <MudDrawer Open="@isDrawerOpen" Anchor="Anchor.End" Variant="DrawerVariant.Temporary">
         <MudDrawerHeader>
             <MudText Typo="Typo.h6">Selected Weapon Combination</MudText>
         </MudDrawerHeader>
@@ -194,7 +194,7 @@ else
 
 
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 16px; padding: 16px;">
+    <div style="padding: 16px;">
         <!-- First Pane -->
         <div>
             <table>
@@ -455,7 +455,7 @@ else
                         };
             }
 
-            <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" ServerData="LoadServerData" RowsPerPage="pageSize" Dense="true" Hover="true" Bordered="true" Striped="true">
+            <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" ServerData="LoadServerData" RowsPerPage="pageSize" Height="45vh" Dense="false" Hover="true" Bordered="true" Striped="true">
                 <Columns>
                     <!-- Template for Weapon Image moved to the first column -->
                     <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Weapon Image">
