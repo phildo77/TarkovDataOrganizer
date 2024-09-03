@@ -1,22 +1,19 @@
 ﻿@inherits LayoutComponentBase
 
 <PageTitle>BlazorAppServerTarkov</PageTitle>
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-<div class="page">
-    <div class="sidebar">
+<MudLayout>
+    <MudAppBar>
+        Tarkov Gun Mod Builder
+    </MudAppBar>
+    <MudDrawer Open="true">
         <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
-        <MudThemeProvider />
-        <MudPopoverProvider />
-        <MudDialogProvider />
-        <MudSnackbarProvider />
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>

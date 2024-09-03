@@ -1,4 +1,4 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@* <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">BlazorAppTarkov</a>
     </div>
@@ -28,3 +28,9 @@
     </nav>
 </div>
 
+ *@
+
+<MudNavMenu>
+    <MudNavLink Href="/gun-configurator" Match="NavLinkMatch.Prefix">Gun Configurator</MudNavLink>
+    <MudNavLink Href="/data-downloader" Match="NavLinkMatch.Prefix">Download Data</MudNavLink>
+</MudNavMenu>
