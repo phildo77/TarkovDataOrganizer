@@ -1,36 +1,26 @@
-﻿@* <div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">BlazorAppTarkov</a>
+﻿<MudNavMenu>
+    <div style="display: flex; flex-direction: column; margin-left: 15px;">
+        <MudButton Href="/" OnClick="HandleLinkClick">Home</MudButton>
+        <MudButton Href="/gun-configurator" OnClick="HandleLinkClick">Gun Configurator</MudButton>
+        <MudButton Href="/data-downloader" OnClick="HandleLinkClick">Download Data</MudButton>
     </div>
-</div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="gun-configurator">
-                <span class="bi" aria-hidden="true"></span> Gun Configurator
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="data-downloader">
-                <span class="bi" aria-hidden="true"></span> Download Data
-            </NavLink>
-        </div>
-
-    </nav>
-</div>
-
- *@
-
-<MudNavMenu>
-    <MudNavLink Href="/gun-configurator" Match="NavLinkMatch.Prefix">Gun Configurator</MudNavLink>
-    <MudNavLink Href="/data-downloader" Match="NavLinkMatch.Prefix">Download Data</MudNavLink>
 </MudNavMenu>
+
+@code {
+    [Parameter]
+    public EventCallback OnNavMenuItemClick { get; set; }
+    [Parameter]
+    public EventCallback OnNavMenuItemClickHome { get; set; }
+
+
+    private void HandleLinkClick()
+    {
+        OnNavMenuItemClick.InvokeAsync();
+    }
+
+    private void HandleLinkClickHome()
+    {
+        OnNavMenuItemClickHome.InvokeAsync();
+    }
+
+}

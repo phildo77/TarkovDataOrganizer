@@ -10,10 +10,14 @@
     <MudAppBar>
         Tarkov Gun Mod Builder
     </MudAppBar>
-    <MudDrawer Open="true">
-        <NavMenu />
+    <MudDrawer Open="@IsDrawerOpened">
+        <NavMenu OnNavMenuItemClickHome="() => IsDrawerOpened = true" OnNavMenuItemClick="() => IsDrawerOpened = false" />
     </MudDrawer>
     <MudMainContent>
         @Body
     </MudMainContent>
 </MudLayout>
+
+@code {
+    private bool IsDrawerOpened { get; set; } = true;
+}
