@@ -614,13 +614,63 @@ else
                         break;
                 }
             }
-            else if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.Velocity) && filter.Value is float velocity)
+            else if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.Velocity) && filter.Value is double velocityDouble)
             {
-                filteredCombinations = filteredCombinations.Where(x => x.Velocity == velocity);
+                switch (filter.Operator)
+                {
+                    case ">":
+                        filteredCombinations = filteredCombinations.Where(x => x.Velocity > (float)velocityDouble);
+                        break;
+                    case "<":
+                        filteredCombinations = filteredCombinations.Where(x => x.Velocity < (float)velocityDouble);
+                        break;
+                    case ">=":
+                        filteredCombinations = filteredCombinations.Where(x => x.Velocity >= (float)velocityDouble);
+                        break;
+                    case "<=":
+                        filteredCombinations = filteredCombinations.Where(x => x.Velocity <= (float)velocityDouble);
+                        break;
+                    case "=":
+                        filteredCombinations = filteredCombinations.Where(x => Math.Abs(x.Velocity - (float)velocityDouble) < 0.0001);
+                        break;
+                    case "!=":
+                        filteredCombinations = filteredCombinations.Where(x => Math.Abs(x.Velocity - (float)velocityDouble) >= 0.0001);
+                        break;
+                    default:
+                        Console.WriteLine($"Unsupported operator: {filter.Operator}");
+                        break;
+                }
             }
-            else if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.AccuracyModifier) && filter.Value is float accuracyModifier)
+            else if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.AccuracyModifier) && filter.Value is double accuracyModifierDouble)
             {
-                filteredCombinations = filteredCombinations.Where(x => x.AccuracyModifier == accuracyModifier);
+                // Handle the operator from the filter (e.g., ">", "<", ">=", "<=", "=", "!=")
+                switch (filter.Operator)
+                {
+                    case ">":
+                        filteredCombinations = filteredCombinations.Where(x => x.AccuracyModifier > (float)accuracyModifierDouble);
+                        break;
+                    case "<":
+                        filteredCombinations = filteredCombinations.Where(x => x.AccuracyModifier < (float)accuracyModifierDouble);
+                        break;
+                    case ">=":
+                        filteredCombinations = filteredCombinations.Where(x => x.AccuracyModifier >= (float)accuracyModifierDouble);
+                        break;
+                    case "<=":
+                        filteredCombinations = filteredCombinations.Where(x => x.AccuracyModifier <= (float)accuracyModifierDouble);
+                        break;
+                    case "=":
+                        // Use a small tolerance to account for floating-point precision differences
+                        filteredCombinations = filteredCombinations.Where(x => Math.Abs(x.AccuracyModifier - (float)accuracyModifierDouble) < 0.0001);
+                        break;
+                    case "!=":
+                        // Use a small tolerance for inequality checks
+                        filteredCombinations = filteredCombinations.Where(x => Math.Abs(x.AccuracyModifier - (float)accuracyModifierDouble) >= 0.0001);
+                        break;
+                    default:
+                        // Handle unexpected operators, logging for debugging purposes
+                        Console.WriteLine($"Unsupported operator: {filter.Operator}");
+                        break;
+                }
             }
             else if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.Weight) && filter.Value is double weightDouble)
             {
