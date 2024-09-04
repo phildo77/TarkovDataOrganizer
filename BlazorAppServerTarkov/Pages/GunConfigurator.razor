@@ -559,13 +559,60 @@ else
 
         foreach (var filter in state.FilterDefinitions)
         {
-            if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.RecoilVertical) && filter.Value is float recoilVertical)
+            if (filter.Title == "Recoil Vertical" && filter.Value is double recoilVerticalDouble)
             {
-                filteredCombinations = filteredCombinations.Where(x => x.RecoilVertical == recoilVertical);
+                // Handle the operator from the filter (e.g., ">", "<", ">=", "<=", "=", "!=")
+                switch (filter.Operator)
+                {
+                    case ">":
+                        filteredCombinations = filteredCombinations.Where(x => x.RecoilVertical > (float)recoilVerticalDouble);
+                        break;
+                    case "<":
+                        filteredCombinations = filteredCombinations.Where(x => x.RecoilVertical < (float)recoilVerticalDouble);
+                        break;
+                    case ">=":
+                        filteredCombinations = filteredCombinations.Where(x => x.RecoilVertical >= (float)recoilVerticalDouble);
+                        break;
+                    case "<=":
+                        filteredCombinations = filteredCombinations.Where(x => x.RecoilVertical <= (float)recoilVerticalDouble);
+                        break;
+                    case "=":
+                        filteredCombinations = filteredCombinations.Where(x => Math.Abs(x.RecoilVertical - (float)recoilVerticalDouble) < 0.0001); // Tolerance for floating-point comparison
+                        break;
+                    case "!=":
+                        filteredCombinations = filteredCombinations.Where(x => Math.Abs(x.RecoilVertical - (float)recoilVerticalDouble) >= 0.0001); // Tolerance for floating-point comparison
+                        break;
+                    default:
+                        Console.WriteLine($"Unsupported operator: {filter.Operator}");
+                        break;
+                }
             }
-            else if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.Ergonomics) && filter.Value is float ergonomics)
+            else if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.Ergonomics) && filter.Value is double ergonomicsDouble)
             {
-                filteredCombinations = filteredCombinations.Where(x => x.Ergonomics == ergonomics);
+                switch (filter.Operator)
+                {
+                    case ">":
+                        filteredCombinations = filteredCombinations.Where(x => x.Ergonomics > (float)ergonomicsDouble);
+                        break;
+                    case "<":
+                        filteredCombinations = filteredCombinations.Where(x => x.Ergonomics < (float)ergonomicsDouble);
+                        break;
+                    case ">=":
+                        filteredCombinations = filteredCombinations.Where(x => x.Ergonomics >= (float)ergonomicsDouble);
+                        break;
+                    case "<=":
+                        filteredCombinations = filteredCombinations.Where(x => x.Ergonomics <= (float)ergonomicsDouble);
+                        break;
+                    case "=":
+                        filteredCombinations = filteredCombinations.Where(x => Math.Abs(x.Ergonomics - (float)ergonomicsDouble) < 0.0001);
+                        break;
+                    case "!=":
+                        filteredCombinations = filteredCombinations.Where(x => Math.Abs(x.Ergonomics - (float)ergonomicsDouble) >= 0.0001);
+                        break;
+                    default:
+                        Console.WriteLine($"Unsupported operator: {filter.Operator}");
+                        break;
+                }
             }
             else if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.Velocity) && filter.Value is float velocity)
             {
@@ -575,9 +622,33 @@ else
             {
                 filteredCombinations = filteredCombinations.Where(x => x.AccuracyModifier == accuracyModifier);
             }
-            else if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.Weight) && filter.Value is float weight)
+            else if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.Weight) && filter.Value is double weightDouble)
             {
-                filteredCombinations = filteredCombinations.Where(x => x.Weight == weight);
+                // Handle the operator from the filter (e.g., ">", "<", ">=", "<=", "=", "!=")
+                switch (filter.Operator)
+                {
+                    case ">":
+                        filteredCombinations = filteredCombinations.Where(x => x.Weight > (float)weightDouble);
+                        break;
+                    case "<":
+                        filteredCombinations = filteredCombinations.Where(x => x.Weight < (float)weightDouble);
+                        break;
+                    case ">=":
+                        filteredCombinations = filteredCombinations.Where(x => x.Weight >= (float)weightDouble);
+                        break;
+                    case "<=":
+                        filteredCombinations = filteredCombinations.Where(x => x.Weight <= (float)weightDouble);
+                        break;
+                    case "=":
+                        filteredCombinations = filteredCombinations.Where(x => Math.Abs(x.Weight - (float)weightDouble) < 0.0001); // Tolerance for floating-point comparison
+                        break;
+                    case "!=":
+                        filteredCombinations = filteredCombinations.Where(x => Math.Abs(x.Weight - (float)weightDouble) >= 0.0001); // Tolerance for floating-point comparison
+                        break;
+                    default:
+                        Console.WriteLine($"Unsupported operator: {filter.Operator}");
+                        break;
+                }
             }
             else if (filter.Title == "Base Price" && filter.Value is double basePriceDouble)
             {
