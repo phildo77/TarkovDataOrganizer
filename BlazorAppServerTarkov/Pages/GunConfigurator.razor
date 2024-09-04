@@ -362,10 +362,10 @@ else
 
             <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" ServerData="LoadServerData" RowsPerPage="pageSize" Height="45vh" Dense="false" Hover="true" Bordered="true" Striped="true">
                 <Columns>
-                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Weapon Image">
+                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination">
                         <CellTemplate>
-                            <img src="@SelectedWeapon.defaultPresetBaseImageLink" alt="@SelectedWeapon.name" class="weapon-default-image" />
-                            <span>@SelectedWeapon.name</span>
+                            <img src="@SelectedWeapon.defaultPresetBaseImageLink" alt="@SelectedWeapon.shortName" class="weapon-default-image" />
+                            <span>@SelectedWeapon.shortName</span>
                         </CellTemplate>
                     </TemplateColumn>
 
