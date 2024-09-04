@@ -47,7 +47,6 @@
         margin: 0 auto; /* Center the image if needed */
     }
 
-
     .weapon-image-container {
         display: flex;
         flex-direction: column;
@@ -110,7 +109,6 @@ else if (ErrorMessage != null)
 }
 else
 {
-
     <MudDrawerContainer>
         <MudDrawer Open="@isDrawerOpen" Anchor="Anchor.End" Variant="DrawerVariant.Temporary" Elevation="5" Style="padding: 10px;">
             @if (SelectedCombination != null)
@@ -156,11 +154,8 @@ else
                                                 {
                                                     var slotType = subslot.name; // Retrieve the slot type
                                                     <MudTreeViewItem T="string" Text="@slotType">
-                                                        <!-- Display Slot Type as the Text -->
-                                                        <!-- Matching structure to slotGroup snippet -->
                                                         <div>
                                                             <div style="margin-left: 10px;">
-                                                                <!-- Margin to match layout style -->
                                                                 <div style="display: flex; align-items: center; margin-top: 10px;">
                                                                     <img src="@subslotItem.gridImageLink" alt="@subslotItem.name" class="weapon-image" />
                                                                     <span>@subslotItem.name</span>
@@ -184,15 +179,10 @@ else
                     </div>
                 }
             }
-
         </MudDrawer>
-
     </MudDrawerContainer>
 
-
-
     <div style="padding: 16px;">
-        <!-- First Pane -->
         <div>
             <table>
                 <thead>
@@ -255,196 +245,114 @@ else
             </table>
         </div>
 
-        <!-- Second Pane -->
         <div>
             <table>
                 <thead>
                     <tr>
                         @if (SelectedWeapon != null)
                         {
-                            <th>Recoil Vertical</th>
-                            <th>Ergonomics</th>
-                            <th>Velocity</th>
-                            <th>Base Price</th>
-                            <th>Accuracy Modifier</th>
-                            <th>Weight</th>
-                            <th>Fire Rate</th>
-                            <th>Center of Impact</th>
-                            <th>Deviation Curve</th>
-                            <th>Deviation Max</th>
+                            <th>Attributes</th>
                         }
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        @if (SelectedWeapon != null)
-                        {
+                    @if (SelectedWeapon != null)
+                    {
+                        <tr>
                             <td>
-                                <MudSlider T="float"
-                                           @bind-Value="SelectedVerticalRecoil"
-                                           Min="@VerticalRecoilMin"
-                                           Max="@VerticalRecoilMax"
-                                           Step="1"
-                                           Variant="Variant.Filled" />
-                                <p>Recoil Vertical: @SelectedVerticalRecoil</p>
                                 <small>
-                                    Range:
-                                    <input type="number" @bind="VerticalRecoilMin" style="width: 50px;" /> -
-                                    <input type="number" @bind="VerticalRecoilMax" style="width: 50px;" />
+                                    Recoil Vertical Range:
+                                    <span>@VerticalRecoilMin</span> - <span>@VerticalRecoilMax</span>
                                 </small>
                             </td>
+                        </tr>
+                        <tr>
                             <td>
-                                <MudSlider T="float"
-                                           @bind-Value="SelectedErgonomics"
-                                           Min="@ErgonomicsMin"
-                                           Max="@ErgonomicsMax"
-                                           Step="1"
-                                           Variant="Variant.Filled" />
-                                <p>Ergonomics: @SelectedErgonomics</p>
                                 <small>
-                                    Range:
-                                    <input type="number" @bind="ErgonomicsMin" style="width: 50px;" /> -
-                                    <input type="number" @bind="ErgonomicsMax" style="width: 50px;" />
+                                    Ergonomics Range:
+                                    <span>@ErgonomicsMin</span> - <span>@ErgonomicsMax</span>
                                 </small>
                             </td>
+                        </tr>
+                        <tr>
                             <td>
-                                <MudSlider T="float"
-                                           @bind-Value="SelectedVelocity"
-                                           Min="@VelocityMin"
-                                           Max="@VelocityMax"
-                                           Step="10"
-                                           Variant="Variant.Filled" />
-                                <p>Velocity: @SelectedVelocity</p>
                                 <small>
-                                    Range:
-                                    <input type="number" @bind="VelocityMin" style="width: 50px;" /> -
-                                    <input type="number" @bind="VelocityMax" style="width: 50px;" />
+                                    Velocity Range:
+                                    <span>@VelocityMin</span> - <span>@VelocityMax</span>
                                 </small>
                             </td>
+                        </tr>
+                        <tr>
                             <td>
-                                <MudSlider T="int"
-                                           @bind-Value="SelectedBasePrice"
-                                           Min="@BasePriceMin"
-                                           Max="@BasePriceMax"
-                                           Step="100"
-                                           Variant="Variant.Filled"
-                                           ValueLabelFormat="C2" />
-                                <p>Base Price: @($"{SelectedBasePrice:C2}")</p>
                                 <small>
-                                    Range:
-                                    <input type="number" @bind="BasePriceMin" style="width: 50px;" /> -
-                                    <input type="number" @bind="BasePriceMax" style="width: 50px;" />
+                                    Base Price Range:
+                                    <span>@BasePriceMin</span> - <span>@BasePriceMax</span>
                                 </small>
                             </td>
+                        </tr>
+                        <tr>
                             <td>
-                                <MudSlider T="float"
-                                           @bind-Value="SelectedAccuracyModifier"
-                                           Min="@AccuracyModifierMin"
-                                           Max="@AccuracyModifierMax"
-                                           Step="0.01f"
-                                           Variant="Variant.Filled" />
-                                <p>Accuracy Modifier: @SelectedAccuracyModifier</p>
                                 <small>
-                                    Range:
-                                    <input type="number" step="0.01" @bind="AccuracyModifierMin" style="width: 50px;" /> -
-                                    <input type="number" step="0.01" @bind="AccuracyModifierMax" style="width: 50px;" />
+                                    Accuracy Modifier Range:
+                                    <span>@AccuracyModifierMin</span> - <span>@AccuracyModifierMax</span>
                                 </small>
                             </td>
+                        </tr>
+                        <tr>
                             <td>
-                                <MudSlider T="float"
-                                           @bind-Value="SelectedWeight"
-                                           Min="@WeightMin"
-                                           Max="@WeightMax"
-                                           Step="0.1f"
-                                           Variant="Variant.Filled" />
-                                <p>Weight: @SelectedWeight</p>
                                 <small>
-                                    Range:
-                                    <input type="number" step="0.1" @bind="WeightMin" style="width: 50px;" /> -
-                                    <input type="number" step="0.1" @bind="WeightMax" style="width: 50px;" />
+                                    Weight Range:
+                                    <span>@WeightMin</span> - <span>@WeightMax</span>
                                 </small>
                             </td>
+                        </tr>
+                        <tr>
                             <td>
-                                <MudSlider T="float"
-                                           @bind-Value="SelectedFireRate"
-                                           Min="@FireRateMin"
-                                           Max="@FireRateMax"
-                                           Step="1"
-                                           Variant="Variant.Filled" />
-                                <p>Fire Rate: @SelectedFireRate</p>
                                 <small>
-                                    Range:
-                                    <input type="number" @bind="FireRateMin" style="width: 50px;" /> -
-                                    <input type="number" @bind="FireRateMax" style="width: 50px;" />
+                                    Fire Rate Range:
+                                    <span>@FireRateMin</span> - <span>@FireRateMax</span>
                                 </small>
                             </td>
+                        </tr>
+                        <tr>
                             <td>
-                                <MudSlider T="float"
-                                           @bind-Value="SelectedCenterOfImpact"
-                                           Min="@CenterOfImpactMin"
-                                           Max="@CenterOfImpactMax"
-                                           Step="0.1f"
-                                           Variant="Variant.Filled" />
-                                <p>Center of Impact: @SelectedCenterOfImpact</p>
                                 <small>
-                                    Range:
-                                    <input type="number" step="0.1" @bind="CenterOfImpactMin" style="width: 50px;" /> -
-                                    <input type="number" step="0.1" @bind="CenterOfImpactMax" style="width: 50px;" />
+                                    Center of Impact Range:
+                                    <span>@CenterOfImpactMin</span> - <span>@CenterOfImpactMax</span>
                                 </small>
                             </td>
+                        </tr>
+                        <tr>
                             <td>
-                                <MudSlider T="float"
-                                           @bind-Value="SelectedDeviationCurve"
-                                           Min="@DeviationCurveMin"
-                                           Max="@DeviationCurveMax"
-                                           Step="0.1f"
-                                           Variant="Variant.Filled" />
-                                <p>Deviation Curve: @SelectedDeviationCurve</p>
                                 <small>
-                                    Range:
-                                    <input type="number" step="0.1" @bind="DeviationCurveMin" style="width: 50px;" /> -
-                                    <input type="number" step="0.1" @bind="DeviationCurveMax" style="width: 50px;" />
+                                    Deviation Curve Range:
+                                    <span>@DeviationCurveMin</span> - <span>@DeviationCurveMax</span>
                                 </small>
                             </td>
+                        </tr>
+                        <tr>
                             <td>
-                                <MudSlider T="float"
-                                           @bind-Value="SelectedDeviationMax"
-                                           Min="@DeviationMaxMin"
-                                           Max="@DeviationMaxMax"
-                                           Step="0.1f"
-                                           Variant="Variant.Filled" />
-                                <p>Deviation Max: @SelectedDeviationMax</p>
                                 <small>
-                                    Range:
-                                    <input type="number" step="0.1" @bind="DeviationMaxMin" style="width: 50px;" /> -
-                                    <input type="number" step="0.1" @bind="DeviationMaxMax" style="width: 50px;" />
+                                    Deviation Max Range:
+                                    <span>@DeviationMaxMin</span> - <span>@DeviationMaxMax</span>
                                 </small>
                             </td>
-                        }
-                    </tr>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
 
-
         @if (SelectedWeapon != null)
         {
-            // Total number of combinations
             var totalCombinations = TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon);
-
-            // Set the page size (number of items per page)
             int pageSize = 20;
 
-            // Create a function to load data for the current page
             async Task<GridData<TarkovData.TarkovItem.WeaponCombination>> LoadServerData(GridState<TarkovData.TarkovItem.WeaponCombination> state)
             {
-                // Calculate the current page
                 var currentPage = state.Page;
-
-                // Get the items for the current page
                 var paginatedCombinations = totalCombinations.Skip(currentPage * pageSize).Take(pageSize).ToList();
 
-                // Return the data to the grid
                 return new GridData<TarkovData.TarkovItem.WeaponCombination>
                         {
                             Items = paginatedCombinations,
@@ -454,7 +362,6 @@ else
 
             <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" ServerData="LoadServerData" RowsPerPage="pageSize" Height="45vh" Dense="false" Hover="true" Bordered="true" Striped="true">
                 <Columns>
-                    <!-- Template for Weapon Image moved to the first column -->
                     <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Weapon Image">
                         <CellTemplate>
                             <img src="@SelectedWeapon.defaultPresetBaseImageLink" alt="@SelectedWeapon.name" class="weapon-default-image" />
@@ -469,47 +376,16 @@ else
                     <PropertyColumn Property="x => x.Weight" Title="Weight" />
                     <PropertyColumn Property="x => x.BasePrice" Title="Base Price" Format="C2" />
 
-                    <!-- Template for Attachments, adjusted to display horizontally -->
-                    @*                     <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Attachments">
-            <CellTemplate>
-            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-            <!-- Flexbox for horizontal layout -->
-            @foreach (var slotGroup in context.Item.SlotGroups)
-            {
-            <div>
-            @if (slotGroup.Key != null)
-            {
-            <strong>@slotGroup.Key</strong> <!-- Display Slot Name -->
-            <div style="display: flex; gap: 5px; align-items: center;">
-            <!-- Flexbox for attachments -->
-            @foreach (var attachment in slotGroup.Value)
-            {
-            <div style="display: flex; flex-direction: column; align-items: center;">
-            <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" />
-            <span>@attachment.name</span>
-            </div>
-            }
-            </div>
-            }
-            </div>
-            }
-            </div>
-            </CellTemplate>
-            </TemplateColumn>
-            *@
-
                     <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Attachments">
                         <CellTemplate>
                             <div style="display: flex; flex-wrap: nowrap; gap: 10px; padding: 10px; align-items: center;">
-                                <!-- Flexbox for horizontal layout -->
                                 @foreach (var slotGroup in context.Item.SlotGroups)
                                 {
                                     <div>
                                         @if (slotGroup.Key != null)
                                         {
-                                            <strong>@slotGroup.Key</strong> <!-- Display Slot Name -->
+                                            <strong>@slotGroup.Key</strong>
                                             <div style="display: flex; gap: 5px; align-items: center;">
-                                                <!-- Flexbox for attachments -->
                                                 @foreach (var attachment in slotGroup.Value)
                                                 {
                                                     <div style="display: flex; flex-direction: column; align-items: center;">
@@ -521,11 +397,9 @@ else
                                     </div>
                                 }
                             </div>
-
                         </CellTemplate>
                     </TemplateColumn>
 
-                    <!-- Template for Selection Button -->
                     <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination">
                         <CellTemplate>
                             <MudButton OnClick="() => HandleCombinationSelection(context.Item)">
@@ -539,102 +413,7 @@ else
                 </PagerContent>
             </MudDataGrid>
         }
-
-
-        <!-- Third Pane -->
-@*         <div style="grid-column: span 2; justify-self: end;">
-            <div style="display: flex; flex-wrap: wrap; gap: 16px;">
-                @if (SelectedCombination != null)
-                {
-                    <div id="comboDisplay-@SelectedWeapon.name" style="border: 1px solid #ccc; padding: 8px; width: 300px;">
-                        <h3>@SelectedWeapon.name</h3>
-                        <img id="weaponImage-@SelectedWeapon.name" src="@SelectedWeapon.defaultPresetBaseImageLink" alt="Selected Weapon Image" style="width: 100%; height: auto;" />
-                        <p>Recoil Vertical: @SelectedCombination.RecoilVertical</p>
-                        <p>Ergonomics: @SelectedCombination.Ergonomics</p>
-                        <p>Velocity: @SelectedCombination.Velocity</p>
-                        <p>Base Price: @SelectedCombination.BasePrice</p>
-                        <p>Accuracy Modifier: @SelectedCombination.AccuracyModifier</p>
-                        <p>Weight: @SelectedCombination.Weight</p>
-
-                        <!-- Wrap each slot group in a container -->
-                        @foreach (var slotGroup in SelectedCombination.SlotGroups)
-                        {
-                            <div style="margin-bottom: 20px;">
-                                <div style="display: flex; align-items: center;">
-                                    <strong>@slotGroup.Key:</strong>
-                                </div>
-                                <div style="margin-left: 10px;">
-                                    @if (slotGroup.Value.Any())
-                                    {
-                                        @foreach (var attachment in slotGroup.Value)
-                                        {
-                                            <!-- Render TreeView for subslots if they exist -->
-                                            @if (attachment.HasSubSlots())
-                                            {
-                                                <div style="margin-top: 10px;">
-                                                    <MudTreeView T="string">
-                                                        <div style="display: flex; align-items: center; margin-top: 10px;">
-                                                            <img src="@attachment.gridImageLink" alt="@attachment.name" style="width: 50px; height: 50px; margin-right: 10px;" />
-                                                            <span>@attachment.name</span>
-                                                            <span style="margin-left: 10px;">
-                                                                Recoil Mod: @attachment.recoilModifier,
-                                                                Ergo Mod: @attachment.ergonomicsModifier,
-                                                                Velocity: @attachment.velocity,
-                                                                Weight: @attachment.weight
-                                                            </span>
-                                                        </div>
-                                                        @foreach (var subslot in attachment.GetSubSlots())
-                                                        {
-                                                            var subslotItem = TarkovData.TarkovItem.DataTable.GetValueOrDefault(subslot.allowedIDs.FirstOrDefault());
-                                                            if (subslotItem != null)
-                                                            {
-                                                                <MudTreeViewItem T="string" Text="@subslotItem.categoryName">
-                                                                    <div style="display: flex; align-items: center;">
-                                                                        <img src="@subslotItem.gridImageLink" alt="@subslotItem.name" style="width: 40px; height: 40px; margin-right: 10px;" />
-                                                                        <span>@subslotItem.name</span>
-                                                                        <span style="margin-left: 10px;">
-                                                                            Recoil Mod: @subslotItem.recoilModifier,
-                                                                            Ergo Mod: @subslotItem.ergonomicsModifier,
-                                                                            Velocity: @subslotItem.velocity,
-                                                                            Weight: @subslotItem.weight
-                                                                        </span>
-                                                                    </div>
-                                                                </MudTreeViewItem>
-                                                            }
-                                                        }
-                                                    </MudTreeView>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <div style="display: flex; align-items: center; margin-top: 10px;">
-                                                    <img src="@attachment.gridImageLink" alt="@attachment.name" style="width: 50px; height: 50px; margin-right: 10px;" />
-                                                    <span>@attachment.name</span>
-                                                    <span style="margin-left: 10px;">
-                                                        Recoil Mod: @attachment.recoilModifier,
-                                                        Ergo Mod: @attachment.ergonomicsModifier,
-                                                        Velocity: @attachment.velocity,
-                                                        Weight: @attachment.weight
-                                                    </span>
-                                                </div>
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <!-- Display empty slot -->
-                                        <div style="display: flex; align-items: center; margin-top: 10px;">
-                                            <span style="color: gray;">(Empty Slot)</span>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </div>
-                }
-            </div>
-        </div>
- *@    </div>
+    </div>
 }
 
 @code {
@@ -694,7 +473,6 @@ else
     private float DeviationMaxMin { get; set; }
     private float DeviationMaxMax { get; set; }
 
-    // Define SelectedAccuracyModifiers
     private IEnumerable<float> SelectedAccuracyModifiers { get; set; } = new List<float>();
 
     private TarkovData.TarkovItem.WeaponCombination? SelectedCombination { get; set; }
@@ -718,6 +496,7 @@ else
         isDrawerOpen = true; // Open the drawer
         StateHasChanged(); // Trigger a UI update
     }
+
     private void SetMinMaxSliders()
     {
         if (SelectedWeapon != null)
@@ -748,7 +527,6 @@ else
             DeviationMaxMin = SelectedWeapon.deviationMax / 2;
             DeviationMaxMax = SelectedWeapon.deviationMax * 2;
         }
-
     }
 
     private List<List<string>> GeneratedCombinations { get; set; } = new();
@@ -757,17 +535,14 @@ else
     {
         if (selectedWeapon == null) return;
 
-        // Clear previous combinations
         GeneratedCombinations.Clear();
 
-        // Get the slots for the selected weapon
         if (TarkovItem.DataTableSlots.TryGetValue(selectedWeapon.id, out var weaponSlots))
         {
             foreach (var slot in weaponSlots.Values)
             {
                 if (slot.required)
                 {
-                    // Generate combinations for the required slots
                     GeneratedCombinations.Add(slot.allowedIDs);
                 }
             }
@@ -776,9 +551,7 @@ else
         StateHasChanged(); // Update UI
     }
 
-
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -786,36 +559,12 @@ else
 
         try
         {
-            // Check if the data file exists
-            // if (File.Exists(filePath))
-            // {
-            //     // Load data from file
-            //     var jsonData = await File.ReadAllTextAsync(filePath);
-            //     var loadedData = JsonSerializer.Deserialize<IEnumerable<TarkovData.TarkovItem>>(jsonData);
-
-            //     // Implement this method in TarkovItem class to load the data into your application state
-            //     if (loadedData != null)
-            //     {
-            //         TarkovData.TarkovItem.LoadData(loadedData); // Ensure this method exists and loads data appropriately
-            //         Categories = TarkovData.TarkovItem.GetDistinctCategories();
-            //         Calibers = TarkovData.TarkovItem.GetDistinctCalibers();
-            //     }
-            //     else
-            //     {
-            //         throw new Exception("Failed to load data from file.");
-            //     }
-            // }
-            // else
-            // {
-            // Download data as a fallback
             await TarkovData.TarkovItem.DownloadTable();
             Categories = TarkovData.TarkovItem.GetDistinctCategories();
             Calibers = TarkovData.TarkovItem.GetDistinctCalibers();
 
-            // Save downloaded data to a file
             var jsonData = JsonSerializer.Serialize(TarkovData.TarkovItem.DataTable.Values);
             await File.WriteAllTextAsync(filePath, jsonData);
-            // }
         }
         catch (Exception ex)
         {
@@ -824,18 +573,15 @@ else
         finally
         {
             IsLoading = false;
+            SetMinMaxSliders(); // Ensure min/max values are initialized after data is loaded
         }
-
     }
 
-
-    private IEnumerable<TarkovData.TarkovItem>
-    FilteredWeaponNames =>
+    private IEnumerable<TarkovData.TarkovItem> FilteredWeaponNames =>
     TarkovData.TarkovItem.DataTable.Values
     .Where(item => item.types.Split('|').Contains("gun", StringComparer.OrdinalIgnoreCase) &&
     (!SelectedCategories.Any() || SelectedCategories.Contains(item.categoryName)) &&
     (!SelectedCalibers.Any() || SelectedCalibers.Contains(item.caliber)));
-
 
     private void OnSelectedCategoryChanged()
     {
@@ -897,7 +643,6 @@ else
         GenerateWeaponCombinations(SelectedWeapon);
     }
 
-
     private void OnWeaponRowClicked(TarkovData.TarkovItem weapon)
     {
         if (SelectedWeapons.Contains(weapon.name))
@@ -909,7 +654,6 @@ else
             SelectedWeapons.Add(weapon.name);
         }
 
-        // Optionally, you could update SelectedWeapon based on last selected or other logic
         SelectedWeapon = SelectedWeapons.Any()
             ? TarkovData.TarkovItem.DataTable.Values.FirstOrDefault(w => w.name == SelectedWeapons.Last())
             : null;
@@ -931,10 +675,8 @@ else
 
     private async Task OnSelectedCaliberChanged()
     {
-        // Log selected calibers for debugging
         Console.WriteLine($"SelectedCalibers changed to: {string.Join(", ", SelectedCalibers)}");
 
-        // Update filtered weapons based on selected calibers
         StateHasChanged();
     }
 
