@@ -350,8 +350,63 @@ else
 
             async Task<GridData<TarkovData.TarkovItem.WeaponCombination>> LoadServerData(GridState<TarkovData.TarkovItem.WeaponCombination> state)
             {
+                if (SelectedWeapon == null)
+                {
+                    return new GridData<TarkovData.TarkovItem.WeaponCombination>
+                            {
+                                Items = new List<TarkovData.TarkovItem.WeaponCombination>(),
+                                TotalItems = 0
+                            };
+                }
+
+                var totalCombinations = TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon);
+
+                // Apply sorting
+                IOrderedEnumerable<TarkovData.TarkovItem.WeaponCombination> sortedCombinations = totalCombinations.OrderBy(x => 0); // Default ordering
+                foreach (var sortDefinition in state.SortDefinitions)
+                {
+                    if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.RecoilVertical))
+                    {
+                        sortedCombinations = !sortDefinition.Descending
+                        ? sortedCombinations.ThenBy(x => x.RecoilVertical)
+                        : sortedCombinations.ThenByDescending(x => x.RecoilVertical);
+                    }
+                    else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.Ergonomics))
+                    {
+                        sortedCombinations = !sortDefinition.Descending
+                        ? sortedCombinations.ThenBy(x => x.Ergonomics)
+                        : sortedCombinations.ThenByDescending(x => x.Ergonomics);
+                    }
+                    else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.Velocity))
+                    {
+                        sortedCombinations = !sortDefinition.Descending
+                        ? sortedCombinations.ThenBy(x => x.Velocity)
+                        : sortedCombinations.ThenByDescending(x => x.Velocity);
+                    }
+                    else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.AccuracyModifier))
+                    {
+                        sortedCombinations = !sortDefinition.Descending
+                        ? sortedCombinations.ThenBy(x => x.AccuracyModifier)
+                        : sortedCombinations.ThenByDescending(x => x.AccuracyModifier);
+                    }
+                    else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.Weight))
+                    {
+                        sortedCombinations = !sortDefinition.Descending
+                        ? sortedCombinations.ThenBy(x => x.Weight)
+                        : sortedCombinations.ThenByDescending(x => x.Weight);
+                    }
+                    else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.BasePrice))
+                    {
+                        sortedCombinations = !sortDefinition.Descending
+                        ? sortedCombinations.ThenBy(x => x.BasePrice)
+                        : sortedCombinations.ThenByDescending(x => x.BasePrice);
+                    }
+                    // Add additional sorting logic for other properties as needed
+                }
+
+                // Pagination logic
                 var currentPage = state.Page;
-                var paginatedCombinations = totalCombinations.Skip(currentPage * pageSize).Take(pageSize).ToList();
+                var paginatedCombinations = sortedCombinations.Skip(currentPage * state.PageSize).Take(state.PageSize).ToList();
 
                 return new GridData<TarkovData.TarkovItem.WeaponCombination>
                         {
@@ -360,7 +415,7 @@ else
                         };
             }
 
-            <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" ServerData="LoadServerData" RowsPerPage="pageSize" Height="45vh" Dense="false" Hover="true" Bordered="true" Striped="true">
+            <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" ServerData="LoadServerData" RowsPerPage="pageSize" Height="45vh" Filterable="true" SortMode="SortMode.Multiple" Dense="false" Hover="true" Bordered="true" Striped="true">
                 <Columns>
                     <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination">
                         <CellTemplate>
