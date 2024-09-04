@@ -348,73 +348,6 @@ else
             var totalCombinations = TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon);
             int pageSize = 20;
 
-            async Task<GridData<TarkovData.TarkovItem.WeaponCombination>> LoadServerData(GridState<TarkovData.TarkovItem.WeaponCombination> state)
-            {
-                if (SelectedWeapon == null)
-                {
-                    return new GridData<TarkovData.TarkovItem.WeaponCombination>
-                            {
-                                Items = new List<TarkovData.TarkovItem.WeaponCombination>(),
-                                TotalItems = 0
-                            };
-                }
-
-                var totalCombinations = TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon);
-
-                // Apply sorting
-                IOrderedEnumerable<TarkovData.TarkovItem.WeaponCombination> sortedCombinations = totalCombinations.OrderBy(x => 0); // Default ordering
-                foreach (var sortDefinition in state.SortDefinitions)
-                {
-                    if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.RecoilVertical))
-                    {
-                        sortedCombinations = !sortDefinition.Descending
-                        ? sortedCombinations.ThenBy(x => x.RecoilVertical)
-                        : sortedCombinations.ThenByDescending(x => x.RecoilVertical);
-                    }
-                    else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.Ergonomics))
-                    {
-                        sortedCombinations = !sortDefinition.Descending
-                        ? sortedCombinations.ThenBy(x => x.Ergonomics)
-                        : sortedCombinations.ThenByDescending(x => x.Ergonomics);
-                    }
-                    else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.Velocity))
-                    {
-                        sortedCombinations = !sortDefinition.Descending
-                        ? sortedCombinations.ThenBy(x => x.Velocity)
-                        : sortedCombinations.ThenByDescending(x => x.Velocity);
-                    }
-                    else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.AccuracyModifier))
-                    {
-                        sortedCombinations = !sortDefinition.Descending
-                        ? sortedCombinations.ThenBy(x => x.AccuracyModifier)
-                        : sortedCombinations.ThenByDescending(x => x.AccuracyModifier);
-                    }
-                    else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.Weight))
-                    {
-                        sortedCombinations = !sortDefinition.Descending
-                        ? sortedCombinations.ThenBy(x => x.Weight)
-                        : sortedCombinations.ThenByDescending(x => x.Weight);
-                    }
-                    else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.BasePrice))
-                    {
-                        sortedCombinations = !sortDefinition.Descending
-                        ? sortedCombinations.ThenBy(x => x.BasePrice)
-                        : sortedCombinations.ThenByDescending(x => x.BasePrice);
-                    }
-                    // Add additional sorting logic for other properties as needed
-                }
-
-                // Pagination logic
-                var currentPage = state.Page;
-                var paginatedCombinations = sortedCombinations.Skip(currentPage * state.PageSize).Take(state.PageSize).ToList();
-
-                return new GridData<TarkovData.TarkovItem.WeaponCombination>
-                        {
-                            Items = paginatedCombinations,
-                            TotalItems = totalCombinations.Count
-                        };
-            }
-
             <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" ServerData="LoadServerData" RowsPerPage="pageSize" Height="45vh" Filterable="true" SortMode="SortMode.Multiple" Dense="false" Hover="true" Bordered="true" Striped="true">
                 <Columns>
                     <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination">
@@ -608,6 +541,130 @@ else
 
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
+    async Task<GridData<TarkovData.TarkovItem.WeaponCombination>> LoadServerData(GridState<TarkovData.TarkovItem.WeaponCombination> state)
+    {
+        if (SelectedWeapon == null)
+        {
+            return new GridData<TarkovData.TarkovItem.WeaponCombination>
+                {
+                    Items = new List<TarkovData.TarkovItem.WeaponCombination>(),
+                    TotalItems = 0
+                };
+        }
+
+        var totalCombinations = TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon);
+
+        // Apply filters from the DataGrid
+        IEnumerable<TarkovData.TarkovItem.WeaponCombination> filteredCombinations = totalCombinations;
+
+        foreach (var filter in state.FilterDefinitions)
+        {
+            if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.RecoilVertical) && filter.Value is float recoilVertical)
+            {
+                filteredCombinations = filteredCombinations.Where(x => x.RecoilVertical == recoilVertical);
+            }
+            else if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.Ergonomics) && filter.Value is float ergonomics)
+            {
+                filteredCombinations = filteredCombinations.Where(x => x.Ergonomics == ergonomics);
+            }
+            else if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.Velocity) && filter.Value is float velocity)
+            {
+                filteredCombinations = filteredCombinations.Where(x => x.Velocity == velocity);
+            }
+            else if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.AccuracyModifier) && filter.Value is float accuracyModifier)
+            {
+                filteredCombinations = filteredCombinations.Where(x => x.AccuracyModifier == accuracyModifier);
+            }
+            else if (filter.Title == nameof(TarkovData.TarkovItem.WeaponCombination.Weight) && filter.Value is float weight)
+            {
+                filteredCombinations = filteredCombinations.Where(x => x.Weight == weight);
+            }
+            else if (filter.Title == "Base Price" && filter.Value is double basePriceDouble)
+            {
+                // Handle the operator from the filter (e.g., ">", "<", ">=", "<=", "=", "!=")
+                switch (filter.Operator)
+                {
+                    case ">":
+                        filteredCombinations = filteredCombinations.Where(x => x.BasePrice > (int)basePriceDouble);
+                        break;
+                    case "<":
+                        filteredCombinations = filteredCombinations.Where(x => x.BasePrice < (int)basePriceDouble);
+                        break;
+                    case ">=":
+                        filteredCombinations = filteredCombinations.Where(x => x.BasePrice >= (int)basePriceDouble);
+                        break;
+                    case "<=":
+                        filteredCombinations = filteredCombinations.Where(x => x.BasePrice <= (int)basePriceDouble);
+                        break;
+                    case "=":
+                        filteredCombinations = filteredCombinations.Where(x => x.BasePrice == (int)basePriceDouble);
+                        break;
+                    case "!=":
+                        filteredCombinations = filteredCombinations.Where(x => x.BasePrice != (int)basePriceDouble);
+                        break;
+                    default:
+                        // If no known operator, log or handle the default case
+                        Console.WriteLine($"Unsupported operator: {filter.Operator}");
+                        break;
+                }
+            }
+            // Add additional filtering logic for other properties as needed
+        }
+
+        // Apply sorting
+        IOrderedEnumerable<TarkovData.TarkovItem.WeaponCombination> sortedCombinations = filteredCombinations.OrderBy(x => 0); // Default ordering
+        foreach (var sortDefinition in state.SortDefinitions)
+        {
+            if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.RecoilVertical))
+            {
+                sortedCombinations = !sortDefinition.Descending
+                    ? sortedCombinations.ThenBy(x => x.RecoilVertical)
+                    : sortedCombinations.ThenByDescending(x => x.RecoilVertical);
+            }
+            else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.Ergonomics))
+            {
+                sortedCombinations = !sortDefinition.Descending
+                    ? sortedCombinations.ThenBy(x => x.Ergonomics)
+                    : sortedCombinations.ThenByDescending(x => x.Ergonomics);
+            }
+            else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.Velocity))
+            {
+                sortedCombinations = !sortDefinition.Descending
+                    ? sortedCombinations.ThenBy(x => x.Velocity)
+                    : sortedCombinations.ThenByDescending(x => x.Velocity);
+            }
+            else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.AccuracyModifier))
+            {
+                sortedCombinations = !sortDefinition.Descending
+                    ? sortedCombinations.ThenBy(x => x.AccuracyModifier)
+                    : sortedCombinations.ThenByDescending(x => x.AccuracyModifier);
+            }
+            else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.Weight))
+            {
+                sortedCombinations = !sortDefinition.Descending
+                    ? sortedCombinations.ThenBy(x => x.Weight)
+                    : sortedCombinations.ThenByDescending(x => x.Weight);
+            }
+            else if (sortDefinition.SortBy == nameof(TarkovData.TarkovItem.WeaponCombination.BasePrice))
+            {
+                sortedCombinations = !sortDefinition.Descending
+                    ? sortedCombinations.ThenBy(x => x.BasePrice)
+                    : sortedCombinations.ThenByDescending(x => x.BasePrice);
+            }
+            // Add additional sorting logic for other properties as needed
+        }
+
+        // Pagination logic
+        var currentPage = state.Page;
+        var paginatedCombinations = sortedCombinations.Skip(currentPage * state.PageSize).Take(state.PageSize).ToList();
+
+        return new GridData<TarkovData.TarkovItem.WeaponCombination>
+            {
+                Items = paginatedCombinations,
+                TotalItems = filteredCombinations.Count()
+            };
+    }
+
     protected override async Task OnInitializedAsync()
     {
         string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TarkovData.json");
@@ -630,6 +687,11 @@ else
             IsLoading = false;
             SetMinMaxSliders(); // Ensure min/max values are initialized after data is loaded
         }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
     }
 
     private IEnumerable<TarkovData.TarkovItem> FilteredWeaponNames =>
@@ -716,6 +778,17 @@ else
         UpdateAvailableSlots(SelectedWeapon);
         SetMinMaxSliders();
         StateHasChanged();
+    }
+
+    private IEnumerable<TarkovData.TarkovItem.WeaponCombination> ApplyFilters(
+    IEnumerable<TarkovData.TarkovItem.WeaponCombination> combinations,
+    Dictionary<string, Func<TarkovData.TarkovItem.WeaponCombination, bool>> filterDefinitions)
+    {
+        foreach (var filter in filterDefinitions)
+        {
+            combinations = combinations.Where(filter.Value);
+        }
+        return combinations;
     }
 
     private async Task OnSelectedWeaponChanged(ChangeEventArgs e)
