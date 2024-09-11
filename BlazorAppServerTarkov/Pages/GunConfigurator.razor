@@ -348,45 +348,14 @@ else
             var totalCombinations = TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon);
             int pageSize = 20;
 
-            <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" ServerData="LoadServerData" RowsPerPage="pageSize" Height="45vh" Filterable="true" SortMode="SortMode.Multiple" Dense="false" Hover="true" Bordered="true" Striped="true">
+            <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" ServerData="LoadServerData" RowsPerPage="20" Height="45vh" Filterable="true" SortMode="SortMode.Multiple" Dense="false" Hover="true" Bordered="true" Striped="true">
                 <Columns>
-                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination">
-                        <CellTemplate>
-                            <img src="@SelectedWeapon.defaultPresetBaseImageLink" alt="@SelectedWeapon.shortName" class="weapon-default-image" />
-                            <span>@SelectedWeapon.shortName</span>
-                        </CellTemplate>
-                    </TemplateColumn>
-
                     <PropertyColumn Property="x => x.RecoilVertical" Title="Recoil Vertical" />
                     <PropertyColumn Property="x => x.Ergonomics" Title="Ergonomics" />
                     <PropertyColumn Property="x => x.Velocity" Title="Velocity" />
                     <PropertyColumn Property="x => x.AccuracyModifier" Title="Accuracy Modifier" />
                     <PropertyColumn Property="x => x.Weight" Title="Weight" />
                     <PropertyColumn Property="x => x.BasePrice" Title="Base Price" Format="C2" />
-
-                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Attachments">
-                        <CellTemplate>
-                            <div style="display: flex; flex-wrap: nowrap; gap: 10px; padding: 10px; align-items: center;">
-                                @foreach (var slotGroup in context.Item.SlotGroups)
-                                {
-                                    <div>
-                                        @if (slotGroup.Key != null)
-                                        {
-                                            <strong>@slotGroup.Key</strong>
-                                            <div style="display: flex; gap: 5px; align-items: center;">
-                                                @foreach (var attachment in slotGroup.Value)
-                                                {
-                                                    <div style="display: flex; flex-direction: column; align-items: center;">
-                                                        <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" />
-                                                    </div>
-                                                }
-                                            </div>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        </CellTemplate>
-                    </TemplateColumn>
 
                     <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination">
                         <CellTemplate>
@@ -396,9 +365,33 @@ else
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>
-                <PagerContent>
-                    <MudDataGridPager PageSizeOptions=@(new int[] {5, 10, 20}) />
-                </PagerContent>
+
+                <ChildRowContent>
+                    @if (context.Item is not null)
+                    {
+                        <MudTd ColSpan="6" Style="display: contents;">
+                            <table style="width: 100%; display: flex; justify-content: space-evenly;">
+                                @foreach (var slotGroup in context.Item.SlotGroups)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; flex-wrap: nowrap; gap: 10px; align-items: center; overflow-x: auto;">
+                                                @foreach (var attachment in slotGroup.Value)
+                                                {
+                                                    <div style="display: flex; flex-direction: column; align-items: center; margin: 5px; min-width: 80px;">
+                                                        <strong>@slotGroup.Key</strong>
+                                                        <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" style="width: 50px; height: 50px;" />
+                                                        <span style="height: 25px;">@attachment.name</span>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </MudTd>
+                    }
+                </ChildRowContent>
             </MudDataGrid>
         }
     </div>
