@@ -357,6 +357,17 @@ else
                     <PropertyColumn Property="x => x.Weight" Title="Weight" />
                     <PropertyColumn Property="x => x.BasePrice" Title="Base Price" Format="C2" />
 
+                    <!-- New Column to Show Attachment Count -->
+                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Attachment Count">
+                        <CellTemplate>
+                            @{
+                                // Calculate the total count of attachments for the combination
+                                var attachmentCount = context.Item.SlotGroups.Sum(group => group.Value.Count);
+                            }
+                            <span>@attachmentCount</span>
+                        </CellTemplate>
+                    </TemplateColumn>
+
                     <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination">
                         <CellTemplate>
                             <MudButton OnClick="() => HandleCombinationSelection(context.Item)">
@@ -365,33 +376,9 @@ else
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>
-
-                <ChildRowContent>
-                    @if (context.Item is not null)
-                    {
-                        <MudTd ColSpan="6" Style="display: contents;">
-                            <table style="width: 100%; display: flex; justify-content: space-evenly;">
-                                @foreach (var slotGroup in context.Item.SlotGroups)
-                                {
-                                    <tr>
-                                        <td>
-                                            <div style="display: flex; flex-wrap: nowrap; gap: 10px; align-items: center; overflow-x: auto;">
-                                                @foreach (var attachment in slotGroup.Value)
-                                                {
-                                                    <div style="display: flex; flex-direction: column; align-items: center; margin: 5px; min-width: 80px;">
-                                                        <strong>@slotGroup.Key</strong>
-                                                        <img src="@attachment.gridImageLink" alt="@attachment.name" class="weapon-image" style="width: 50px; height: 50px;" />
-                                                        <span style="height: 25px;">@attachment.name</span>
-                                                    </div>
-                                                }
-                                            </div>
-                                        </td>
-                                    </tr>
-                                }
-                            </table>
-                        </MudTd>
-                    }
-                </ChildRowContent>
+                <PagerContent>
+                    <MudDataGridPager />
+                </PagerContent>
             </MudDataGrid>
         }
     </div>
@@ -831,6 +818,64 @@ else
         Console.WriteLine($"SelectedWeights changed to: {string.Join(", ", SelectedWeights)}");
     }
 
+    private void CalculateStatRanges()
+    {
+        if (SelectedWeapon == null) return;
+
+        // Generate combinations for the selected weapon
+        var combinations = TarkovData.TarkovItem.GenerateUniqueCombinations(SelectedWeapon);
+
+        if (!combinations.Any()) return;
+
+        // Initialize min and max values based on the first combination
+        VerticalRecoilMin = VerticalRecoilMax = combinations.First().RecoilVertical;
+        ErgonomicsMin = ErgonomicsMax = combinations.First().Ergonomics;
+        VelocityMin = VelocityMax = combinations.First().Velocity;
+        BasePriceMin = BasePriceMax = combinations.First().BasePrice;
+        AccuracyModifierMin = AccuracyModifierMax = combinations.First().AccuracyModifier;
+        WeightMin = WeightMax = combinations.First().Weight;
+        FireRateMin = FireRateMax = SelectedWeapon.fireRate;
+        CenterOfImpactMin = CenterOfImpactMax = SelectedWeapon.centerOfImpact;
+        DeviationCurveMin = DeviationCurveMax = SelectedWeapon.deviationCurve;
+        DeviationMaxMin = DeviationMaxMax = SelectedWeapon.deviationMax;
+
+        // Iterate over combinations to find min and max for each stat
+        foreach (var combination in combinations)
+        {
+            VerticalRecoilMin = Math.Min(VerticalRecoilMin, combination.RecoilVertical);
+            VerticalRecoilMax = Math.Max(VerticalRecoilMax, combination.RecoilVertical);
+
+            ErgonomicsMin = Math.Min(ErgonomicsMin, combination.Ergonomics);
+            ErgonomicsMax = Math.Max(ErgonomicsMax, combination.Ergonomics);
+
+            VelocityMin = Math.Min(VelocityMin, combination.Velocity);
+            VelocityMax = Math.Max(VelocityMax, combination.Velocity);
+
+            BasePriceMin = Math.Min(BasePriceMin, combination.BasePrice);
+            BasePriceMax = Math.Max(BasePriceMax, combination.BasePrice);
+
+            AccuracyModifierMin = Math.Min(AccuracyModifierMin, combination.AccuracyModifier);
+            AccuracyModifierMax = Math.Max(AccuracyModifierMax, combination.AccuracyModifier);
+
+            WeightMin = Math.Min(WeightMin, combination.Weight);
+            WeightMax = Math.Max(WeightMax, combination.Weight);
+        }
+
+        // Adjust ranges for additional stats like Fire Rate, Center of Impact, etc.
+        FireRateMin = SelectedWeapon.fireRate / 2;
+        FireRateMax = SelectedWeapon.fireRate * 2;
+
+        CenterOfImpactMin = SelectedWeapon.centerOfImpact / 2;
+        CenterOfImpactMax = SelectedWeapon.centerOfImpact * 2;
+
+        DeviationCurveMin = SelectedWeapon.deviationCurve / 2;
+        DeviationCurveMax = SelectedWeapon.deviationCurve * 2;
+
+        DeviationMaxMin = SelectedWeapon.deviationMax / 2;
+        DeviationMaxMax = SelectedWeapon.deviationMax * 2;
+    }
+
+
     private void UpdateAvailableSlots(TarkovData.TarkovItem selectedWeapon)
     {
         AvailableSlots.Clear();
@@ -872,6 +917,7 @@ else
     {
         SelectedWeapon = weapon;
         GenerateWeaponCombinations(SelectedWeapon);
+        CalculateStatRanges(); // Calculate ranges after generating combinations
     }
 
     private void OnWeaponRowClicked(TarkovData.TarkovItem weapon)
