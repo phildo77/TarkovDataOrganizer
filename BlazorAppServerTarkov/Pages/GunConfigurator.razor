@@ -786,7 +786,6 @@ else
         finally
         {
             IsLoading = false;
-            SetMinMaxSliders(); // Ensure min/max values are initialized after data is loaded
         }
     }
 
@@ -828,20 +827,24 @@ else
         if (!combinations.Any()) return;
 
         // Initialize min and max values based on the first combination
-        VerticalRecoilMin = VerticalRecoilMax = combinations.First().RecoilVertical;
-        ErgonomicsMin = ErgonomicsMax = combinations.First().Ergonomics;
-        VelocityMin = VelocityMax = combinations.First().Velocity;
-        BasePriceMin = BasePriceMax = combinations.First().BasePrice;
-        AccuracyModifierMin = AccuracyModifierMax = combinations.First().AccuracyModifier;
-        WeightMin = WeightMax = combinations.First().Weight;
-        FireRateMin = FireRateMax = SelectedWeapon.fireRate;
-        CenterOfImpactMin = CenterOfImpactMax = SelectedWeapon.centerOfImpact;
-        DeviationCurveMin = DeviationCurveMax = SelectedWeapon.deviationCurve;
-        DeviationMaxMin = DeviationMaxMax = SelectedWeapon.deviationMax;
+        var firstCombination = combinations.First();
+
+        VerticalRecoilMin = VerticalRecoilMax = firstCombination.RecoilVertical;
+        ErgonomicsMin = ErgonomicsMax = firstCombination.Ergonomics;
+        VelocityMin = VelocityMax = firstCombination.Velocity;
+        BasePriceMin = BasePriceMax = firstCombination.BasePrice;
+        AccuracyModifierMin = AccuracyModifierMax = firstCombination.AccuracyModifier;
+        WeightMin = WeightMax = firstCombination.Weight;
+
+        // Debug: Log the initial values
+        Console.WriteLine($"Initial Base Price: {BasePriceMin}");
 
         // Iterate over combinations to find min and max for each stat
         foreach (var combination in combinations)
         {
+            // Debug: Log each combination's base price
+            Console.WriteLine($"Combination Base Price: {combination.BasePrice}");
+
             VerticalRecoilMin = Math.Min(VerticalRecoilMin, combination.RecoilVertical);
             VerticalRecoilMax = Math.Max(VerticalRecoilMax, combination.RecoilVertical);
 
@@ -861,18 +864,8 @@ else
             WeightMax = Math.Max(WeightMax, combination.Weight);
         }
 
-        // Adjust ranges for additional stats like Fire Rate, Center of Impact, etc.
-        FireRateMin = SelectedWeapon.fireRate / 2;
-        FireRateMax = SelectedWeapon.fireRate * 2;
-
-        CenterOfImpactMin = SelectedWeapon.centerOfImpact / 2;
-        CenterOfImpactMax = SelectedWeapon.centerOfImpact * 2;
-
-        DeviationCurveMin = SelectedWeapon.deviationCurve / 2;
-        DeviationCurveMax = SelectedWeapon.deviationCurve * 2;
-
-        DeviationMaxMin = SelectedWeapon.deviationMax / 2;
-        DeviationMaxMax = SelectedWeapon.deviationMax * 2;
+        // Debug: Log the final calculated range
+        Console.WriteLine($"Final Base Price Range: {BasePriceMin} - {BasePriceMax}");
     }
 
 
@@ -936,7 +929,6 @@ else
             : null;
         OnWeaponSelected(SelectedWeapon);
         UpdateAvailableSlots(SelectedWeapon);
-        SetMinMaxSliders();
         StateHasChanged();
     }
 
