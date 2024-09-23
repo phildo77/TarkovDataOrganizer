@@ -53,60 +53,73 @@ public partial class TarkovData
         {
             var uniqueCombinations = new List<WeaponCombination>();
 
+            // Make sure the weapon has slots
             if (DataTableSlots.TryGetValue(selectedWeapon.id, out var weaponSlots))
             {
-                var slotCombinations = new List<List<TarkovItem>>();
-
-                foreach (var slot in weaponSlots.Values)
-                {
-                    // Exclude magazine slots
-                    if (slot.name.Equals("Magazine", StringComparison.OrdinalIgnoreCase) ||
-                        slot.name.Equals("Mag", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-
-                    var allowedItems = slot.allowedIDs
+                // Convert weaponSlots (Slot objects) to a dictionary of TarkovItems
+                var convertedSlots = weaponSlots.ToDictionary(
+                    slot => slot.Key, // Slot name
+                    slot => slot.Value.allowedIDs
                         .Select(id => DataTable.GetValueOrDefault(id))
                         .Where(item => item != null)
-                        .ToList();
+                        .ToList()
+                );
 
-                    if (allowedItems.Any())
-                    {
-                        slotCombinations.Add(allowedItems);
-                    }
-                    else
-                    {
-                        // Add an empty list if there are no allowed items, indicating an empty slot
-                        slotCombinations.Add(new List<TarkovItem>());
-                    }
-                }
-
-                var cartesianProduct = CartesianProduct(slotCombinations);
-
-                foreach (var combination in cartesianProduct)
+                // Recursive function to get all combinations for a slot and its subslots
+                void GetCombinations(Dictionary<string, List<TarkovItem>> currentSlots, Dictionary<string, List<TarkovItem>> accumulatedCombination)
                 {
-                    var groupedCombination = weaponSlots.Values
-                        .ToDictionary(
-                            slot => slot.name,
-                            slot => combination
-                                .Where(item => slot.allowedIDs.Contains(item.id))
-                                .ToList()
-                        );
-
-                    var weaponCombination = new WeaponCombination
+                    if (currentSlots.Count == 0)
                     {
-                        SlotGroups = groupedCombination,
-                        RecoilVertical = CalculateRecoilVertical(selectedWeapon, combination),
-                        Ergonomics = CalculateErgonomics(selectedWeapon, combination),
-                        Velocity = CalculateVelocity(selectedWeapon, combination),
-                        AccuracyModifier = CalculateAccuracyModifier(selectedWeapon, combination),
-                        Weight = CalculateWeight(selectedWeapon, combination),
-                        BasePrice = CalculateBasePrice(selectedWeapon, combination)
-                    };
+                        // Base case: no more slots to process, add the accumulated combination to results
+                        uniqueCombinations.Add(new WeaponCombination
+                        {
+                            SlotGroups = new Dictionary<string, List<TarkovItem>>(accumulatedCombination),
+                            RecoilVertical = CalculateRecoilVertical(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
+                            Ergonomics = CalculateErgonomics(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
+                            Velocity = CalculateVelocity(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
+                            AccuracyModifier = CalculateAccuracyModifier(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
+                            Weight = CalculateWeight(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
+                            BasePrice = CalculateBasePrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList())
+                        });
+                        return;
+                    }
 
-                    uniqueCombinations.Add(weaponCombination);
+                    // Recursively process each slot and its allowed items
+                    var currentSlot = currentSlots.First();
+                    var remainingSlots = currentSlots.Skip(1).ToDictionary(kv => kv.Key, kv => kv.Value);
+
+                    foreach (var item in currentSlot.Value)
+                    {
+                        // Check if the item has subslots and recurse
+                        if (DataTableSlots.TryGetValue(item.id, out var subSlots) && subSlots.Any())
+                        {
+                            foreach (var subItem in subSlots)
+                            {
+                                var allowedSubItems = subItem.Value.allowedIDs.Select(id => DataTable.GetValueOrDefault(id)).Where(subItem => subItem != null).ToList();
+
+                                var newCombination = new Dictionary<string, List<TarkovItem>>(accumulatedCombination)
+                                {
+                                    [currentSlot.Key] = new List<TarkovItem> { item }
+                                };
+
+                                GetCombinations(remainingSlots, newCombination); // Recurse into subslot
+                            }
+                        }
+                        else
+                        {
+                            // If no subslots, simply add to the current combination and continue
+                            var newCombination = new Dictionary<string, List<TarkovItem>>(accumulatedCombination)
+                            {
+                                [currentSlot.Key] = new List<TarkovItem> { item }
+                            };
+
+                            GetCombinations(remainingSlots, newCombination);
+                        }
+                    }
                 }
+
+                // Start the recursion with the converted slots (TarkovItems)
+                GetCombinations(convertedSlots, new Dictionary<string, List<TarkovItem>>());
             }
 
             return uniqueCombinations;

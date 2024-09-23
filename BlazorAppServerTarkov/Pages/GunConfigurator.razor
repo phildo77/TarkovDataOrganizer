@@ -842,9 +842,6 @@ else
         // Iterate over combinations to find min and max for each stat
         foreach (var combination in combinations)
         {
-            // Debug: Log each combination's base price
-            Console.WriteLine($"Combination Base Price: {combination.BasePrice}");
-
             VerticalRecoilMin = Math.Min(VerticalRecoilMin, combination.RecoilVertical);
             VerticalRecoilMax = Math.Max(VerticalRecoilMax, combination.RecoilVertical);
 
@@ -864,8 +861,6 @@ else
             WeightMax = Math.Max(WeightMax, combination.Weight);
         }
 
-        // Debug: Log the final calculated range
-        Console.WriteLine($"Final Base Price Range: {BasePriceMin} - {BasePriceMax}");
     }
 
 
