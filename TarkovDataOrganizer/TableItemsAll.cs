@@ -17,11 +17,16 @@ public partial class TarkovData
                 .OrderBy(name => name)
                 .ToList();
         }
+        private static float CalculateRecoilHorizontal(TarkovItem baseWeapon, List<TarkovItem> attachments)
+        {
+            return baseWeapon.recoilHorizontal + attachments.Sum(a => a.recoilModifier); // Adjust the logic based on how horizontal recoil is calculated
+        }
 
         public class WeaponCombination
         {
             public Dictionary<string, List<TarkovItem>> SlotGroups { get; set; }
             public float RecoilVertical { get; set; }
+            public float RecoilHorizontal { get; set; } // New property
             public float Ergonomics { get; set; }
             public float Velocity { get; set; }
             public float AccuracyModifier { get; set; }
@@ -29,7 +34,6 @@ public partial class TarkovData
             public int BasePrice { get; set; }
             // Add other stats as needed
         }
-
         public bool HasSubSlots()
         {
             // Return true if this item has sub-slots; otherwise, false.
@@ -51,7 +55,7 @@ public partial class TarkovData
 
         public static List<WeaponCombination> GenerateUniqueCombinations(TarkovItem selectedWeapon)
         {
-            var uniqueCombinations = new List<WeaponCombination>();
+            var uniqueCombinations = new Dictionary<(float RecoilVertical, float RecoilHorizontal, float Ergonomics), WeaponCombination>();
 
             // Make sure the weapon has slots
             if (DataTableSlots.TryGetValue(selectedWeapon.id, out var weaponSlots))
@@ -70,17 +74,33 @@ public partial class TarkovData
                 {
                     if (currentSlots.Count == 0)
                     {
-                        // Base case: no more slots to process, add the accumulated combination to results
-                        uniqueCombinations.Add(new WeaponCombination
+                        // Calculate weapon stats
+                        var recoilVertical = CalculateRecoilVertical(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
+                        var recoilHorizontal = CalculateRecoilHorizontal(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()); // Added Horizontal Recoil Calculation
+                        var ergonomics = CalculateErgonomics(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
+
+                        // Group by Recoil (Vertical, Horizontal) and Ergonomics
+                        var key = (recoilVertical, recoilHorizontal, ergonomics);
+
+                        if (!uniqueCombinations.TryGetValue(key, out var existingCombination))
                         {
-                            SlotGroups = new Dictionary<string, List<TarkovItem>>(accumulatedCombination),
-                            RecoilVertical = CalculateRecoilVertical(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
-                            Ergonomics = CalculateErgonomics(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
-                            Velocity = CalculateVelocity(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
-                            AccuracyModifier = CalculateAccuracyModifier(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
-                            Weight = CalculateWeight(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
-                            BasePrice = CalculateBasePrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList())
-                        });
+                            uniqueCombinations[key] = new WeaponCombination
+                            {
+                                SlotGroups = new Dictionary<string, List<TarkovItem>>(accumulatedCombination),
+                                RecoilVertical = recoilVertical,
+                                RecoilHorizontal = recoilHorizontal, // Added Horizontal Recoil to WeaponCombination
+                                Ergonomics = ergonomics,
+                                Velocity = CalculateVelocity(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
+                                AccuracyModifier = CalculateAccuracyModifier(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
+                                Weight = CalculateWeight(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
+                                BasePrice = CalculateBasePrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList())
+                            };
+                        }
+                        else
+                        {
+                            // Optionally: Aggregate other properties if needed
+                            existingCombination.BasePrice += CalculateBasePrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
+                        }
                         return;
                     }
 
@@ -122,7 +142,8 @@ public partial class TarkovData
                 GetCombinations(convertedSlots, new Dictionary<string, List<TarkovItem>>());
             }
 
-            return uniqueCombinations;
+            // Return only the unique combinations based on Recoil (Vertical, Horizontal) and Ergonomics
+            return uniqueCombinations.Values.ToList();
         }
 
         private static float CalculateRecoilVertical(TarkovItem baseWeapon, List<TarkovItem> attachments)
