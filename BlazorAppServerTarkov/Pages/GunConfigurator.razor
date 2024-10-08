@@ -351,7 +351,12 @@ else
             <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" ServerData="LoadServerData" RowsPerPage="20" Height="45vh" Filterable="true" SortMode="SortMode.Multiple" Dense="false" Hover="true" Bordered="true" Striped="true">
                 <Columns>
                     <!-- Recoil Vertical and Ergonomics Columns remain unchanged -->
-                    <PropertyColumn Property="x => x.RecoilVertical" Title="Recoil Vertical" />
+                    <!-- Recoil Column showing Vertical - Horizontal -->
+                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Recoil (Vertical - Horizontal)">
+                        <CellTemplate>
+                            <span>@context.Item.RecoilVertical - @context.Item.RecoilHorizontal</span>
+                        </CellTemplate>
+                    </TemplateColumn>
                     <PropertyColumn Property="x => x.Ergonomics" Title="Ergonomics" />
 
                     <!-- Velocity Column showing Min - Max -->
