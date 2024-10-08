@@ -415,7 +415,8 @@ else
                     </TemplateColumn>
 
                     <!-- New Column to Show Attachment Count -->
-                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Attachment Count">
+                    <!-- Attachment Count Column, now sortable -->
+                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Attachment Count" Sortable="true" SortBy="@(x => x.SlotGroups.Sum(group => group.Value.Count))">
                         <CellTemplate>
                             @{
                                 // Calculate the total count of attachments for the combination
