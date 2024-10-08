@@ -32,7 +32,9 @@ public partial class TarkovData
             public float AccuracyModifier { get; set; }
             public float Weight { get; set; }
             public int BasePrice { get; set; }
-            // Add other stats as needed
+            public int Avg24hPrice { get; set; } // Added property for 24-hour average price
+            public int Low24hPrice { get; set; } // Added property for 24-hour lowest price
+                                                 // Add other stats as needed
         }
         public bool HasSubSlots()
         {
@@ -57,29 +59,24 @@ public partial class TarkovData
         {
             var uniqueCombinations = new Dictionary<(float RecoilVertical, float RecoilHorizontal, float Ergonomics), WeaponCombination>();
 
-            // Make sure the weapon has slots
             if (DataTableSlots.TryGetValue(selectedWeapon.id, out var weaponSlots))
             {
-                // Convert weaponSlots (Slot objects) to a dictionary of TarkovItems
                 var convertedSlots = weaponSlots.ToDictionary(
-                    slot => slot.Key, // Slot name
+                    slot => slot.Key,
                     slot => slot.Value.allowedIDs
                         .Select(id => DataTable.GetValueOrDefault(id))
                         .Where(item => item != null)
                         .ToList()
                 );
 
-                // Recursive function to get all combinations for a slot and its subslots
                 void GetCombinations(Dictionary<string, List<TarkovItem>> currentSlots, Dictionary<string, List<TarkovItem>> accumulatedCombination)
                 {
                     if (currentSlots.Count == 0)
                     {
-                        // Calculate weapon stats
                         var recoilVertical = CalculateRecoilVertical(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
-                        var recoilHorizontal = CalculateRecoilHorizontal(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()); // Added Horizontal Recoil Calculation
+                        var recoilHorizontal = CalculateRecoilHorizontal(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
                         var ergonomics = CalculateErgonomics(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
 
-                        // Group by Recoil (Vertical, Horizontal) and Ergonomics
                         var key = (recoilVertical, recoilHorizontal, ergonomics);
 
                         if (!uniqueCombinations.TryGetValue(key, out var existingCombination))
@@ -88,29 +85,30 @@ public partial class TarkovData
                             {
                                 SlotGroups = new Dictionary<string, List<TarkovItem>>(accumulatedCombination),
                                 RecoilVertical = recoilVertical,
-                                RecoilHorizontal = recoilHorizontal, // Added Horizontal Recoil to WeaponCombination
+                                RecoilHorizontal = recoilHorizontal,
                                 Ergonomics = ergonomics,
                                 Velocity = CalculateVelocity(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
                                 AccuracyModifier = CalculateAccuracyModifier(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
                                 Weight = CalculateWeight(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
-                                BasePrice = CalculateBasePrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList())
+                                BasePrice = CalculateBasePrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
+                                Avg24hPrice = CalculateAvg24hPrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()), // Calculate avg24hPrice
+                                Low24hPrice = CalculateLow24hPrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList())  // Calculate low24hPrice
                             };
                         }
                         else
                         {
-                            // Optionally: Aggregate other properties if needed
                             existingCombination.BasePrice += CalculateBasePrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
+                            existingCombination.Avg24hPrice += CalculateAvg24hPrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
+                            existingCombination.Low24hPrice += CalculateLow24hPrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
                         }
                         return;
                     }
 
-                    // Recursively process each slot and its allowed items
                     var currentSlot = currentSlots.First();
                     var remainingSlots = currentSlots.Skip(1).ToDictionary(kv => kv.Key, kv => kv.Value);
 
                     foreach (var item in currentSlot.Value)
                     {
-                        // Check if the item has subslots and recurse
                         if (DataTableSlots.TryGetValue(item.id, out var subSlots) && subSlots.Any())
                         {
                             foreach (var subItem in subSlots)
@@ -127,7 +125,6 @@ public partial class TarkovData
                         }
                         else
                         {
-                            // If no subslots, simply add to the current combination and continue
                             var newCombination = new Dictionary<string, List<TarkovItem>>(accumulatedCombination)
                             {
                                 [currentSlot.Key] = new List<TarkovItem> { item }
@@ -138,14 +135,23 @@ public partial class TarkovData
                     }
                 }
 
-                // Start the recursion with the converted slots (TarkovItems)
                 GetCombinations(convertedSlots, new Dictionary<string, List<TarkovItem>>());
             }
 
-            // Return only the unique combinations based on Recoil (Vertical, Horizontal) and Ergonomics
             return uniqueCombinations.Values.ToList();
         }
 
+
+        // Calculation methods for Avg24hPrice and Low24hPrice
+        private static int CalculateAvg24hPrice(TarkovItem baseWeapon, List<TarkovItem> attachments)
+        {
+            return baseWeapon.avg24hPrice + attachments.Sum(a => a.avg24hPrice);
+        }
+
+        private static int CalculateLow24hPrice(TarkovItem baseWeapon, List<TarkovItem> attachments)
+        {
+            return baseWeapon.low24hPrice + attachments.Sum(a => a.low24hPrice);
+        }
         private static float CalculateRecoilVertical(TarkovItem baseWeapon, List<TarkovItem> attachments)
         {
             return baseWeapon.recoilVertical + attachments.Sum(a => a.recoilModifier);
