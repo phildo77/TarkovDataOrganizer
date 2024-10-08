@@ -350,13 +350,64 @@ else
 
             <MudDataGrid T="TarkovData.TarkovItem.WeaponCombination" ServerData="LoadServerData" RowsPerPage="20" Height="45vh" Filterable="true" SortMode="SortMode.Multiple" Dense="false" Hover="true" Bordered="true" Striped="true">
                 <Columns>
+                    <!-- Recoil Vertical and Ergonomics Columns remain unchanged -->
                     <PropertyColumn Property="x => x.RecoilVertical" Title="Recoil Vertical" />
                     <PropertyColumn Property="x => x.Ergonomics" Title="Ergonomics" />
-                    <PropertyColumn Property="x => x.Velocity" Title="Velocity" />
-                    <PropertyColumn Property="x => x.AccuracyModifier" Title="Accuracy Modifier" />
-                    <PropertyColumn Property="x => x.Weight" Title="Weight" />
-                    <PropertyColumn Property="x => x.Avg24hPrice" Title="Avg. 24 H Price" Format="C2" />
-                    <PropertyColumn Property="x => x.Low24hPrice" Title="Low 24 H Price" Format="C2" />
+
+                    <!-- Velocity Column showing Min - Max -->
+                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Velocity">
+                        <CellTemplate>
+                            @{
+                                var velocityMin = context.Item.SlotGroups.Min(group => group.Value.Min(item => item.velocity));
+                                var velocityMax = context.Item.SlotGroups.Max(group => group.Value.Max(item => item.velocity));
+                            }
+                            <span>@velocityMin - @velocityMax</span>
+                        </CellTemplate>
+                    </TemplateColumn>
+
+                    <!-- Accuracy Modifier Column showing Min - Max -->
+                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Accuracy Modifier">
+                        <CellTemplate>
+                            @{
+                                var accuracyModifierMin = context.Item.SlotGroups.Min(group => group.Value.Min(item => item.accuracyModifier));
+                                var accuracyModifierMax = context.Item.SlotGroups.Max(group => group.Value.Max(item => item.accuracyModifier));
+                            }
+                            <span>@accuracyModifierMin - @accuracyModifierMax</span>
+                        </CellTemplate>
+                    </TemplateColumn>
+
+                    <!-- Weight Column showing Min - Max -->
+                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Weight">
+                        <CellTemplate>
+                            @{
+                                var weightMin = context.Item.SlotGroups.Min(group => group.Value.Min(item => item.weight));
+                                var weightMax = context.Item.SlotGroups.Max(group => group.Value.Max(item => item.weight));
+                            }
+                            <span>@weightMin - @weightMax</span>
+                        </CellTemplate>
+                    </TemplateColumn>
+
+                    <!-- Avg. 24h Price Column showing Min - Max -->
+                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Avg. 24h Price">
+                        <CellTemplate>
+                            @{
+                                var avg24hPriceMin = context.Item.SlotGroups.Min(group => group.Value.Min(item => item.avg24hPrice));
+                                var avg24hPriceMax = context.Item.SlotGroups.Max(group => group.Value.Max(item => item.avg24hPrice));
+                            }
+                            <span>@avg24hPriceMin - @avg24hPriceMax</span>
+                        </CellTemplate>
+                    </TemplateColumn>
+
+                    <!-- Low 24h Price Column showing Min - Max -->
+                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Low 24h Price">
+                        <CellTemplate>
+                            @{
+                                var low24hPriceMin = context.Item.SlotGroups.Min(group => group.Value.Min(item => item.low24hPrice));
+                                var low24hPriceMax = context.Item.SlotGroups.Max(group => group.Value.Max(item => item.low24hPrice));
+                            }
+                            <span>@low24hPriceMin - @low24hPriceMax</span>
+                        </CellTemplate>
+                    </TemplateColumn>
 
                     <!-- New Column to Show Attachment Count -->
                     <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Attachment Count">
