@@ -367,7 +367,21 @@ else
                         </CellTemplate>
                     </TemplateColumn>
                     <PropertyColumn Property="x => x.Ergonomics" Title="Ergonomics" />
-
+                    <!-- Add New Column for Stacked Combos -->
+                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Stacked Combos">
+                        <CellTemplate>
+                            <span>@context.Item.TotalCombinations</span>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <!-- Attachment Count Column -->
+                    <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Attachment Count" Sortable="true" SortBy="@(x => x.SlotGroups.Sum(group => group.Value.Count))">
+                        <CellTemplate>
+                            @{
+                                var attachmentCount = context.Item.SlotGroups.Sum(group => group.Value.Count);
+                            }
+                            <span>@attachmentCount</span>
+                        </CellTemplate>
+                    </TemplateColumn>
                     <!-- Velocity Column showing Min - Max -->
                     <TemplateColumn T="TarkovData.TarkovItem.WeaponCombination" Title="Velocity">
                         <CellTemplate>
