@@ -540,7 +540,7 @@ else
         exportData.Add("Stack Line item");
         exportData.Add($"Ergo: {combination.Ergonomics}");
         exportData.Add($"H - V recoil: {combination.RecoilHorizontal} - {combination.RecoilVertical}");
-        exportData.Add($"Total Combos: {GetTotalCombinations(SelectedWeapon)}");
+        exportData.Add($"Total Combos: {combination.TotalCombinations}");
         exportData.Add("-----");
 
         // Get all possible attachment combinations
@@ -565,17 +565,9 @@ else
             exportData.Add("-----");
         }
 
-        // Set the ExportedCombinationText property for the Blazor UI to render
-        ExportedCombinationText = string.Join("\n", exportData);
-
-        // Optionally output to a file or console using OutputCombination
-        foreach (var attachmentCombo in allCombinations)
-        {
-            OutputCombination(combination); // This will call the existing output logic
-        }
-
-        // Notify the Blazor component to re-render
-        StateHasChanged();
+        // Use JSInterop to export to a file
+        var exportContent = string.Join("\n", exportData);
+        ExportToFile(exportContent, "weapon_combinations.txt");
     }
     private void OutputCombination(TarkovData.TarkovItem.WeaponCombination combination)
     {
@@ -641,11 +633,10 @@ else
         }
     }
 
-    private void ExportToFile(List<string> data, string fileName)
+    private void ExportToFile(string content, string fileName)
     {
-        var textData = string.Join("\n", data);
-        // Use JSInterop to trigger file download in the browser as a text file
-        JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, "text/plain", textData);
+        // Use JSInterop to trigger the file download in the browser
+        JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, "text/plain", content);
     }
 
     // This method calculates the total number of combinations for the selected weapon.
