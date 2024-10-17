@@ -57,7 +57,7 @@ public partial class TarkovData
 
         public static List<WeaponCombination> GenerateUniqueCombinations(TarkovItem selectedWeapon)
         {
-            var uniqueCombinations = new Dictionary<(float RecoilVertical, float RecoilHorizontal, float Ergonomics), WeaponCombination>();
+            var uniqueCombinations = new Dictionary<(float RecoilVertical, float RecoilHorizontal, float Ergonomics), List<WeaponCombination>>();
 
             if (DataTableSlots.TryGetValue(selectedWeapon.id, out var weaponSlots))
             {
@@ -79,28 +79,29 @@ public partial class TarkovData
 
                         var key = (recoilVertical, recoilHorizontal, ergonomics);
 
-                        if (!uniqueCombinations.TryGetValue(key, out var existingCombination))
+                        // Grouping combinations by recoil and ergonomics
+                        if (!uniqueCombinations.TryGetValue(key, out var existingCombinations))
                         {
-                            uniqueCombinations[key] = new WeaponCombination
-                            {
-                                SlotGroups = new Dictionary<string, List<TarkovItem>>(accumulatedCombination),
-                                RecoilVertical = recoilVertical,
-                                RecoilHorizontal = recoilHorizontal,
-                                Ergonomics = ergonomics,
-                                Velocity = CalculateVelocity(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
-                                AccuracyModifier = CalculateAccuracyModifier(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
-                                Weight = CalculateWeight(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
-                                BasePrice = CalculateBasePrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
-                                Avg24hPrice = CalculateAvg24hPrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()), // Calculate avg24hPrice
-                                Low24hPrice = CalculateLow24hPrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList())  // Calculate low24hPrice
-                            };
+                            // Initialize the list of combinations if it doesn't exist
+                            uniqueCombinations[key] = new List<WeaponCombination>();
+                            existingCombinations = uniqueCombinations[key]; // Ensure it's assigned
                         }
-                        else
+
+                        var newCombination = new WeaponCombination
                         {
-                            existingCombination.BasePrice += CalculateBasePrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
-                            existingCombination.Avg24hPrice += CalculateAvg24hPrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
-                            existingCombination.Low24hPrice += CalculateLow24hPrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
-                        }
+                            SlotGroups = new Dictionary<string, List<TarkovItem>>(accumulatedCombination),
+                            RecoilVertical = recoilVertical,
+                            RecoilHorizontal = recoilHorizontal,
+                            Ergonomics = ergonomics,
+                            Velocity = CalculateVelocity(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
+                            AccuracyModifier = CalculateAccuracyModifier(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
+                            Weight = CalculateWeight(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
+                            BasePrice = CalculateBasePrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
+                            Avg24hPrice = CalculateAvg24hPrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
+                            Low24hPrice = CalculateLow24hPrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList())
+                        };
+
+                        existingCombinations.Add(newCombination);
                         return;
                     }
 
@@ -109,36 +110,20 @@ public partial class TarkovData
 
                     foreach (var item in currentSlot.Value)
                     {
-                        if (DataTableSlots.TryGetValue(item.id, out var subSlots) && subSlots.Any())
+                        var newCombination = new Dictionary<string, List<TarkovItem>>(accumulatedCombination)
                         {
-                            foreach (var subItem in subSlots)
-                            {
-                                var allowedSubItems = subItem.Value.allowedIDs.Select(id => DataTable.GetValueOrDefault(id)).Where(subItem => subItem != null).ToList();
+                            [currentSlot.Key] = new List<TarkovItem> { item }
+                        };
 
-                                var newCombination = new Dictionary<string, List<TarkovItem>>(accumulatedCombination)
-                                {
-                                    [currentSlot.Key] = new List<TarkovItem> { item }
-                                };
-
-                                GetCombinations(remainingSlots, newCombination); // Recurse into subslot
-                            }
-                        }
-                        else
-                        {
-                            var newCombination = new Dictionary<string, List<TarkovItem>>(accumulatedCombination)
-                            {
-                                [currentSlot.Key] = new List<TarkovItem> { item }
-                            };
-
-                            GetCombinations(remainingSlots, newCombination);
-                        }
+                        GetCombinations(remainingSlots, newCombination);
                     }
                 }
 
                 GetCombinations(convertedSlots, new Dictionary<string, List<TarkovItem>>());
             }
 
-            return uniqueCombinations.Values.ToList();
+            // Flatten the uniqueCombinations dictionary to a list for the DataGrid
+            return uniqueCombinations.Values.SelectMany(combos => combos).ToList();
         }
 
 
