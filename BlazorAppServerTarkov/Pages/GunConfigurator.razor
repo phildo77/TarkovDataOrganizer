@@ -36,6 +36,15 @@
         DotNet.invokeMethodAsync('YourAssemblyName', 'UpdateSelectedWeapons', selectedValues);
     }
 </script>
+<script>
+    window.BlazorDownloadFile = (fileName, contentType, content) => {
+        const a = document.createElement('a');
+        const file = new Blob([content], { type: contentType });
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+    };
+</script>
 
 <style>
 
@@ -431,6 +440,10 @@ else
                             <MudButton OnClick="() => HandleCombinationSelection(context.Item)">
                                 Select This Combination
                             </MudButton>
+                            <!-- New button to export the selected row and its combinations -->
+                            <MudButton Color="Color.Info" OnClick="() => ExportCombination(context.Item)">
+                                Export
+                            </MudButton>
                         </CellTemplate>
                     </TemplateColumn>
                 </Columns>
@@ -508,7 +521,45 @@ else
         SelectedCombination = combination;
         StateHasChanged(); // Trigger a UI update
     }
+    private void ExportCombination(TarkovData.TarkovItem.WeaponCombination combination)
+    {
+        // Create a CSV or JSON structure for exporting the combination data.
+        var exportData = new List<string>();
 
+        // Add the main weapon combination details
+        exportData.Add($"Weapon: {SelectedWeapon?.name}");
+        exportData.Add($"Recoil Vertical: {combination.RecoilVertical}");
+        exportData.Add($"Recoil Horizontal: {combination.RecoilHorizontal}");
+        exportData.Add($"Ergonomics: {combination.Ergonomics}");
+        exportData.Add($"Velocity: {combination.Velocity}");
+        exportData.Add($"Accuracy Modifier: {combination.AccuracyModifier}");
+        exportData.Add($"Weight: {combination.Weight}");
+        exportData.Add($"Base Price: {combination.BasePrice}");
+        exportData.Add($"Avg 24h Price: {combination.Avg24hPrice}");
+        exportData.Add($"Low 24h Price: {combination.Low24hPrice}");
+
+        // Add details for each slot and its attachments
+        foreach (var slotGroup in combination.SlotGroups)
+        {
+            exportData.Add($"Slot: {slotGroup.Key}");
+            foreach (var attachment in slotGroup.Value)
+            {
+                exportData.Add($"\tAttachment: {attachment.name}, Recoil Mod: {attachment.recoilModifier}, Ergo Mod: {attachment.ergonomicsModifier}");
+            }
+        }
+
+        // Export logic (e.g., write to file, copy to clipboard, or prompt download)
+        ExportToFile(exportData);
+    }
+    private void ExportToFile(List<string> data)
+    {
+        // Example: export data as CSV file
+        var fileName = "exported_combination.csv";
+        var csvData = string.Join("\n", data);
+
+        // Use JSInterop to trigger file download in the browser
+        JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, "text/csv", csvData);
+    }
     private bool isDrawerOpen = false;
 
     private void ToggleDrawer()
