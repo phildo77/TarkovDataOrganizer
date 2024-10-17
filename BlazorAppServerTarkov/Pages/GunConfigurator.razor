@@ -523,42 +523,47 @@ else
     }
     private void ExportCombination(TarkovData.TarkovItem.WeaponCombination combination)
     {
-        // Create a CSV or JSON structure for exporting the combination data.
         var exportData = new List<string>();
 
-        // Add the main weapon combination details
-        exportData.Add($"Weapon: {SelectedWeapon?.name}");
-        exportData.Add($"Recoil Vertical: {combination.RecoilVertical}");
-        exportData.Add($"Recoil Horizontal: {combination.RecoilHorizontal}");
-        exportData.Add($"Ergonomics: {combination.Ergonomics}");
-        exportData.Add($"Velocity: {combination.Velocity}");
-        exportData.Add($"Accuracy Modifier: {combination.AccuracyModifier}");
-        exportData.Add($"Weight: {combination.Weight}");
-        exportData.Add($"Base Price: {combination.BasePrice}");
-        exportData.Add($"Avg 24h Price: {combination.Avg24hPrice}");
-        exportData.Add($"Low 24h Price: {combination.Low24hPrice}");
+        // Add stack line item with Ergo, Recoil, and Total Combos
+        exportData.Add("Stack Line item");
+        exportData.Add($"Ergo: {combination.Ergonomics}");
+        exportData.Add($"H - V recoil: {combination.RecoilHorizontal} - {combination.RecoilVertical}");
+        exportData.Add($"Total Combos: {GetTotalCombinations(SelectedWeapon)}");
+        exportData.Add("-----");
 
-        // Add details for each slot and its attachments
+        // Add each combination with attachments and their details
+        int comboIndex = 1;
+        exportData.Add($"Combo {comboIndex++}");
+        exportData.Add($"Base Gun: {SelectedWeapon?.name}");
+
         foreach (var slotGroup in combination.SlotGroups)
         {
-            exportData.Add($"Slot: {slotGroup.Key}");
             foreach (var attachment in slotGroup.Value)
             {
-                exportData.Add($"\tAttachment: {attachment.name}, Recoil Mod: {attachment.recoilModifier}, Ergo Mod: {attachment.ergonomicsModifier}");
+                exportData.Add($"{attachment.name} | ERGO: {attachment.ergonomicsModifier} | RECOIL: {attachment.recoilModifier} | WEIGHT: {attachment.weight} | AVG24PRICE: {attachment.avg24hPrice} | LOW24PRICE: {attachment.low24hPrice}");
             }
         }
 
-        // Export logic (e.g., write to file, copy to clipboard, or prompt download)
-        ExportToFile(exportData);
-    }
-    private void ExportToFile(List<string> data)
-    {
-        // Example: export data as CSV file
-        var fileName = "exported_combination.csv";
-        var csvData = string.Join("\n", data);
+        // Add totals for the combination
+        exportData.Add($"Totals: ERGO: {combination.Ergonomics} | RECOIL: {combination.RecoilHorizontal} - {combination.RecoilVertical} | WEIGHT: {combination.Weight} | AVG24PRICE: {combination.Avg24hPrice} | LOW24PRICE: {combination.Low24hPrice}");
+        exportData.Add("-----");
 
-        // Use JSInterop to trigger file download in the browser
-        JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, "text/csv", csvData);
+        // Export logic
+        ExportToFile(exportData, "exported_combination.txt");
+    }
+
+    private void ExportToFile(List<string> data, string fileName)
+    {
+        var textData = string.Join("\n", data);
+        // Use JSInterop to trigger file download in the browser as a text file
+        JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, "text/plain", textData);
+    }
+
+    // This method calculates the total number of combinations for the selected weapon.
+    private int GetTotalCombinations(TarkovData.TarkovItem selectedWeapon)
+    {
+        return TarkovData.TarkovItem.GenerateUniqueCombinations(selectedWeapon).Count;
     }
     private bool isDrawerOpen = false;
 
