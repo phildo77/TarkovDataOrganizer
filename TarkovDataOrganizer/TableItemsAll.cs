@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 using CsvHelper;
 using CsvHelper.Configuration;
 
@@ -84,7 +85,8 @@ public partial class TarkovData
 
                         if (!uniqueCombinations.TryGetValue(key, out var existingCombination))
                         {
-                            uniqueCombinations[key] = new WeaponCombination
+                            // Add a new unique combination
+                            var newCombination = new WeaponCombination
                             {
                                 SlotGroups = new Dictionary<string, List<TarkovItem>>(accumulatedCombination),
                                 RecoilVertical = recoilVertical,
@@ -98,6 +100,10 @@ public partial class TarkovData
                                 Low24hPrice = CalculateLow24hPrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
                                 TotalCombinations = 1 // Start the count at 1
                             };
+                            uniqueCombinations[key] = newCombination;
+
+                            // Output combination details
+                            OutputCombination(newCombination);
                         }
                         else
                         {
@@ -107,6 +113,7 @@ public partial class TarkovData
                         return;
                     }
 
+                    // Recursively process each slot
                     var currentSlot = currentSlots.First();
                     var remainingSlots = currentSlots.Skip(1).ToDictionary(kv => kv.Key, kv => kv.Value);
 
@@ -121,10 +128,45 @@ public partial class TarkovData
                     }
                 }
 
+                // Start generating combinations
                 GetCombinations(convertedSlots, new Dictionary<string, List<TarkovItem>>());
             }
 
             return uniqueCombinations.Values.ToList();
+        }
+
+        // Output combination to console or text file
+        private static void OutputCombination(WeaponCombination combination)
+        {
+            var sb = new StringBuilder();
+
+            // Output base weapon and key details
+            sb.AppendLine("Combo:");
+            sb.AppendLine($"Ergo: {combination.Ergonomics}");
+            sb.AppendLine($"Recoil (H - V): {combination.RecoilHorizontal} - {combination.RecoilVertical}");
+            sb.AppendLine($"Total Weight: {combination.Weight}");
+            sb.AppendLine($"Velocity: {combination.Velocity}");
+            sb.AppendLine($"Accuracy Modifier: {combination.AccuracyModifier}");
+            sb.AppendLine($"Avg 24h Price: {combination.Avg24hPrice}");
+            sb.AppendLine($"Low 24h Price: {combination.Low24hPrice}");
+
+            // Output all slot attachments
+            foreach (var slot in combination.SlotGroups)
+            {
+                sb.AppendLine($"Slot: {slot.Key}");
+                foreach (var item in slot.Value)
+                {
+                    sb.AppendLine($"\tAttachment: {item.name} | ERGO: {item.ergonomicsModifier} | RECOIL: {item.recoilModifier} | WEIGHT: {item.weight}");
+                }
+            }
+
+            sb.AppendLine("-----");
+
+            // Output to console (or save to a file by appending)
+            Console.WriteLine(sb.ToString());
+
+            // If writing to a file, uncomment the following
+            // File.AppendAllText("output_combinations.txt", sb.ToString());
         }
 
 
