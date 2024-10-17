@@ -548,20 +548,25 @@ else
 
         // Add each combination with attachments and their details
         int comboIndex = 1;
-        exportData.Add($"Combo {comboIndex++}");
-        exportData.Add($"Base Gun: {SelectedWeapon?.name}");
 
         foreach (var slotGroup in combination.SlotGroups)
         {
-            foreach (var attachment in slotGroup.Value)
+            // Base gun information
+            exportData.Add($"Combo {comboIndex++}");
+            exportData.Add($"Base Gun: {SelectedWeapon?.name} | BASE ERGO: {SelectedWeapon?.ergonomics} | Base Recoil H V: {SelectedWeapon?.recoilHorizontal} / {SelectedWeapon?.recoilVertical} | Weight: {SelectedWeapon?.weight} | AVG24PRICE: {SelectedWeapon?.avg24hPrice} | LOW24PRICE: {SelectedWeapon?.low24hPrice}");
+            exportData.Add(""); // Empty line for spacing
+
+            // Attachments for the combo
+            foreach (var attachment in slotGroup.Value)  // Accessing slotGroup.Value to get the list of attachments
             {
                 exportData.Add($"{attachment.name} | ERGO: {attachment.ergonomicsModifier} | RECOIL: {attachment.recoilModifier} | WEIGHT: {attachment.weight} | AVG24PRICE: {attachment.avg24hPrice} | LOW24PRICE: {attachment.low24hPrice}");
             }
-        }
+            exportData.Add(""); // Empty line for spacing
 
-        // Add totals for the combination
-        exportData.Add($"Totals: ERGO: {combination.Ergonomics} | RECOIL: {combination.RecoilHorizontal} - {combination.RecoilVertical} | WEIGHT: {combination.Weight} | AVG24PRICE: {combination.Avg24hPrice} | LOW24PRICE: {combination.Low24hPrice}");
-        exportData.Add("-----");
+            // Totals for the combo
+            exportData.Add($"Totals: ERGO: {combination.Ergonomics} | RECOIL: {combination.RecoilHorizontal} - {combination.RecoilVertical} | WEIGHT: {combination.Weight} | AVG24PRICE: {combination.Avg24hPrice} | LOW24PRICE: {combination.Low24hPrice}");
+            exportData.Add("-----");
+        }
 
         // Export logic
         ExportToFile(exportData, "exported_combination.txt");
