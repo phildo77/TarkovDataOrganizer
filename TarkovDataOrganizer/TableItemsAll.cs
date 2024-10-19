@@ -136,12 +136,19 @@ public partial class TarkovData
         }
 
         // Output combination to console or text file
+        // Static counter to track the combo number
+        private static int comboCounter = 0;
+
+        // Output combination to console or text file
         private static void OutputCombination(WeaponCombination combination)
         {
             var sb = new StringBuilder();
 
-            // Output base weapon and key details
-            sb.AppendLine("Combo:");
+            // Increment the combo counter
+            comboCounter++;
+
+            // Output the current combo number
+            sb.AppendLine($"Combo: {comboCounter}");
             sb.AppendLine($"Ergo: {combination.Ergonomics}");
             sb.AppendLine($"Recoil (H - V): {combination.RecoilHorizontal} - {combination.RecoilVertical}");
             sb.AppendLine($"Total Weight: {combination.Weight}");
@@ -168,7 +175,6 @@ public partial class TarkovData
             // If writing to a file, uncomment the following
             // File.AppendAllText("output_combinations.txt", sb.ToString());
         }
-
 
         // Calculation methods for Avg24hPrice and Low24hPrice
         private static int CalculateAvg24hPrice(TarkovItem baseWeapon, List<TarkovItem> attachments)
