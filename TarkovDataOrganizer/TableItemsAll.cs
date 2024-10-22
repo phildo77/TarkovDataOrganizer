@@ -27,17 +27,18 @@ public partial class TarkovData
         {
             public Dictionary<string, List<TarkovItem>> SlotGroups { get; set; }
             public float RecoilVertical { get; set; }
-            public float RecoilHorizontal { get; set; } // New property
+            public float RecoilHorizontal { get; set; }
             public float Ergonomics { get; set; }
             public float Velocity { get; set; }
             public float AccuracyModifier { get; set; }
             public float Weight { get; set; }
             public int BasePrice { get; set; }
-            public int Avg24hPrice { get; set; } // Added property for 24-hour average price
-            public int Low24hPrice { get; set; } // Added property for 24-hour lowest price
-                                                 // Add other stats as needed
-                                                 // New property to track how many combinations share these same stats
-            public int TotalCombinations { get; set; } // This will hold the total count of combinations in a group.
+            public int Avg24hPrice { get; set; }
+            public int Low24hPrice { get; set; }
+            public int TotalCombinations { get; set; } // This holds the total count of combinations in a group.
+
+            // Store a list of attachment sets (rather than a single string for all combinations)
+            public List<string> AttachmentSets { get; set; } = new List<string>();
         }
         public bool HasSubSlots()
         {
@@ -64,6 +65,7 @@ public partial class TarkovData
 
             if (DataTableSlots.TryGetValue(selectedWeapon.id, out var weaponSlots))
             {
+                // Convert slot data to list of possible attachments
                 var convertedSlots = weaponSlots.ToDictionary(
                     slot => slot.Key,
                     slot => slot.Value.allowedIDs
@@ -76,12 +78,18 @@ public partial class TarkovData
                 {
                     if (currentSlots.Count == 0)
                     {
-                        // Calculate recoil, ergonomics, etc.
+                        // Calculate weapon stats
                         var recoilVertical = CalculateRecoilVertical(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
                         var recoilHorizontal = CalculateRecoilHorizontal(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
                         var ergonomics = CalculateErgonomics(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList());
 
                         var key = (recoilVertical, recoilHorizontal, ergonomics);
+
+                        // Generate a string for the current set of attachments
+                        var attachmentDetails = string.Join(" | ",
+                            accumulatedCombination.Select(slot =>
+                                $"{slot.Key}: {string.Join(", ", slot.Value.Select(item => item.name))}"
+                            ));
 
                         if (!uniqueCombinations.TryGetValue(key, out var existingCombination))
                         {
@@ -98,18 +106,23 @@ public partial class TarkovData
                                 BasePrice = CalculateBasePrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
                                 Avg24hPrice = CalculateAvg24hPrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
                                 Low24hPrice = CalculateLow24hPrice(selectedWeapon, accumulatedCombination.SelectMany(kv => kv.Value).ToList()),
-                                TotalCombinations = 1 // Start the count at 1
+                                TotalCombinations = 1,
                             };
+
+                            // Add the first attachment set for this combination
+                            newCombination.AttachmentSets.Add(attachmentDetails);
                             uniqueCombinations[key] = newCombination;
 
-                            // Output combination details
+                            // Output combination details for export (if needed)
                             OutputCombination(newCombination);
                         }
                         else
                         {
-                            // If the combination already exists, increment the count
+                            // If the combination already exists, increment the count and add the new attachment details
                             existingCombination.TotalCombinations++;
+                            existingCombination.AttachmentSets.Add(attachmentDetails);
                         }
+
                         return;
                     }
 
@@ -134,6 +147,32 @@ public partial class TarkovData
 
             return uniqueCombinations.Values.ToList();
         }
+
+
+        public static void ExportCombinationsToCsv(List<WeaponCombination> combinations, string fileName = "WeaponCombinations.csv")
+        {
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = "," };
+
+            using (var writer = new StreamWriter(fileName))
+            using (var csv = new CsvWriter(writer, config))
+            {
+                csv.WriteRecords(combinations.Select(c => new
+                {
+                    Ergo = c.Ergonomics,
+                    RecoilVertical = c.RecoilVertical,
+                    RecoilHorizontal = c.RecoilHorizontal,
+                    Weight = c.Weight,
+                    Velocity = c.Velocity,
+                    AccuracyModifier = c.AccuracyModifier,
+                    BasePrice = c.BasePrice,
+                    Avg24hPrice = c.Avg24hPrice,
+                    Low24hPrice = c.Low24hPrice,
+                    TotalCombinations = c.TotalCombinations,
+                    SlotDetails = string.Join(" | ", c.SlotGroups.SelectMany(sg => sg.Value.Select(a => $"{sg.Key}: {a.name} (ERGO: {a.ergonomicsModifier}, RECOIL: {a.recoilModifier}, WEIGHT: {a.weight})")))
+                }));
+            }
+        }
+
 
         // Output combination to console or text file
         // Static counter to track the combo number
