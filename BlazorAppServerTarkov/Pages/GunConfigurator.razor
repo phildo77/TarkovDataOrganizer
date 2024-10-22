@@ -543,24 +543,26 @@ else
         exportData.Add($"Total Combos: {combination.TotalCombinations}");
         exportData.Add("-----");
 
-        // Get all possible attachment combinations
-        var allCombinations = GenerateAttachmentCombinations(combination.SlotGroups);
-
-        // Loop through and export each attachment combination
+        // Get all possible attachment combinations from the AttachmentSets
         int comboIndex = 1;
-        foreach (var attachmentCombo in allCombinations)
+        foreach (var attachmentSet in combination.AttachmentSets)
         {
             exportData.Add($"Combo {comboIndex++}");
+
+            // Add base gun stats to the export
             exportData.Add($"Base Gun: {SelectedWeapon?.name} | BASE ERGO: {SelectedWeapon?.ergonomics} | Base Recoil H V: {SelectedWeapon?.recoilHorizontal} / {SelectedWeapon?.recoilVertical} | Weight: {SelectedWeapon?.weight} | AVG24PRICE: {SelectedWeapon?.avg24hPrice} | LOW24PRICE: {SelectedWeapon?.low24hPrice}");
             exportData.Add(""); // Empty line for spacing
 
-            // Export each attachment in the current combo
-            foreach (var attachment in attachmentCombo)
+            // Add attachment details from the current attachment set
+            var attachmentLines = attachmentSet.Split('|').Select(a => a.Trim()).ToList();
+            foreach (var attachmentLine in attachmentLines)
             {
-                exportData.Add($"{attachment.name} | ERGO: {attachment.ergonomicsModifier} | RECOIL: {attachment.recoilModifier} | WEIGHT: {attachment.weight} | AVG24PRICE: {attachment.avg24hPrice} | LOW24PRICE: {attachment.low24hPrice}");
+                exportData.Add($"{attachmentLine}");
             }
 
             exportData.Add(""); // Empty line for spacing
+
+            // Add the total for this combination
             exportData.Add($"Totals: ERGO: {combination.Ergonomics} | RECOIL: {combination.RecoilHorizontal} - {combination.RecoilVertical} | WEIGHT: {combination.Weight} | AVG24PRICE: {combination.Avg24hPrice} | LOW24PRICE: {combination.Low24hPrice}");
             exportData.Add("-----");
         }
