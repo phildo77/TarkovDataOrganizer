@@ -537,11 +537,8 @@ else
         var exportData = new List<string>();
 
         // Add stack line item with Ergo, Recoil, and Total Combos
-        exportData.Add("Stack Line item");
-        exportData.Add($"Ergo: {combination.Ergonomics}");
-        exportData.Add($"H - V recoil: {combination.RecoilHorizontal} - {combination.RecoilVertical}");
-        exportData.Add($"Total Combos: {combination.TotalCombinations}");
-        exportData.Add("-----");
+        exportData.Add($"Base Gun: {SelectedWeapon?.name} | BASE ERGO: {SelectedWeapon?.ergonomics} | Base Recoil H V: {SelectedWeapon?.recoilHorizontal} / {SelectedWeapon?.recoilVertical} | Weight: {SelectedWeapon?.weight} | AVG24PRICE: {SelectedWeapon?.avg24hPrice} | LOW24PRICE: {SelectedWeapon?.low24hPrice}");
+        exportData.Add(""); // Empty line for spacing
 
         // Get all possible attachment combinations from the AttachmentSets
         int comboIndex = 1;
@@ -553,11 +550,28 @@ else
             exportData.Add($"Base Gun: {SelectedWeapon?.name} | BASE ERGO: {SelectedWeapon?.ergonomics} | Base Recoil H V: {SelectedWeapon?.recoilHorizontal} / {SelectedWeapon?.recoilVertical} | Weight: {SelectedWeapon?.weight} | AVG24PRICE: {SelectedWeapon?.avg24hPrice} | LOW24PRICE: {SelectedWeapon?.low24hPrice}");
             exportData.Add(""); // Empty line for spacing
 
-            // Add attachment details from the current attachment set
+            // Split the attachment details
             var attachmentLines = attachmentSet.Split('|').Select(a => a.Trim()).ToList();
             foreach (var attachmentLine in attachmentLines)
             {
-                exportData.Add($"{attachmentLine}");
+                var attachmentId = attachmentLine.Split(':')[0].Trim().ToLower(); // Normalize case
+                Console.WriteLine($"Attempting to retrieve attachment with ID: {attachmentId}"); // Debug output
+
+                var attachment = TarkovData.TarkovItem.DataTable.GetValueOrDefault(attachmentId);
+
+                if (attachment != null)
+                {
+                    // Add attachment stats to the export
+                    exportData.Add($"{attachment.name} | ERGO: {attachment.ergonomicsModifier} | RECOIL: {attachment.recoilModifier} | WEIGHT: {attachment.weight} | AVG24PRICE: {attachment.avg24hPrice} | LOW24PRICE: {attachment.low24hPrice}");
+                }
+                else
+                {
+                    Console.WriteLine($"Attachment not found for ID: {attachmentId}"); // Log missing attachment
+                }
+            }
+            foreach (var key in TarkovData.TarkovItem.DataTable.Keys)
+            {
+                Console.WriteLine($"DataTable contains key: {key}");
             }
 
             exportData.Add(""); // Empty line for spacing
