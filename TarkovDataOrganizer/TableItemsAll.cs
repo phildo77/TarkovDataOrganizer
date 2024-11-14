@@ -85,11 +85,10 @@ public partial class TarkovData
 
                         var key = (recoilVertical, recoilHorizontal, ergonomics);
 
-                        // Generate a string for the current set of attachments
                         var attachmentDetails = string.Join(" | ",
-                            accumulatedCombination.Select(slot =>
-                                $"{slot.Key}: {string.Join(", ", slot.Value.Select(item => item.name))}"
-                            ));
+                            accumulatedCombination.SelectMany(slot => slot.Value.Select(item =>
+                                $"{item.id}: {item.name}"
+                            )));
 
                         if (!uniqueCombinations.TryGetValue(key, out var existingCombination))
                         {
