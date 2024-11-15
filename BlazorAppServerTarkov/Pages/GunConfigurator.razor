@@ -575,9 +575,11 @@ else
             }
 
             exportData.Add(""); // Empty line for spacing
+            // recoil calculated as percent
+            var recoil = (combination.RecoilHorizontal - combination.RecoilVertical) / 100;
 
             // Add the total for this combination
-            exportData.Add($"Totals: ERGO: {combination.Ergonomics} | RECOIL: {combination.RecoilHorizontal} - {combination.RecoilVertical} | WEIGHT: {combination.Weight} | AVG24PRICE: {combination.Avg24hPrice} | LOW24PRICE: {combination.Low24hPrice}");
+            exportData.Add($"Totals: ERGO: {combination.Ergonomics} | RECOIL: {recoil}% | WEIGHT: {combination.Weight} | AVG24PRICE: {combination.Avg24hPrice} | LOW24PRICE: {combination.Low24hPrice}");
             exportData.Add("-----");
         }
 
